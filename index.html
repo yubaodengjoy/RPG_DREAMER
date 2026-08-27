@@ -1267,19 +1267,6 @@ body:not(.hero-in-view) .brand {
   padding: 12px;
 }
 
-.footer {
-  padding: 54px clamp(18px, 4vw, 64px);
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  color: rgba(22, 34, 58, 0.52);
-  border-top: 0;
-  font-family: var(--mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0;
-}
-
 @keyframes preSpin { to { transform: rotate(360deg); } }
 
 .reveal {
@@ -1305,7 +1292,6 @@ body:not(.hero-in-view) .brand {
   }
   .feature-strip article:last-child { border-bottom: 0; }
   .dash-panel { padding-top: 44px; }
-  .footer { flex-direction: column; }
 }
 
 @media (max-width: 520px) {
@@ -1920,9 +1906,6 @@ body.hero-sequence-revealed .hero-content::after {
 
   <div class="code-soon-toast" role="status" aria-live="polite">Code will be coming soon</div>
 
-  <footer class="footer">
-    <span>RPG Dreamer</span>
-  </footer>
 </main>
 
 <script src="project-page/rpg-demo.js?v=20260827-02"></script>
