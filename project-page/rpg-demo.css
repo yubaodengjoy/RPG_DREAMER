@@ -2167,6 +2167,16 @@ body.rpg-demo-fullscreen-fallback {
   background: #000;
 }
 
+/* The R2 iframe must remain renderable during boot to avoid Chromium
+   throttling, while the compiler screen stays visually above it. */
+#demos .rpg-handheld-player .rpg-demo-progress {
+  z-index: 5;
+}
+
+#demos .rpg-handheld-player .rpg-demo-iframe {
+  z-index: 1;
+}
+
 @media (max-width: 720px) {
   #demos .rpg-cartridge-browser {
     width: 100%;
