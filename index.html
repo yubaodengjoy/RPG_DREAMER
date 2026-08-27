@@ -437,6 +437,7 @@ body:not(.hero-in-view) .brand {
 .overview-figure {
   width: min(90%, 1240px);
   margin: 46px auto 0;
+  scroll-margin-top: 96px;
 }
 
 .overview-figure img {
@@ -468,7 +469,7 @@ body:not(.hero-in-view) .brand {
   border-top: 1px solid rgba(22, 34, 58, 0.16);
   color: rgba(22, 34, 58, 0.68);
   font-family: var(--sans);
-  font-size: clamp(13px, 1.1vw, 15px);
+  font-size: clamp(15px, 1.25vw, 17px);
   line-height: 1.55;
   text-align: left;
 }
@@ -1522,9 +1523,10 @@ body.hero-sequence-revealed .hero-content::after {
     <div class="nav-links">
       <a href="#abstract">Abstract</a>
       <a href="#demos">Demos</a>
-      <a href="#overview">Overview</a>
+      <a href="#teaser">Teaser</a>
+      <a href="#method">Method</a>
+      <a href="#overview-figure">Overview</a>
       <a href="#result">Result</a>
-      <button type="button" data-code-soon>GitHub</button>
     </div>
   </nav>
 
@@ -1723,7 +1725,7 @@ body.hero-sequence-revealed .hero-content::after {
   <section class="section paper-section overview-section" id="overview">
     <div class="section-inner">
       <div class="overview-gallery">
-        <figure class="overview-figure reveal">
+        <figure class="overview-figure reveal" id="teaser">
           <h2 class="paper-heading">Teaser</h2>
           <img src="teaser.png?v=20260821-01" alt="RPG Dreamer teaser showing automatic generation and a long-horizon generated RPG" loading="lazy">
           <figcaption class="overview-figure-caption">
@@ -1731,7 +1733,7 @@ body.hero-sequence-revealed .hero-content::after {
           </figcaption>
         </figure>
 
-        <figure class="overview-figure reveal">
+        <figure class="overview-figure reveal" id="method">
           <h2 class="paper-heading">Method</h2>
           <img src="method.png?v=20260821-01" alt="RPG Dreamer method: Agent-Oriented Game Engine and Reviewer-centric Generation Loop" loading="lazy">
           <figcaption class="overview-figure-caption">
