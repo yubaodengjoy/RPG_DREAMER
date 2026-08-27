@@ -258,22 +258,13 @@ body:not(.hero-in-view) .brand {
 
 .paper-heading {
   font-family: var(--sans);
-  font-size: clamp(30px, 3.4vw, 44px);
+  font-size: clamp(42px, 5vw, 64px);
   font-weight: 800;
+  line-height: 1.05;
   letter-spacing: -0.01em;
   text-align: center;
   color: #16223a;
   margin: 0 0 34px;
-}
-
-.paper-heading::after {
-  content: "";
-  display: block;
-  width: 54px;
-  height: 4px;
-  margin: 14px auto 0;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--ember), var(--gold));
 }
 
 .dark-section .paper-heading {
@@ -295,7 +286,7 @@ body:not(.hero-in-view) .brand {
 
 #abstract .paper-heading {
   font-family: "Jersey 10", var(--mono);
-  font-size: clamp(36px, 4.7vw, 54px);
+  font-size: clamp(42px, 5vw, 64px);
   font-weight: 400;
   font-synthesis: none;
   letter-spacing: 0;
@@ -437,7 +428,7 @@ body:not(.hero-in-view) .brand {
      depend on the viewport — the transform does the scaling, not vw units. */
   #abstract.abstract-fit .abstract-logo { width: 86px; margin-bottom: 18px; }
   #abstract.abstract-fit .abstract-paper-title { font-size: 50px; white-space: normal; }
-  #abstract.abstract-fit .paper-heading { font-size: 54px; margin-bottom: 30px; }
+  #abstract.abstract-fit .paper-heading { font-size: 64px; margin-bottom: 30px; }
   #abstract.abstract-fit .abstract-panel { max-width: 940px; padding: 40px 54px 46px; }
   #abstract.abstract-fit .abstract-body { font-size: 16px; line-height: 1.72; }
 }
