@@ -879,7 +879,6 @@ body:not(.hero-in-view) .brand {
 }
 
 .result-table-wrap {
-  position: relative;
   overflow-x: auto;
   border: 1px solid rgba(22, 34, 58, 0.12);
   border-radius: 16px;
@@ -889,18 +888,6 @@ body:not(.hero-in-view) .brand {
     0 1px 0 rgba(255, 255, 255, 0.84) inset;
   backdrop-filter: blur(8px);
   scrollbar-width: thin;
-}
-
-.result-table-wrap::before {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 22px;
-  left: 22px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(128, 215, 255, 0.9), rgba(255, 210, 122, 0.82), transparent);
-  pointer-events: none;
 }
 
 .result-table {
