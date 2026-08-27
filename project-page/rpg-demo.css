@@ -1023,6 +1023,10 @@ body.rpg-demo-fullscreen-fallback {
   margin: -10px auto 18px;
 }
 
+#demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-standby-tips {
+  display: none;
+}
+
 .rpg-demo-standby-tip {
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr);
