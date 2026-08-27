@@ -42,12 +42,14 @@ jobs:
             teaser.png \
             technical_report.pdf \
             rpg-dreamer-top-hero-poster.webp \
-            rpg-dreamer-top-hero.mp4 \
-            rpg-dreamer-top-hero.webm \
+            top-video-intro-poster.webp \
+            top_video_1.mp4 \
+            top_video_2.mp4 \
             _site/
 
           cp -a fonts Author_logo _site/
           cp project-page/rpg-demo.css project-page/rpg-demo.js _site/project-page/
+          cp -a project-page/cartridge-covers _site/project-page/
           cp project-page/play-games/rpg-embed-host.js _site/project-page/play-games/
 
           for game_id in 40 41 42 43; do

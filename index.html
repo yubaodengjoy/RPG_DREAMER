@@ -1460,6 +1460,87 @@ body:not(.hero-in-view) .brand {
   flex-wrap: wrap;
 }
 
+/* Two-part opening: the clean intro plays first, then the persistent world
+   montage takes over and introduces the interface as one composed reveal. */
+.hero-image {
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 680ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-intro-video { opacity: 1; }
+.hero.is-looping .hero-intro-video { opacity: 0; }
+.hero.is-looping .hero-loop-video { opacity: 1; }
+
+body.hero-sequence-pending .nav {
+  opacity: 0;
+  transform: translateY(-20px);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+body.hero-sequence-pending .hero-content {
+  opacity: 0;
+  transform: translateY(22px) scale(0.92);
+  filter: blur(16px);
+  clip-path: inset(46% 8% round 36px);
+  pointer-events: none;
+}
+
+body.hero-sequence-revealed .nav {
+  animation: heroNavArrival 980ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.hero-sequence-revealed .hero-content {
+  animation: heroIdentityArrival 1300ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+}
+
+.hero-content::after {
+  content: "";
+  position: absolute;
+  z-index: 8;
+  inset: 12px 18px;
+  border-radius: 26px;
+  background: linear-gradient(90deg, transparent, rgba(170, 232, 255, 0.72), transparent);
+  opacity: 0;
+  transform: translateX(-115%) skewX(-12deg);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+body.hero-sequence-revealed .hero-content::after {
+  animation: heroIdentityScan 1150ms cubic-bezier(0.22, 1, 0.36, 1) 260ms both;
+}
+
+@keyframes heroNavArrival {
+  0% { opacity: 0; transform: translateY(-20px); filter: blur(10px); }
+  55% { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes heroIdentityArrival {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.92);
+    filter: blur(16px);
+    clip-path: inset(46% 8% round 36px);
+  }
+  58% { opacity: 1; }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+    clip-path: inset(0 round 36px);
+  }
+}
+
+@keyframes heroIdentityScan {
+  0% { opacity: 0; transform: translateX(-115%) skewX(-12deg); }
+  28% { opacity: 0.34; }
+  72% { opacity: 0.18; }
+  100% { opacity: 0; transform: translateX(115%) skewX(-12deg); }
+}
+
 @media (max-width: 520px) {
   .hero { padding: 20px 14px 30px; }
 
@@ -1485,10 +1566,10 @@ body:not(.hero-in-view) .brand {
 
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
-<link href="project-page/rpg-demo.css?v=20260827-03" rel="stylesheet">
+<link href="project-page/rpg-demo.css?v=20260827-04" rel="stylesheet">
 <meta name="build" content="20260722-41">
 </head>
-<body class="hero-in-view">
+<body class="hero-in-view hero-sequence-pending">
 <main class="page">
   <nav class="nav">
     <a class="brand" href="#top">
@@ -1505,9 +1586,11 @@ body:not(.hero-in-view) .brand {
   </nav>
 
   <section class="hero" id="top">
-    <video class="hero-image" muted loop playsinline preload="auto" poster="rpg-dreamer-top-hero-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
-      <source src="rpg-dreamer-top-hero.mp4" type="video/mp4">
-      <source src="rpg-dreamer-top-hero.webm" type="video/webm">
+    <video class="hero-image hero-intro-video" data-hero-intro muted playsinline preload="auto" poster="top-video-intro-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+      <source src="top_video_1.mp4" type="video/mp4">
+    </video>
+    <video class="hero-image hero-loop-video" data-hero-loop muted loop playsinline preload="auto" poster="rpg-dreamer-top-hero-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+      <source src="top_video_2.mp4" type="video/mp4">
     </video>
     <div class="hero-content">
       <div class="hero-brand">
@@ -1640,20 +1723,6 @@ body:not(.hero-in-view) .brand {
             <span aria-hidden="true">‹</span>
           </button>
           <nav class="rpg-demo-switcher" aria-label="World cartridge library">
-          <button class="rpg-demo-choice" type="button" data-rpg-game="world-40" aria-pressed="false">
-            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-40/src/dist/cover.webp')" aria-hidden="true"></span>
-            <span class="rpg-demo-choice-caption">
-              <strong>武松·最后一虎</strong>
-              <small>Generated World 40</small>
-            </span>
-          </button>
-          <button class="rpg-demo-choice" type="button" data-rpg-game="magic-brush" aria-pressed="false">
-            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-41/src/dist/cover.webp')" aria-hidden="true"></span>
-            <span class="rpg-demo-choice-caption">
-              <strong>神笔：移命录</strong>
-              <small>Generated World 41</small>
-            </span>
-          </button>
           <button class="rpg-demo-choice" type="button" data-rpg-game="world-42" aria-pressed="false">
             <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-42/src/dist/cover.webp')" aria-hidden="true"></span>
             <span class="rpg-demo-choice-caption">
@@ -1668,21 +1737,35 @@ body:not(.hero-in-view) .brand {
               <small>Generated World 43</small>
             </span>
           </button>
-          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Generated World 44, coming soon">
-            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-40/src/dist/assets/chapter-02-main-menu-C_C4urk1.png')" aria-hidden="true"></span>
-            <span class="rpg-demo-choice-caption"><strong>World 44</strong><small>Coming Soon</small></span>
+          <button class="rpg-demo-choice" type="button" data-rpg-game="world-40" aria-pressed="false">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-40/src/dist/cover.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption">
+              <strong>武松·最后一虎</strong>
+              <small>Generated World 40</small>
+            </span>
           </button>
-          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Generated World 45, coming soon">
-            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-40/src/dist/assets/chapter-03-main-menu-CF0523Ke.png')" aria-hidden="true"></span>
-            <span class="rpg-demo-choice-caption"><strong>World 45</strong><small>Coming Soon</small></span>
+          <button class="rpg-demo-choice" type="button" data-rpg-game="magic-brush" aria-pressed="false">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-41/src/dist/cover.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption">
+              <strong>神笔：移命录</strong>
+              <small>Generated World 41</small>
+            </span>
           </button>
-          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Generated World 46, coming soon">
-            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-43/src/dist/assets/chapter-02-main-menu-DdyifpHs.png')" aria-hidden="true"></span>
-            <span class="rpg-demo-choice-caption"><strong>World 46</strong><small>Coming Soon</small></span>
+          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Unsent Frequencies, coming soon">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../project-page/cartridge-covers/unsent-frequencies.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption"><strong>Unsent Frequencies</strong><small>Coming Soon</small></span>
           </button>
-          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Generated World 47, coming soon">
-            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-42/src/dist/assets/opening-comic-page-Bb87Q_93.webp')" aria-hidden="true"></span>
-            <span class="rpg-demo-choice-caption"><strong>World 47</strong><small>Coming Soon</small></span>
+          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Homecoming and the Throne, coming soon">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../project-page/cartridge-covers/homecoming-throne.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption"><strong>Homecoming and the Throne</strong><small>Coming Soon</small></span>
+          </button>
+          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="镜中奇旅：升格仪式，coming soon">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../project-page/cartridge-covers/looking-glass-ascension.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption"><strong>镜中奇旅：升格仪式</strong><small>Coming Soon</small></span>
+          </button>
+          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="纸页王国：灰烬之兆，coming soon">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../project-page/cartridge-covers/paper-kingdom-ashes.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption"><strong>纸页王国：灰烬之兆</strong><small>Coming Soon</small></span>
           </button>
           </nav>
           <button class="rpg-cartridge-scroll" type="button" data-rpg-scroll="1" aria-label="Show more games">
@@ -1911,20 +1994,42 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   window.addEventListener("resize", onScroll);
   update();
 })();
-// ---- Hero playback ----
-// Start only after a useful buffer exists, prefer the hardware-friendly MP4,
-// and stop video decoding away from the hero.
+// ---- Two-part hero playback ----
+// Both clips begin buffering together. The clean intro plays once; its final
+// composition matches the opening of the loop, so the identity can arrive on
+// top without a visible cut.
 (() => {
-  const v = document.querySelector(".hero-image");
-  if (!v) return;
-  const hero = v.closest(".hero");
-  v.muted = true;
-  v.setAttribute("muted", "");
-  v.playsInline = true;
-  v.preload = "auto";
+  const intro = document.querySelector("[data-hero-intro]");
+  const loop = document.querySelector("[data-hero-loop]");
+  const hero = intro?.closest(".hero");
+  if (!intro || !loop || !hero) return;
+
+  const videos = [intro, loop];
   let heroVisible = true;
-  let started = false;
+  let phase = "preloading";
   let announced = false;
+  let fallbackTimer = 0;
+
+  videos.forEach((video) => {
+    video.muted = true;
+    video.setAttribute("muted", "");
+    video.playsInline = true;
+    video.preload = "auto";
+  });
+
+  const bufferedAhead = (video) => {
+    for (let i = 0; i < video.buffered.length; i += 1) {
+      if (video.buffered.start(i) <= video.currentTime + 0.05 && video.buffered.end(i) >= video.currentTime) {
+        return video.buffered.end(i) - video.currentTime;
+      }
+    }
+    return 0;
+  };
+
+  const hasUsefulBuffer = (video, seconds = 1.25) => (
+    video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA
+    && bufferedAhead(video) >= Math.min(seconds, Math.max(0.5, video.duration || seconds))
+  );
 
   const announceReady = () => {
     if (announced) return;
@@ -1935,57 +2040,89 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
     document.dispatchEvent(new Event("rpgdreamer:hero-ready"));
   };
 
-  const bufferedAhead = () => {
-    for (let i = 0; i < v.buffered.length; i += 1) {
-      if (v.buffered.start(i) <= v.currentTime + 0.05 && v.buffered.end(i) >= v.currentTime) {
-        return v.buffered.end(i) - v.currentTime;
-      }
-    }
-    return 0;
-  };
-
-  const playIfVisible = () => {
-    if (!started || !heroVisible || document.hidden) return;
-    v.play().catch(() => {});
-  };
-
-  const maybeStart = (force = false) => {
-    if (started) return;
-    if (!force && v.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) return;
-    if (!force && bufferedAhead() < Math.min(5, Math.max(1, v.duration || 5))) return;
-    started = true;
-    playIfVisible();
+  const revealIdentity = () => {
+    hero.classList.add("is-looping");
+    document.body.classList.remove("hero-sequence-pending");
+    document.body.classList.add("hero-sequence-revealed");
     announceReady();
   };
 
-  ["loadeddata", "canplay", "canplaythrough", "progress"].forEach((eventName) => {
-    v.addEventListener(eventName, () => maybeStart(), { passive: true });
-  });
-  v.addEventListener("playing", () => hero?.classList.remove("is-buffering"));
-  v.addEventListener("waiting", () => hero?.classList.add("is-buffering"));
-  v.addEventListener("stalled", () => hero?.classList.add("is-buffering"));
-  v.addEventListener("error", announceReady, { once: true });
+  const activeVideo = () => (phase === "loop" ? loop : intro);
 
-  if ("IntersectionObserver" in window && hero) {
+  const playActiveIfVisible = () => {
+    if (phase === "preloading" || !heroVisible || document.hidden) return;
+    activeVideo().play().catch(() => {});
+  };
+
+  const startLoop = () => {
+    if (phase === "loop") return;
+    if (loop.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+      hero.classList.add("is-buffering");
+      loop.addEventListener("canplay", startLoop, { once: true });
+      if (loop.networkState === HTMLMediaElement.NETWORK_EMPTY) loop.load();
+      return;
+    }
+    phase = "loop";
+    intro.pause();
+    loop.currentTime = 0;
+    const playback = loop.play();
+    if (playback && typeof playback.then === "function") {
+      playback.then(revealIdentity).catch(revealIdentity);
+    } else {
+      revealIdentity();
+    }
+    window.setTimeout(revealIdentity, 900);
+  };
+
+  const startIntro = (force = false) => {
+    if (phase !== "preloading") return;
+    if (!force && !hasUsefulBuffer(intro)) return;
+    phase = "intro";
+    window.clearTimeout(fallbackTimer);
+    if (heroVisible && !document.hidden) {
+      intro.play().catch(startLoop);
+    }
+  };
+
+  ["loadeddata", "canplay", "canplaythrough", "progress"].forEach((eventName) => {
+    videos.forEach((video) => video.addEventListener(eventName, () => startIntro(), { passive: true }));
+  });
+
+  intro.addEventListener("ended", startLoop, { once: true });
+  intro.addEventListener("error", startLoop, { once: true });
+  loop.addEventListener("playing", () => {
+    hero.classList.remove("is-buffering");
+    if (phase === "loop") revealIdentity();
+  });
+  videos.forEach((video) => {
+    video.addEventListener("waiting", () => hero.classList.add("is-buffering"));
+    video.addEventListener("stalled", () => hero.classList.add("is-buffering"));
+    video.addEventListener("playing", () => hero.classList.remove("is-buffering"));
+  });
+
+  if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(([entry]) => {
       heroVisible = entry.isIntersecting;
       document.body.classList.toggle("hero-in-view", heroVisible);
-      if (heroVisible) playIfVisible();
-      else v.pause();
+      if (heroVisible) playActiveIfVisible();
+      else videos.forEach((video) => video.pause());
     }, { threshold: 0.05 });
     observer.observe(hero);
   }
 
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) v.pause();
-    else playIfVisible();
+    if (document.hidden) videos.forEach((video) => video.pause());
+    else playActiveIfVisible();
   });
-  window.addEventListener("pagehide", () => v.pause());
-  window.addEventListener("pageshow", playIfVisible);
+  window.addEventListener("pagehide", () => videos.forEach((video) => video.pause()));
+  window.addEventListener("pageshow", playActiveIfVisible);
 
-  // Slow connections still get the poster immediately instead of a blank hero.
-  window.setTimeout(() => maybeStart(true), 5000);
-  v.load();
+  // Do not leave a slow connection on a blank poster forever. Both requests
+  // continue in parallel even if the intro is allowed to begin early.
+  fallbackTimer = window.setTimeout(() => startIntro(true), 3000);
+  videos.forEach((video) => {
+    if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
+  });
 })();
 
 // ---- Demo cinema ----

@@ -422,7 +422,7 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-demo-switcher::before {
-  content: "CARTRIDGE LIBRARY · 2 LIVE / 4 COMING SOON";
+  content: "CARTRIDGE LIBRARY · 4 LIVE / 4 COMING SOON";
   position: absolute;
   top: 11px;
   left: 16px;
@@ -1647,6 +1647,13 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-demo-choice.is-coming::after {
   content: "SOON";
   background: rgba(5, 8, 12, 0.78);
+}
+
+/* Idle/loading/ready dots competed with the cover art. Keep the explicit
+   IN DEVICE and SOON badges, but remove the small status light on the right. */
+.rpg-demo-choice:not(.is-active):not(.is-coming)::after {
+  content: none;
+  display: none;
 }
 
 .rpg-cartridge-flight {
