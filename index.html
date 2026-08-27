@@ -569,11 +569,17 @@ body:not(.hero-in-view) .brand {
   margin: 16px auto 0;
   padding: 14px 4px 0;
   border-top: 1px solid rgba(22, 34, 58, 0.16);
-  color: rgba(22, 34, 58, 0.68);
-  font-family: var(--sans);
-  font-size: clamp(15px, 1.25vw, 17px);
-  line-height: 1.55;
-  text-align: left;
+  color: #2a3242;
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.35vw, 17px);
+  line-height: 1.78;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.overview-figure-caption strong {
+  color: #16223a;
+  font-weight: 700;
 }
 
 /* Video Demonstration: a dark cinema screen inside the light section, so it
@@ -979,6 +985,16 @@ body:not(.hero-in-view) .brand {
   margin: clamp(30px, 5vw, 58px) auto 0;
 }
 
+#result .studio-head {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  text-align: left;
+}
+
+#result .paper-heading {
+  text-align: left;
+}
+
 .result-table-wrap {
   overflow-x: auto;
   border: 1px solid rgba(22, 34, 58, 0.12);
@@ -1012,15 +1028,8 @@ body:not(.hero-in-view) .brand {
 .result-table td {
   padding: 15px 18px;
   border-bottom: 1px solid rgba(22, 34, 58, 0.09);
-  text-align: right;
-  white-space: nowrap;
-}
-
-.result-table th:first-child,
-.result-table td:first-child,
-.result-table th:nth-child(2),
-.result-table td:nth-child(2) {
   text-align: left;
+  white-space: nowrap;
 }
 
 .result-table thead th {
