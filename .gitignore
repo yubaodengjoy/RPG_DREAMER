@@ -1,0 +1,64 @@
+# Deployment allowlist: ignore every top-level item unless explicitly allowed.
+/*
+
+# Repository and GitHub Pages configuration.
+!/.gitignore
+!/.nojekyll
+!/.github/
+!/.github/workflows/
+!/.github/workflows/deploy-pages.yml
+
+# Landing-page runtime files.
+!/index.html
+!/logo.png
+!/method.png
+!/rpg-bench-overview.png
+!/teaser.png
+!/technical_report.pdf
+!/rpg-dreamer-top-hero-poster.webp
+!/rpg-dreamer-top-hero.mp4
+!/rpg-dreamer-top-hero.webm
+
+# Local fonts and author marks.
+!/fonts/
+!/fonts/**
+!/Author_logo/
+!/Author_logo/**
+
+# Demo controller and same-origin game bridge only.
+!/project-page/
+/project-page/*
+!/project-page/rpg-demo.css
+!/project-page/rpg-demo.js
+!/project-page/play-games/
+/project-page/play-games/*
+!/project-page/play-games/rpg-embed-host.js
+
+# Four compiled games. Source and build-time files remain excluded.
+!/src-40/
+/src-40/*
+!/src-40/src/
+/src-40/src/*
+!/src-40/src/dist/
+!/src-40/src/dist/**
+
+!/src-41/
+/src-41/*
+!/src-41/src/
+/src-41/src/*
+!/src-41/src/dist/
+!/src-41/src/dist/**
+
+!/src-42/
+/src-42/*
+!/src-42/src/
+/src-42/src/*
+!/src-42/src/dist/
+!/src-42/src/dist/**
+
+!/src-43/
+/src-43/*
+!/src-43/src/
+/src-43/src/*
+!/src-43/src/dist/
+!/src-43/src/dist/**

@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPG Dreamer</title>
+<link rel="icon" type="image/png" href="logo.png">
+<meta name="description" content="RPG Dreamer is an AI-native game development studio for turning natural language into playable web games.">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --ink: #101016;
+  --paper: #f8f6ef;
+  --mist: #dfeaf0;
+  --ember: #ff7a3d;
+  --gold: #ffd27a;
+  --cyan: #80d7ff;
+  --violet: #b6a3ff;
+  --blue: #183a57;
+  --muted: #6e7682;
+  --line: rgba(255,255,255,0.16);
+  --serif: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  --sans: "Space Grotesk", "Satoshi", "Avenir Next", sans-serif;
+  --mono: "JetBrains Mono", "IBM Plex Mono", monospace;
+}
+
+body {
+  font-family: var(--sans);
+  background: #05070c;
+  color: var(--paper);
+  line-height: 1.55;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+img, video { max-width: 100%; display: block; }
+
+.page {
+  position: relative;
+  z-index: 3;
+  isolation: isolate;
+}
+
+/* One continuous canvas runs behind every post-hero section. Large, widely
+   spaced glows cross section boundaries so the page reads as one composition
+   instead of a stack of individually painted panels. */
+.page::before {
+  content: "";
+  position: absolute;
+  top: 100svh;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 76% 18% at 4% 5%, rgba(128, 215, 255, 0.28), transparent 72%),
+    radial-gradient(ellipse 68% 20% at 96% 29%, rgba(182, 163, 255, 0.20), transparent 74%),
+    radial-gradient(ellipse 82% 18% at 8% 52%, rgba(255, 210, 122, 0.22), transparent 74%),
+    radial-gradient(ellipse 78% 22% at 94% 77%, rgba(128, 215, 255, 0.18), transparent 74%),
+    linear-gradient(180deg, #dceff0 0%, #f8f6ef 14%, #f8f6ef 30%, #f5f7f8 59%, #f8f6ef 100%);
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px clamp(18px, 4vw, 64px);
+  color: rgba(248,246,239,0.78);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, rgba(5,7,12,0.78), rgba(5,7,12,0));
+  transition: color 240ms ease, background 240ms ease, box-shadow 240ms ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Jersey 10", var(--mono);
+  font-weight: 400;
+  font-synthesis: none;
+  text-transform: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--paper);
+  transition: color 240ms ease;
+}
+
+body:not(.hero-in-view) .nav {
+  color: rgba(22, 34, 58, 0.76);
+  background: linear-gradient(180deg, rgba(247, 250, 248, 0.94), rgba(247, 250, 248, 0.72) 58%, rgba(247, 250, 248, 0));
+  box-shadow: 0 -1px 0 rgba(22, 34, 58, 0.06) inset;
+}
+
+body:not(.hero-in-view) .brand {
+  color: #16223a;
+}
+
+.brand img {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+}
+
+.nav-links {
+  display: flex;
+  gap: clamp(16px, 3vw, 34px);
+}
+
+.nav-links a,
+.nav-links button {
+  opacity: 0.72;
+  transition: opacity 180ms ease, color 180ms ease;
+}
+
+.nav-links button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.nav-links a:hover,
+.nav-links button:hover {
+  opacity: 1;
+  color: var(--gold);
+}
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  background: linear-gradient(180deg, #05070c 0%, #07111a 64%, #bedde0 90%, #dceff0 100%);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse at center, rgba(5,7,12,0) 0%, rgba(5,7,12,0.22) 62%, rgba(5,7,12,0.55) 100%),
+    linear-gradient(180deg, rgba(5,7,12,0.10), rgba(5,7,12,0.45));
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 6;
+  text-align: center;
+}
+
+.hero-brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-inline: auto;
+  gap: clamp(4px, 0.6vw, 8px);
+}
+
+.hero-logo {
+  height: auto;
+  flex: 0 0 auto;
+}
+
+.hero-title {
+  font-family: "Jersey 10", var(--mono);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.section {
+  position: relative;
+  padding: clamp(92px, 10vw, 150px) clamp(18px, 4vw, 64px);
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+}
+
+.paper-section {
+  background: transparent;
+  color: var(--ink);
+}
+
+.section-inner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--blue) 72%, var(--muted));
+  margin-bottom: 18px;
+}
+
+.section-title {
+  font-family: var(--sans);
+  font-size: clamp(40px, 7vw, 92px);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: 0;
+  max-width: 880px;
+}
+
+.section-title .flow {
+  color: transparent;
+  background: linear-gradient(110deg, #101016 0%, #ff7a3d 28%, #326b99 55%, #101016 88%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: titleFlow 10s linear infinite;
+}
+
+.lead {
+  max-width: 830px;
+  margin-top: 28px;
+  color: #3b4652;
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.4vw, 29px);
+  line-height: 1.55;
+}
+
+.abstract-logo {
+  display: block;
+  width: clamp(64px, 7vw, 92px);
+  height: auto;
+  margin: 0 auto 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -12px rgba(22, 34, 58, 0.35);
+}
+
+.paper-heading {
+  font-family: var(--sans);
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: #16223a;
+  margin: 0 0 34px;
+}
+
+.paper-heading::after {
+  content: "";
+  display: block;
+  width: 54px;
+  height: 4px;
+  margin: 14px auto 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--ember), var(--gold));
+}
+
+.dark-section .paper-heading {
+  color: #16223a;
+}
+
+.abstract-paper-title {
+  font-family: var(--sans);
+  font-size: clamp(22px, 3.4vw, 42px);
+  font-weight: 700;
+  text-align: center;
+  margin: 0 auto 16px;
+  white-space: nowrap;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #16223a;
+}
+
+@media (max-width: 640px) {
+  .abstract-paper-title { white-space: normal; }
+}
+
+.abstract-paper-title .brand-accent {
+  background: linear-gradient(95deg, #ff6a3a 0%, #d83a5d 60%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.abstract-affiliation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.25;
+  color: #5a6373;
+  text-align: center;
+  margin: 0 0 44px;
+}
+
+.abstract-affiliation-item {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+}
+
+.abstract-affiliation-mark {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+
+.abstract-affiliation-mark.is-fitx {
+  width: 52px;
+}
+
+.abstract-affiliation-mark img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+@media (max-width: 640px) {
+  .abstract-affiliation {
+    gap: 10px 18px;
+    margin-bottom: 36px;
+    font-size: 12px;
+  }
+
+  .abstract-affiliation-mark {
+    width: 28px;
+    height: 28px;
+  }
+
+  .abstract-affiliation-mark.is-fitx {
+    width: 46px;
+  }
+}
+
+.abstract-panel {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: clamp(32px, 4vw, 48px) clamp(28px, 4.5vw, 56px) clamp(36px, 4vw, 52px);
+  background: #fdfcf6;
+  border: 1px solid rgba(22, 34, 58, 0.08);
+  border-radius: 22px;
+  box-shadow:
+    0 1px 2px rgba(22, 34, 58, 0.04),
+    0 8px 24px rgba(22, 34, 58, 0.06),
+    0 32px 64px -24px rgba(22, 34, 58, 0.08);
+}
+
+.abstract-panel .abstract-body {
+  font-family: var(--serif);
+  color: #2a3242;
+  font-size: clamp(15px, 1.35vw, 17px);
+  line-height: 1.78;
+  margin: 0;
+  max-width: none;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.abstract-panel strong {
+  font-weight: 700;
+  color: #16223a;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.paper-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background:
+    linear-gradient(110deg, rgba(255, 210, 122, 0.12), rgba(255, 255, 255, 0.05) 48%, rgba(128, 215, 255, 0.12)),
+    rgba(8, 13, 23, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #f8f6ef;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px) saturate(115%);
+  -webkit-backdrop-filter: blur(16px) saturate(115%);
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  cursor: pointer;
+}
+
+.paper-btn:hover {
+  transform: translateY(-2px);
+  background:
+    linear-gradient(110deg, rgba(255, 210, 122, 0.2), rgba(255, 255, 255, 0.08) 48%, rgba(128, 215, 255, 0.2)),
+    rgba(8, 13, 23, 0.6);
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.32),
+    0 0 22px rgba(128, 215, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.paper-btn svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+
+/* Q2 scale-to-fit: the abstract fills exactly one screen at any resolution. Its
+   content is laid out at a fixed DESIGN size (viewport-independent — the vw-based
+   clamps below are pinned to constants) and the whole block is uniformly scaled
+   by JS to fit the viewport, like a slide that always fills the screen. This
+   stops it from floating tiny in a big empty section on large/hi-res monitors.
+   The outer .abstract-scaler is sized by JS to the SCALED footprint so layout
+   matches the visual (no phantom scrollbars from the unscaled inner box).
+   Desktop only; narrow screens keep the normal responsive flow. */
+@media (min-width: 900px) {
+  #abstract.abstract-fit {
+    height: 100svh;
+    min-height: 0;
+    padding: clamp(28px, 4.5vmin, 72px);
+    overflow: hidden;
+  }
+  #abstract.abstract-fit .abstract-stage {
+    width: 1080px;
+    transform-origin: top left;
+    will-change: transform;
+  }
+  /* Pin the responsive sizes to constants so the stage's natural box does not
+     depend on the viewport — the transform does the scaling, not vw units. */
+  #abstract.abstract-fit .abstract-logo { width: 86px; margin-bottom: 18px; }
+  #abstract.abstract-fit .abstract-paper-title { font-size: 36px; white-space: normal; }
+  #abstract.abstract-fit .abstract-affiliation { font-size: 15px; margin-bottom: 38px; }
+  #abstract.abstract-fit .paper-heading { font-size: 40px; margin-bottom: 30px; }
+  #abstract.abstract-fit .abstract-panel { max-width: 940px; padding: 40px 54px 46px; }
+  #abstract.abstract-fit .abstract-body { font-size: 16px; line-height: 1.72; }
+}
+
+.overview-figure {
+  width: min(90%, 1240px);
+  margin: 46px auto 0;
+}
+
+.overview-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(22, 34, 58, 0.1);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 2px rgba(22, 34, 58, 0.04),
+    0 18px 44px -20px rgba(22, 34, 58, 0.16);
+}
+
+.overview-gallery {
+  display: grid;
+  gap: clamp(42px, 6vw, 76px);
+  margin-top: clamp(48px, 7vw, 88px);
+}
+
+.overview-gallery .overview-figure {
+  margin-top: 0;
+}
+
+.overview-figure-title {
+  margin-bottom: 18px;
+  color: #16223a;
+  font-family: var(--sans);
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 700;
+  text-align: left;
+}
+
+.overview-figure-caption {
+  display: block;
+  width: 100%;
+  margin: 16px auto 0;
+  padding: 14px 4px 0;
+  border-top: 1px solid rgba(22, 34, 58, 0.16);
+  color: rgba(22, 34, 58, 0.68);
+  font-family: var(--sans);
+  font-size: clamp(13px, 1.1vw, 15px);
+  line-height: 1.55;
+  text-align: left;
+}
+
+/* Video Demonstration: a dark cinema screen inside the light section, so it
+   reads as a player rather than a figure. The poster is the clip's own first
+   frame, so it is 16:9 like the clip and neither is cropped or letterboxed. */
+.video-figure {
+  width: min(90%, 1240px);
+  margin: 46px auto 0;
+}
+
+.video-figure video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #07071e;
+  border: 1px solid rgba(22, 34, 58, 0.1);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 2px rgba(22, 34, 58, 0.04),
+    0 18px 44px -20px rgba(22, 34, 58, 0.16);
+}
+
+.feature-strip {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid rgba(16,16,22,0.12);
+  border-bottom: 1px solid rgba(16,16,22,0.12);
+}
+
+.feature-strip article {
+  padding: 30px clamp(18px, 3vw, 34px);
+  border-right: 1px solid rgba(16,16,22,0.12);
+}
+
+.feature-strip article:last-child { border-right: 0; }
+.feature-strip h3 { font-size: 18px; margin-bottom: 8px; }
+.feature-strip p { color: #596573; font-size: 15px; }
+
+.dark-section {
+  background: transparent;
+  color: var(--ink);
+  overflow: clip;
+  isolation: isolate;
+}
+
+.dark-section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 1% -8% 0;
+  background:
+    radial-gradient(ellipse 58% 56% at 50% 62%, rgba(48, 65, 76, 0.34) 0%, rgba(66, 83, 92, 0.22) 48%, rgba(92, 111, 120, 0.1) 70%, transparent 86%),
+    radial-gradient(ellipse 28% 24% at 17% 39%, rgba(255, 178, 104, 0.2), transparent 78%),
+    radial-gradient(ellipse 30% 28% at 84% 58%, rgba(128, 215, 255, 0.22), transparent 80%);
+  filter: blur(8px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 86%, transparent 100%);
+  pointer-events: none;
+}
+
+.dark-section .section-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.demo-head {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto 54px;
+}
+
+.demo-head .section-title {
+  margin: 0 auto;
+}
+
+.demo-head .lead {
+  margin-left: auto;
+  margin-right: auto;
+  color: #596573;
+}
+
+.demo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.demo-tags span {
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: rgba(248,246,239,0.72);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  background: rgba(255,255,255,0.06);
+}
+
+/* ---------- Demo Cinema ---------- */
+
+.demo-cinema {
+  position: relative;
+  z-index: 1;
+  margin-top: 54px;
+}
+
+.cinema-screen {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #06080d;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 26px 70px rgba(0, 0, 0, 0.5),
+    0 70px 140px -50px rgba(128, 215, 255, 0.14);
+}
+
+.cinema-screen video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 1;
+  transition: opacity 220ms ease;
+}
+
+.cinema-screen video.switching {
+  opacity: 0;
+}
+
+.cinema-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cinema-progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold), var(--ember));
+}
+
+.cinema-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;
+  background: rgba(6, 8, 13, 0.55);
+  color: rgba(248, 246, 239, 0.72);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cinema-loading[hidden] { display: none; }
+.cinema-loading .cinema-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(248, 246, 239, 0.18);
+  border-top-color: rgba(255, 210, 122, 0.9);
+  border-radius: 50%;
+  animation: preSpin 0.8s linear infinite;
+}
+
+.cinema-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 7, 12, 0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: rgba(248, 246, 239, 0.85);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 200ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.cinema-screen:hover .cinema-arrow,
+.cinema-arrow:focus-visible {
+  opacity: 1;
+}
+
+.cinema-arrow:hover {
+  background: rgba(255, 210, 122, 0.2);
+  border-color: rgba(255, 210, 122, 0.5);
+  color: var(--gold);
+}
+
+.cinema-arrow.prev { left: 18px; }
+.cinema-arrow.next { right: 18px; }
+
+.cinema-info {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px 40px;
+  align-items: start;
+}
+
+.cinema-info .eyebrow {
+  color: rgba(255, 210, 122, 0.75);
+  margin-bottom: 10px;
+}
+
+.cinema-info h3 {
+  font-family: var(--sans);
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--paper);
+  margin: 0 0 12px;
+}
+
+.cinema-desc {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.25vw, 18px);
+  line-height: 1.65;
+  color: rgba(248, 246, 239, 0.76);
+  max-width: 720px;
+  margin: 0;
+}
+
+.cinema-info .demo-tags {
+  justify-content: flex-end;
+  max-width: 320px;
+  margin-top: 4px;
+}
+
+.cinema-rail {
+  margin-top: 34px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(128px, 11vw, 168px);
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.rail-thumb {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.rail-frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  opacity: 0.5;
+  transition: opacity 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.rail-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rail-thumb:hover .rail-frame {
+  opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+.rail-thumb.active .rail-frame {
+  opacity: 1;
+  border-color: rgba(255, 210, 122, 0.7);
+  box-shadow: 0 0 0 1px rgba(255, 210, 122, 0.35), 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.rail-name {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(248, 246, 239, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 200ms ease;
+}
+
+.rail-thumb.active .rail-name {
+  color: var(--gold);
+}
+
+@media (max-width: 760px) {
+  .cinema-info {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .cinema-info .demo-tags {
+    justify-content: flex-start;
+    max-width: none;
+  }
+  .cinema-rail {
+    grid-auto-columns: 124px;
+  }
+  .cinema-arrow {
+    width: 42px;
+    height: 42px;
+    opacity: 1;
+    background: rgba(5, 7, 12, 0.45);
+  }
+  .cinema-arrow.prev { left: 10px; }
+  .cinema-arrow.next { right: 10px; }
+}
+
+/* ---------- Studio ---------- */
+
+.studio-head {
+  text-align: center;
+}
+
+.studio-intro {
+  max-width: 680px;
+  margin: -14px auto 0;
+  color: #596573;
+  font-family: var(--serif);
+  font-size: clamp(16px, 1.45vw, 19px);
+  text-align: center;
+}
+
+.dash-flow {
+  margin-top: 30px;
+}
+
+.dash-panel {
+  margin: 0;
+  padding-top: 64px;
+  opacity: 0;
+  transform: translateY(56px) scale(0.97);
+  filter: blur(8px);
+  transition:
+    opacity 950ms cubic-bezier(.16,1,.3,1),
+    transform 950ms cubic-bezier(.16,1,.3,1),
+    filter 950ms cubic-bezier(.16,1,.3,1);
+}
+
+.dash-panel.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.dash-panel figcaption {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.panel-num {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #b0653c;
+}
+
+.panel-name {
+  font-family: var(--sans);
+  font-size: clamp(19px, 2vw, 24px);
+  font-weight: 700;
+  color: #16223a;
+}
+
+.result-compare {
+  margin-top: clamp(34px, 5vw, 64px);
+}
+
+.result-intro {
+  max-width: 820px;
+  margin: 12px auto 0;
+  color: #596573;
+  font-family: var(--serif);
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.75;
+  text-align: center;
+}
+
+.result-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.result-stat {
+  position: relative;
+  min-height: 178px;
+  overflow: hidden;
+  padding: 24px 26px;
+  border: 1px solid rgba(22, 34, 58, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 18px 44px -28px rgba(22, 34, 58, 0.28);
+}
+
+.result-stat::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  bottom: -44px;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: rgba(128, 215, 255, 0.16);
+}
+
+.result-stat.is-primary {
+  border-color: rgba(176, 101, 60, 0.34);
+  background: linear-gradient(145deg, rgba(255, 248, 229, 0.94), rgba(255, 255, 255, 0.76));
+}
+
+.result-stat-label,
+.result-block-kicker {
+  color: #8a5a40;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.result-stat-value {
+  display: block;
+  margin-top: 16px;
+  color: #16223a;
+  font-family: var(--sans);
+  font-size: clamp(42px, 5vw, 66px);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.result-stat-value small {
+  margin-left: 4px;
+  font-size: 0.38em;
+  letter-spacing: 0;
+}
+
+.result-stat p {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 0;
+  color: #65717d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.result-block {
+  margin-top: clamp(54px, 7vw, 86px);
+}
+
+.result-block-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.result-block-title {
+  margin: 8px 0 0;
+  color: #16223a;
+  font-family: var(--sans);
+  font-size: clamp(24px, 3vw, 36px);
+  letter-spacing: -0.025em;
+}
+
+.result-block-note {
+  max-width: 520px;
+  margin: 0;
+  color: #687480;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: right;
+}
+
+.result-table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(22, 34, 58, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 22px 54px -34px rgba(22, 34, 58, 0.28);
+  scrollbar-width: thin;
+}
+
+.result-table {
+  width: 100%;
+  min-width: 840px;
+  border-collapse: collapse;
+  color: #26354b;
+  font-size: 14px;
+}
+
+.result-table.is-wide {
+  min-width: 1100px;
+}
+
+.result-table th,
+.result-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid rgba(22, 34, 58, 0.09);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.result-table th:first-child,
+.result-table td:first-child,
+.result-table .is-text {
+  text-align: left;
+}
+
+.result-table thead th {
+  background: #16223a;
+  color: #f8f6ef;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.result-table thead tr + tr th {
+  padding-block: 10px;
+  background: #22324d;
+  color: rgba(248, 246, 239, 0.72);
+}
+
+.result-table tbody th {
+  color: #16223a;
+  font-family: var(--sans);
+  font-weight: 650;
+}
+
+.result-table tbody td {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.result-table tbody tr:last-child th,
+.result-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.result-table tbody tr:hover {
+  background: rgba(128, 215, 255, 0.08);
+}
+
+.result-table .is-rpgdreamer {
+  background: rgba(255, 210, 122, 0.17);
+}
+
+.result-table .is-rpgdreamer th {
+  color: #9b512e;
+}
+
+.result-table .best-score {
+  color: #9b512e;
+  font-weight: 800;
+}
+
+.result-table .correlation-row {
+  background: rgba(128, 215, 255, 0.12);
+}
+
+.result-source {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.result-source a {
+  color: #536777;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.result-source a:hover {
+  color: #9b512e;
+}
+
+.result-validation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 18px;
+}
+
+.result-validation-grid .result-table {
+  min-width: 0;
+}
+
+.result-validation-copy {
+  display: grid;
+  align-content: center;
+  padding: clamp(24px, 4vw, 42px);
+  border: 1px solid rgba(22, 34, 58, 0.12);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(22, 34, 58, 0.96), rgba(34, 50, 77, 0.94));
+  color: #f8f6ef;
+}
+
+.result-validation-copy strong {
+  font-family: var(--sans);
+  font-size: clamp(32px, 5vw, 58px);
+  letter-spacing: -0.04em;
+}
+
+.result-validation-copy p {
+  margin: 12px 0 0;
+  color: rgba(248, 246, 239, 0.68);
+  font-family: var(--serif);
+  line-height: 1.65;
+}
+
+@media (max-width: 820px) {
+  .result-summary,
+  .result-validation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-block-head {
+    display: block;
+  }
+
+  .result-block-note {
+    margin-top: 10px;
+    text-align: left;
+  }
+
+  .result-table-wrap {
+    margin-right: calc(clamp(18px, 4vw, 64px) * -0.5);
+  }
+}
+
+.code-soon-toast {
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 32px;
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 210, 122, 0.42);
+  border-radius: 999px;
+  background: rgba(8, 13, 23, 0.94);
+  color: #f8f6ef;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.34);
+  font-family: var(--sans);
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 12px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.code-soon-toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+
+.panel-media {
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(22, 34, 58, 0.16);
+  background: #0b0c10;
+  box-shadow:
+    0 1px 2px rgba(22, 34, 58, 0.06),
+    0 24px 56px -20px rgba(22, 34, 58, 0.32);
+}
+
+.panel-media img {
+  width: 100%;
+  aspect-ratio: 2557 / 1285;
+  object-fit: cover;
+  cursor: zoom-in;
+  transform: translateY(var(--para, 0)) scale(1.05);
+  will-change: transform;
+}
+
+/* ---------- Overview ---------- */
+
+.overview-section {
+  background: transparent;
+}
+
+.overview-section .section-inner {
+  width: min(1400px, 100%);
+}
+
+.overview-head {
+  text-align: center;
+  margin: 0 auto 26px;
+}
+
+.overview-head .eyebrow {
+  margin-bottom: 0;
+}
+
+.overview-figure img { cursor: zoom-in; }
+
+/* Overview diagram fills the viewport height at ALL desktop sizes — no abrupt
+   threshold where it snaps small. Previously gated on min-width:1600 AND
+   min-height:1000, so any screen below that band (common laptop heights, or a
+   hi-DPI screen whose CSS height is < 1000) fell back to a tiny 1240px-capped
+   figure floating in a full-height section. */
+@media (min-width: 900px) {
+  .overview-section {
+    padding-top: clamp(84px, 9vh, 130px);
+    padding-bottom: clamp(48px, 6vh, 96px);
+  }
+
+  .overview-section .section-inner {
+    width: min(94vw, 2800px);
+  }
+
+  .overview-figure {
+    width: min(90%, 1240px);
+    margin-top: clamp(20px, 3vh, 40px);
+  }
+
+  .overview-figure img {
+    width: 100%;
+    max-width: none;
+    max-height: none;
+  }
+
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 4vmin;
+  background: rgba(5, 7, 12, 0.93);
+  backdrop-filter: blur(6px);
+  cursor: zoom-out;
+}
+
+.lightbox[hidden] { display: none; }
+
+.lightbox img {
+  max-width: 94vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px;
+}
+
+.footer {
+  padding: 54px clamp(18px, 4vw, 64px);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: rgba(22, 34, 58, 0.52);
+  border-top: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+@keyframes preSpin { to { transform: rotate(360deg); } }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 800ms cubic-bezier(.16,1,.3,1), transform 800ms cubic-bezier(.16,1,.3,1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 880px) {
+  .nav-links { display: none; }
+  .feature-strip,
+  .studio-stage {
+    grid-template-columns: 1fr;
+  }
+  .feature-strip article {
+    border-right: 0;
+    border-bottom: 1px solid rgba(16,16,22,0.12);
+  }
+  .feature-strip article:last-child { border-bottom: 0; }
+  .dash-panel { padding-top: 44px; }
+  .footer { flex-direction: column; }
+}
+
+@media (max-width: 520px) {
+  .hero-brand { gap: 3px; }
+  .hero-logo { width: 17vw; }
+  .hero-title { font-size: 14vw; }
+  .hero-actions {
+    --hero-actions-scale: 1;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100vw - 24px);
+  }
+  .paper-btn {
+    gap: 7px;
+    padding: 9px 13px;
+    font-size: 13px;
+  }
+  .paper-btn svg { width: 19px; height: 19px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Simplified static top page. */
+.hero {
+  min-height: 100svh;
+  place-items: center;
+  padding: clamp(28px, 5vw, 68px);
+}
+
+.hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hero::before {
+  background:
+    linear-gradient(180deg, rgba(3, 8, 16, 0.12) 0%, rgba(3, 8, 16, 0.02) 58%, rgba(3, 8, 16, 0.12) 100%),
+    linear-gradient(90deg, rgba(3, 8, 16, 0.12), transparent 35%, transparent 65%, rgba(3, 8, 16, 0.12));
+}
+
+.hero-content {
+  width: auto;
+  max-width: calc(100% - 32px);
+  padding: 24px 40px 24px 28px;
+  margin: 0;
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transform-origin: center;
+  animation: none;
+  border: 0;
+  border-radius: 36px;
+  background: rgba(5, 14, 28, 0.52);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
+}
+
+.hero-brand { gap: 24px; }
+
+.hero-logo { width: clamp(96px, 12vw, 144px); }
+
+.hero-wordmark {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-title {
+  margin: 0;
+  color: #f8fbff;
+  background: none;
+  font-size: clamp(80px, 10.5vw, 120px);
+  line-height: 1;
+  animation: none;
+  filter: drop-shadow(0 0 20px rgba(45, 184, 255, 0.22));
+}
+
+.hero-tagline {
+  margin: -6px 0 0;
+  color: rgba(248, 251, 255, 0.62);
+  font: 400 clamp(20.7px, 2.736vw, 30.2px)/1.15 "Jersey 10", var(--mono);
+  font-synthesis: none;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-shadow: 0 0 16px rgba(45, 184, 255, 0.16);
+  white-space: nowrap;
+}
+
+#video[hidden],
+.paper-btn[hidden] { display: none !important; }
+
+/* Resource links stay with the abstract instead of entering the top page. */
+.hero-actions {
+  position: static;
+  width: auto;
+  margin: 24px auto 0;
+  opacity: 1;
+  visibility: visible;
+  translate: none;
+  scale: 1;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 520px) {
+  .hero { padding: 20px 14px 30px; }
+
+  .hero-content {
+    padding: 14px 18px 14px 14px;
+    transform: none;
+    border-radius: 28px;
+  }
+
+  .hero-brand { gap: 12px; }
+  .hero-logo { width: 64px; }
+  .hero-title { font-size: 40px; }
+
+  .hero-tagline {
+    max-width: none;
+    margin-top: -4px;
+    font-size: 11.4px;
+    line-height: 1.2;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+}
+
+</style>
+<link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
+<link href="project-page/rpg-demo.css?v=20260827-03" rel="stylesheet">
+<meta name="build" content="20260722-41">
+</head>
+<body class="hero-in-view">
+<main class="page">
+  <nav class="nav">
+    <a class="brand" href="#top">
+      <img src="logo.png" alt="RPG Dreamer logo" width="30" height="30">
+      <span>RPG Dreamer</span>
+    </a>
+    <div class="nav-links">
+      <a href="#abstract">Abstract</a>
+      <a href="#demos">Demos</a>
+      <a href="#overview">Overview</a>
+      <a href="#result">Result</a>
+      <button type="button" data-code-soon>GitHub</button>
+    </div>
+  </nav>
+
+  <section class="hero" id="top">
+    <video class="hero-image" muted loop playsinline preload="auto" poster="rpg-dreamer-top-hero-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+      <source src="rpg-dreamer-top-hero.mp4" type="video/mp4">
+      <source src="rpg-dreamer-top-hero.webm" type="video/webm">
+    </video>
+    <div class="hero-content">
+      <div class="hero-brand">
+        <img class="hero-logo" src="logo.png" alt="RPG Dreamer logo">
+        <div class="hero-wordmark">
+          <h1 class="hero-title">RPG Dreamer</h1>
+          <p class="hero-tagline">Agentic Generation for Long-Horizon RPGs</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section paper-section abstract-fit" id="abstract">
+    <div class="abstract-scaler">
+    <div class="abstract-stage">
+    <div class="section-inner reveal">
+      <img class="abstract-logo" src="logo.png" alt="RPG Dreamer logo">
+      <h2 class="abstract-paper-title"><span class="brand-accent">RPG Dreamer:</span> Towards Agent-Driven Generation of Long-Horizon Interactive Worlds</h2>
+      <div class="abstract-affiliation" aria-label="Author affiliations">
+        <span class="abstract-affiliation-item">
+          <span class="abstract-affiliation-mark is-fitx"><img src="Author_logo/fitx-logo.png" alt="FitX logo"></span>
+          <span>FitX Technology (Hong Kong) Limited</span>
+        </span>
+        <span class="abstract-affiliation-item">
+          <span class="abstract-affiliation-mark"><img src="Author_logo/hitsz-logo.png" alt="Harbin Institute of Technology logo"></span>
+          <span>Harbin Institute of Technology, Shenzhen</span>
+        </span>
+        <span class="abstract-affiliation-item">
+          <span class="abstract-affiliation-mark"><img src="Author_logo/csu-logo.png" alt="Central South University logo"></span>
+          <span>Central South University</span>
+        </span>
+      </div>
+      <h3 class="paper-heading">Abstract</h3>
+      <div class="abstract-panel">
+        <p class="abstract-body">
+          Games, as a special category of software, create interactive worlds governed by their own specific rules. Given the recent successes of coding agents, increasing attention has been devoted to automatic game generation. We observe that existing methods fail to create long-horizon games, as they entangle game mechanics with content and lack effective playtesting capabilities. In this work, we present <strong>RPG Dreamer</strong>, a framework capable of generating games with hours-long coherent playthroughs. We use role-playing games (RPGs) to exemplifies the long-horizon generation capabilities of the framework, as RPGs feature branching narratives, non-linear progressions, and extended playtime. RPG Dreamer consists of an <strong>Agent-Oriented Game Engine (AOGE)</strong> and a <strong>Reviewer-centric Generation Loop (RGL)</strong>. AOGE separates mechanics from content, and exposes an agent interface with uniform observation and semantic action, enhancing both the reliability and coverage of automated gameplay. RGL is a closed-loop pipeline that enables agents to iteratively generate, review, and evolve games through a multi-reviewer system, including a team of gameplay reviewers who conduct playtesting to expose latent bugs. Due to the absence of benchmarks for evaluating hour-scale game generation, we further propose <strong>RPG-Bench</strong>, a benchmark of 150 evaluation instances spanning diverse themes, whose metrics are grounded in dynamic gameplay trajectories. Results on RPG-Bench demonstrate that RPG Dreamer improves the scalability of state-of-the-art coding agents on long-horizon games.
+        </p>
+      </div>
+      <div class="hero-actions">
+        <!-- Icons: Font Awesome Free 5.15.4/6.7.2. -->
+        <a class="paper-btn" href="technical_report.pdf" target="_blank" rel="noopener">
+          <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M181.9 256.1c-5-16-4.9-46.9-2-46.9 8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7 18.3-7 39-17.2 62.9-21.9-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8 4.5-18.5 11.6-46.6 6.2-64.2-4.7-29.4-42.4-26.5-47.8-6.8-5 18.3-.4 44.1 8.1 77-11.6 27.6-28.7 64.6-40.8 85.8-.1 0-.1.1-.2.1-27.1 13.9-73.6 44.5-54.5 68 5.6 6.9 16 10 21.5 10 17.9 0 35.7-18 61.1-61.8 25.8-8.5 54.1-19.1 79-23.2 21.7 11.8 47.1 19.5 64 19.5 29.2 0 31.2-32 19.7-43.4-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9 37.1 15.8 42.8 9 42.8 9z"/></svg>
+          <span>Paper</span>
+        </a>
+        <a class="paper-btn" href="#video" hidden>
+          <svg viewBox="0 0 576 512" aria-hidden="true"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+          <span>Video</span>
+        </a>
+        <button class="paper-btn" type="button" data-code-soon>
+          <svg viewBox="0 0 496 512" aria-hidden="true"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+          <span>GitHub</span>
+        </button>
+        <a class="paper-btn" href="#demos">
+          <svg viewBox="0 0 640 512" aria-hidden="true"><path d="M192 64C86 64 0 150 0 256S86 448 192 448l256 0c106 0 192-86 192-192s-86-192-192-192L192 64zM496 168a40 40 0 1 1 0 80 40 40 0 1 1 0-80zM392 304a40 40 0 1 1 80 0 40 40 0 1 1 -80 0zM168 200c0-13.3 10.7-24 24-24s24 10.7 24 24l0 32 32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0 0 32c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-32-32 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l32 0 0-32z"/></svg>
+          <span>Demos</span>
+        </a>
+      </div>
+    </div>
+    </div>
+    </div>
+  </section>
+
+  <section class="section dark-section" id="demos">
+    <div class="section-inner">
+      <div class="demo-head reveal">
+        <h2 class="paper-heading" id="demos-title">Demos</h2>
+      </div>
+
+      <section
+        class="rpg-play-demo reveal"
+        id="rpg-play-demo"
+        aria-labelledby="demos-title"
+      >
+        <div class="rpg-demo-stage" data-rpg-stage>
+          <div class="rpg-handheld-unit rpg-handheld-player">
+            <button class="rpg-handheld-cartridge" type="button" data-rpg-eject aria-label="Eject cartridge">
+              <span class="rpg-handheld-cartridge-cover"></span>
+              <span data-rpg-cartridge-label>NO CARTRIDGE</span>
+            </button>
+            <div class="rpg-handheld-body">
+              <div class="rpg-demo-actions">
+                <button type="button" data-rpg-enter-fullscreen disabled aria-label="Open game in fullscreen">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Fullscreen
+                </button>
+                <button type="button" data-rpg-exit-fullscreen hidden aria-label="Exit fullscreen">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8H3V3M16 8h5V3M8 16H3v5M16 16h5v5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Exit fullscreen
+                </button>
+              </div>
+              <span class="rpg-handheld-dpad" aria-hidden="true"></span>
+              <div class="rpg-handheld-screen" data-rpg-screen>
+                <div class="rpg-demo-placeholder" data-rpg-placeholder>
+                  <div class="rpg-demo-placeholder-content">
+                  <small>RPG DREAMER · STANDBY</small>
+                  <h3 data-rpg-placeholder-title>INSERT CARTRIDGE</h3>
+                  <p data-rpg-placeholder-copy>Choose one of the playable world cartridges from the library below.</p>
+                  <button class="rpg-demo-load" type="button" data-rpg-load disabled>
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 7 8 5-8 5V7Z" fill="currentColor"/></svg>
+                    Power on selected world
+                  </button>
+                  </div>
+                </div>
+
+                <div class="rpg-demo-progress rpg-compiler-screen" data-rpg-progress hidden role="status" aria-live="polite">
+                  <small>AI WORLD COMPILER · BOOT</small>
+                  <strong data-rpg-progress-title>Booting 神笔：移命录</strong>
+                  <div class="rpg-compiler-log" aria-hidden="true">
+                    <span>&gt; BIND RPG ENGINE <i>WAIT</i></span>
+                    <span>&gt; MOUNT WORLD ASSETS <i>WAIT</i></span>
+                    <span>&gt; RESTORE STORY STATE <i>WAIT</i></span>
+                    <span>&gt; OPEN CHAPTER 01 <i>WAIT</i></span>
+                  </div>
+                  <div class="rpg-demo-progress-track" aria-hidden="true"><span data-rpg-progress-bar></span></div>
+                  <span class="rpg-compiler-status" data-rpg-progress-label>Reading world cartridge…</span>
+                </div>
+              </div>
+              <span class="rpg-handheld-buttons" aria-hidden="true"></span>
+              <div class="rpg-handheld-power" data-rpg-power role="group" aria-label="Console power">
+                <button type="button" data-rpg-power-off aria-pressed="true">OFF</button>
+                <span class="rpg-handheld-power-track" aria-hidden="true"><i></i></span>
+                <button type="button" data-rpg-power-on aria-pressed="false" disabled>ON</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rpg-cartridge-browser">
+          <button class="rpg-cartridge-scroll" type="button" data-rpg-scroll="-1" aria-label="Show previous games">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <nav class="rpg-demo-switcher" aria-label="World cartridge library">
+          <button class="rpg-demo-choice" type="button" data-rpg-game="world-40" aria-pressed="false">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-40/src/dist/cover.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption">
+              <strong>武松·最后一虎</strong>
+              <small>Generated World 40</small>
+            </span>
+          </button>
+          <button class="rpg-demo-choice" type="button" data-rpg-game="magic-brush" aria-pressed="false">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-41/src/dist/cover.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption">
+              <strong>神笔：移命录</strong>
+              <small>Generated World 41</small>
+            </span>
+          </button>
+          <button class="rpg-demo-choice" type="button" data-rpg-game="world-42" aria-pressed="false">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-42/src/dist/cover.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption">
+              <strong>Pinocchio: The City That Swallows Truth</strong>
+              <small>Generated World 42</small>
+            </span>
+          </button>
+          <button class="rpg-demo-choice" type="button" data-rpg-game="vanishing-emperor" aria-pressed="false">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-43/src/dist/cover.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption">
+              <strong>The Vanishing Emperor</strong>
+              <small>Generated World 43</small>
+            </span>
+          </button>
+          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Generated World 44, coming soon">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-40/src/dist/assets/chapter-02-main-menu-C_C4urk1.png')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption"><strong>World 44</strong><small>Coming Soon</small></span>
+          </button>
+          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Generated World 45, coming soon">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-40/src/dist/assets/chapter-03-main-menu-CF0523Ke.png')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption"><strong>World 45</strong><small>Coming Soon</small></span>
+          </button>
+          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Generated World 46, coming soon">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-43/src/dist/assets/chapter-02-main-menu-DdyifpHs.png')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption"><strong>World 46</strong><small>Coming Soon</small></span>
+          </button>
+          <button class="rpg-demo-choice is-coming" type="button" disabled aria-label="Generated World 47, coming soon">
+            <span class="rpg-demo-choice-cover" style="--rpg-card-cover: url('../src-42/src/dist/assets/opening-comic-page-Bb87Q_93.webp')" aria-hidden="true"></span>
+            <span class="rpg-demo-choice-caption"><strong>World 47</strong><small>Coming Soon</small></span>
+          </button>
+          </nav>
+          <button class="rpg-cartridge-scroll" type="button" data-rpg-scroll="1" aria-label="Show more games">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="section paper-section overview-section" id="overview">
+    <div class="section-inner">
+      <div class="overview-head reveal">
+        <h2 class="paper-heading">Overview</h2>
+      </div>
+
+      <figure class="overview-figure reveal" id="overview-figure">
+        <img src="rpg-bench-overview.png?v=20260821-01" alt="RPG-Bench theme coverage and five complementary gameplay modes" loading="lazy">
+        <figcaption class="overview-figure-caption">
+          Overview of the theme coverage of RPG-Bench and the gameplay modes for agent-based evaluation. RPG-Bench contains 150 evaluation instances, and evaluators are required to play the game under five complementary modes to examine game quality.
+        </figcaption>
+      </figure>
+
+      <div class="overview-gallery">
+        <figure class="overview-figure reveal">
+          <h3 class="overview-figure-title">Method</h3>
+          <img src="method.png?v=20260821-01" alt="RPG Dreamer method: Agent-Oriented Game Engine and Reviewer-centric Generation Loop" loading="lazy">
+          <figcaption class="overview-figure-caption">
+            <strong>Overview of RPG Dreamer.</strong> (a) AOGE organizes a game type into reusable mechanics, content slots, and a mechanics-grounded Agent Interface. (b) RGL instantiates the content slots by producing the game design, code implementation, and assets, assembles the resulting content with the mechanics and Agent Interface into a candidate game, and evaluates it with code, content, and gameplay reviewers. Review feedback returns to the building process, forming a self-evolving loop that iteratively refines the candidate into the target game.
+          </figcaption>
+        </figure>
+
+        <figure class="overview-figure reveal">
+          <h3 class="overview-figure-title">Teaser</h3>
+          <img src="teaser.png?v=20260821-01" alt="RPG Dreamer teaser showing automatic generation and a long-horizon generated RPG" loading="lazy">
+          <figcaption class="overview-figure-caption">
+            <strong>Capability overview of RPG Dreamer.</strong> Gameplay screenshots serve as narrative nodes in an hours-long, left-to-right progression whose routes branch, reconverge, and branch again as player decisions alter persistent story state. Distinct final choices lead to four visibly different endings.
+          </figcaption>
+        </figure>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section paper-section" id="video" hidden>
+    <div class="section-inner">
+      <div class="overview-head reveal">
+        <h2 class="paper-heading">Video Demonstration</h2>
+      </div>
+
+      <figure class="video-figure reveal">
+        <!-- Video demonstration removed. -->
+      </figure>
+    </div>
+  </section>
+
+  <section class="section paper-section" id="result">
+    <div class="section-inner">
+      <div class="studio-head reveal">
+        <h2 class="paper-heading">Result</h2>
+        <p class="result-intro">We evaluate complete, hour-scale RPG generation on all 150 RPG-Bench instances. Scores are normalized to a 0–100 scale across requirement fidelity, content richness, visual and interaction quality, and playability.</p>
+      </div>
+      <div class="result-compare reveal">
+        <div class="result-summary" aria-label="Key RPG Dreamer results">
+          <article class="result-stat is-primary">
+            <span class="result-stat-label">Automatic overall</span>
+            <strong class="result-stat-value">83.2<small>/100</small></strong>
+            <p>Highest overall score in the RPG-Bench comparison.</p>
+          </article>
+          <article class="result-stat">
+            <span class="result-stat-label">Human overall</span>
+            <strong class="result-stat-value">65.9<small>/100</small></strong>
+            <p>Human evaluation of RPG Dreamer with GPT 5.6 Sol.</p>
+          </article>
+          <article class="result-stat">
+            <span class="result-stat-label">Intent reproduction</span>
+            <strong class="result-stat-value">100<small>%</small></strong>
+            <p>Human-achievable intents reproduced through the Agent Interface.</p>
+          </article>
+        </div>
+
+        <section class="result-block" aria-labelledby="result-main-title">
+          <header class="result-block-head">
+            <div>
+              <span class="result-block-kicker">Main comparison</span>
+              <h3 class="result-block-title" id="result-main-title">Performance on RPG-Bench</h3>
+            </div>
+            <p class="result-block-note">The overall score is the arithmetic mean of the four evaluation dimensions. A dash denotes an unavailable result in the report.</p>
+          </header>
+          <div class="result-table-wrap" tabindex="0" role="region" aria-label="RPG-Bench method comparison table">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th scope="col">Harness</th>
+                  <th scope="col" class="is-text">Model</th>
+                  <th scope="col"><abbr title="Requirement fidelity">RF</abbr></th>
+                  <th scope="col"><abbr title="Content richness">CR</abbr></th>
+                  <th scope="col"><abbr title="Visual and interaction quality">VI</abbr></th>
+                  <th scope="col"><abbr title="Playability">PL</abbr></th>
+                  <th scope="col">Overall</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Claude</th><td class="is-text">Mimo-V2.5</td><td>44.0</td><td>6.3</td><td>19.8</td><td>100.0</td><td>42.5</td></tr>
+                <tr><th scope="row">OpenGame</th><td class="is-text">Claude Opus 4.8</td><td>76.0</td><td>30.6</td><td>36.7</td><td>100.0</td><td>60.8</td></tr>
+                <tr><th scope="row">Qwen-code</th><td class="is-text">Qwen 3.8 Max</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+                <tr><th scope="row">Kimi-code</th><td class="is-text">Kimi K3</td><td class="best-score">96.0</td><td>50.9</td><td>66.3</td><td>100.0</td><td>78.3</td></tr>
+                <tr><th scope="row">Codex</th><td class="is-text">GPT 5.6 Sol</td><td>88.0</td><td>54.5</td><td>51.0</td><td>100.0</td><td>73.4</td></tr>
+                <tr class="is-rpgdreamer"><th scope="row">RPGDreamer</th><td class="is-text">GPT 5.6 Sol</td><td>88.0</td><td class="best-score">71.4</td><td class="best-score">73.4</td><td class="best-score">100.0</td><td class="best-score">83.2</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="result-source"><a href="technical_report.pdf#page=9">Technical report · Table 1 ↗</a></div>
+        </section>
+
+        <section class="result-block" aria-labelledby="result-human-title">
+          <header class="result-block-head">
+            <div>
+              <span class="result-block-kicker">Human validation</span>
+              <h3 class="result-block-title" id="result-human-title">Automatic and human evaluation</h3>
+            </div>
+            <p class="result-block-note">Playability in the human evaluation averages gameplay/system completion and process/functional stability. Pearson’s <em>r</em> reports agreement.</p>
+          </header>
+          <div class="result-table-wrap" tabindex="0" role="region" aria-label="Automatic and human evaluation results table">
+            <table class="result-table is-wide">
+              <thead>
+                <tr>
+                  <th scope="col" rowspan="2">Method</th>
+                  <th scope="colgroup" colspan="2">RF</th>
+                  <th scope="colgroup" colspan="2">CR</th>
+                  <th scope="colgroup" colspan="2">VI</th>
+                  <th scope="colgroup" colspan="2">PL</th>
+                  <th scope="colgroup" colspan="2">Overall</th>
+                </tr>
+                <tr>
+                  <th scope="col">Auto</th><th scope="col">Human</th>
+                  <th scope="col">Auto</th><th scope="col">Human</th>
+                  <th scope="col">Auto</th><th scope="col">Human</th>
+                  <th scope="col">Auto</th><th scope="col">Human</th>
+                  <th scope="col">Auto</th><th scope="col">Human</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Claude + Mimo-V2.5</th><td>44.0</td><td>0.8</td><td>6.3</td><td>0.1</td><td>19.7</td><td>1.3</td><td>76.7</td><td>0.4</td><td>36.7</td><td>0.7</td></tr>
+                <tr><th scope="row">Codex + GPT 5.6 Sol</th><td>88.0</td><td>44.0</td><td>54.5</td><td>32.1</td><td>51.0</td><td>31.5</td><td>100.0</td><td>34.6</td><td>73.4</td><td>35.7</td></tr>
+                <tr class="is-rpgdreamer"><th scope="row">RPGDreamer + GPT 5.6 Sol</th><td>88.0</td><td class="best-score">69.7</td><td>71.4</td><td class="best-score">61.3</td><td>73.4</td><td class="best-score">70.5</td><td>100.0</td><td class="best-score">62.0</td><td>83.2</td><td class="best-score">65.9</td></tr>
+                <tr class="correlation-row"><th scope="row">Pearson’s <em>r</em></th><td colspan="2">0.57</td><td colspan="2">0.88</td><td colspan="2">0.86</td><td colspan="2">0.38</td><td colspan="2" class="best-score">0.79</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="result-source"><a href="technical_report.pdf#page=10">Technical report · Table 2 ↗</a></div>
+        </section>
+
+        <section class="result-block" aria-labelledby="result-interface-title">
+          <header class="result-block-head">
+            <div>
+              <span class="result-block-kicker">Agent Interface validation</span>
+              <h3 class="result-block-title" id="result-interface-title">Intent reproduction</h3>
+            </div>
+          </header>
+          <div class="result-validation-grid">
+            <div class="result-table-wrap">
+              <table class="result-table" aria-label="Agent Interface intent reproduction table">
+                <thead><tr><th scope="col">Method</th><th scope="col">Success rate</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Claude + Kimi K3</th><td>75%</td></tr>
+                  <tr><th scope="row">Codex + GPT 5.6 Sol</th><td class="best-score">100%</td></tr>
+                  <tr class="is-rpgdreamer"><th scope="row">RPGDreamer + GPT 5.6 Sol</th><td class="best-score">100%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <aside class="result-validation-copy">
+              <strong>100%</strong>
+              <p>Percentage of human-achievable intents that the RPG Dreamer Gameplay Agent successfully completes from the same initial game state.</p>
+            </aside>
+          </div>
+          <div class="result-source"><a href="technical_report.pdf#page=11">Technical report · Table 4 ↗</a></div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <img src="rpg-bench-overview.png?v=20260821-01" alt="RPG-Bench theme coverage and five complementary gameplay modes, enlarged">
+  </div>
+
+  <div class="code-soon-toast" role="status" aria-live="polite">Code will be coming soon</div>
+
+  <footer class="footer">
+    <span>RPG Dreamer</span>
+  </footer>
+</main>
+
+<script src="project-page/rpg-demo.js?v=20260827-02"></script>
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add("visible");
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe(el));
+
+// ---- Dashboard panel parallax ----
+(() => {
+  const media = Array.from(document.querySelectorAll(".panel-media img"));
+  if (!media.length || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let ticking = false;
+  function update() {
+    ticking = false;
+    const vh = window.innerHeight;
+    for (const img of media) {
+      const r = img.parentElement.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) continue;
+      const delta = (r.top + r.height / 2 - vh / 2) / vh; // -0.5..0.5 around center
+      img.style.setProperty("--para", (delta * 4).toFixed(2) + "%");
+    }
+  }
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  update();
+})();
+// ---- Hero playback ----
+// Start only after a useful buffer exists, prefer the hardware-friendly MP4,
+// and stop video decoding away from the hero.
+(() => {
+  const v = document.querySelector(".hero-image");
+  if (!v) return;
+  const hero = v.closest(".hero");
+  v.muted = true;
+  v.setAttribute("muted", "");
+  v.playsInline = true;
+  v.preload = "auto";
+  let heroVisible = true;
+  let started = false;
+  let announced = false;
+
+  const announceReady = () => {
+    if (announced) return;
+    announced = true;
+    window.__rpgDreamerPageRevealed = true;
+    window.__rpgDreamerEnterMs = Math.round(performance.now());
+    document.dispatchEvent(new Event("rpgdreamer:revealed"));
+    document.dispatchEvent(new Event("rpgdreamer:hero-ready"));
+  };
+
+  const bufferedAhead = () => {
+    for (let i = 0; i < v.buffered.length; i += 1) {
+      if (v.buffered.start(i) <= v.currentTime + 0.05 && v.buffered.end(i) >= v.currentTime) {
+        return v.buffered.end(i) - v.currentTime;
+      }
+    }
+    return 0;
+  };
+
+  const playIfVisible = () => {
+    if (!started || !heroVisible || document.hidden) return;
+    v.play().catch(() => {});
+  };
+
+  const maybeStart = (force = false) => {
+    if (started) return;
+    if (!force && v.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) return;
+    if (!force && bufferedAhead() < Math.min(5, Math.max(1, v.duration || 5))) return;
+    started = true;
+    playIfVisible();
+    announceReady();
+  };
+
+  ["loadeddata", "canplay", "canplaythrough", "progress"].forEach((eventName) => {
+    v.addEventListener(eventName, () => maybeStart(), { passive: true });
+  });
+  v.addEventListener("playing", () => hero?.classList.remove("is-buffering"));
+  v.addEventListener("waiting", () => hero?.classList.add("is-buffering"));
+  v.addEventListener("stalled", () => hero?.classList.add("is-buffering"));
+  v.addEventListener("error", announceReady, { once: true });
+
+  if ("IntersectionObserver" in window && hero) {
+    const observer = new IntersectionObserver(([entry]) => {
+      heroVisible = entry.isIntersecting;
+      document.body.classList.toggle("hero-in-view", heroVisible);
+      if (heroVisible) playIfVisible();
+      else v.pause();
+    }, { threshold: 0.05 });
+    observer.observe(hero);
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) v.pause();
+    else playIfVisible();
+  });
+  window.addEventListener("pagehide", () => v.pause());
+  window.addEventListener("pageshow", playIfVisible);
+
+  // Slow connections still get the poster immediately instead of a blank hero.
+  window.setTimeout(() => maybeStart(true), 5000);
+  v.load();
+})();
+
+// ---- Demo cinema ----
+(() => {
+  const DEMOS = [
+    {
+      src: "demo/page/hk.mp4", poster: "demo/page/thumbs/hk.webp",
+      eyebrow: "Oneshot", title: "Hollow Knight boss slice",
+      desc: "A side-view boss fight with jumps, dash movement, air attacks, ground combos, melee pressure, ranged attacks, and room-scale repositioning.",
+      tags: ["Side-view", "Action", "Boss fight", "Combat"]
+    },
+    {
+      src: "demo/page/demonslayer.mp4", poster: "demo/page/thumbs/demonslayer.jpg",
+      eyebrow: "Prompt + reference", title: "HK to Demon Slayer",
+      desc: "The same action framework is steered toward a different visual and combat fantasy from a prompt plus a reference image.",
+      tags: ["Reference image", "Action", "Style transfer"]
+    },
+    {
+      src: "demo/page/sekiro.mp4", poster: "demo/page/thumbs/sekiro.webp",
+      eyebrow: "Soulslike", title: "Pixel Sekiro",
+      desc: "A retro boss-fight prototype with guard, parry timing, attack tells, posture pressure, and deathblow payoff.",
+      tags: ["Soulslike", "Parry", "Boss AI"]
+    },
+    {
+      src: "demo/page/fruit_ninja.mp4", poster: "demo/page/thumbs/fruit_ninja.webp",
+      eyebrow: "Arcade physics", title: "Fruit Ninja",
+      desc: "A fast arcade slice demo focused on readable input, responsive motion, and object feedback.",
+      tags: ["Arcade", "Physics", "Input"]
+    },
+    {
+      src: "demo/page/kof.mp4", poster: "demo/page/thumbs/kof.webp",
+      eyebrow: "Arcade fighter", title: "KOF",
+      desc: "A desktop fighting-game slice with character movement, attack timing, hit response, and stage presentation.",
+      tags: ["Fighting", "Characters", "Hit logic"]
+    },
+    {
+      src: "demo/page/parkour_dash.mp4", poster: "demo/page/thumbs/parkour_dash.webp",
+      eyebrow: "Cartoon parkour", title: "Aniya Parkour",
+      desc: "A movement demo where dash timing and balloon bounce reactions create a chained traversal route.",
+      tags: ["Platformer", "Dash", "Traversal"]
+    },
+    {
+      src: "demo/page/rog.mp4", poster: "demo/page/thumbs/rog.webp",
+      eyebrow: "Roguelike shooter", title: "Dungeon Roguelike",
+      desc: "A top-down dungeon shooter with rooms, corridors, enemies, weapons, pickups, health, shield, and mana systems.",
+      tags: ["Roguelike", "Top-down", "Shooter", "Dungeon"]
+    },
+    {
+      src: "demo/page/werewolf.mp4", poster: "demo/page/thumbs/werewolf.jpg",
+      eyebrow: "AI game", title: "AI Werewolf",
+      desc: "A social deduction game where the built-in LLM module drives the other players through speeches, votes, and night actions.",
+      tags: ["LLM agents", "Party game", "Dialogue"]
+    },
+    {
+      src: "demo/page/civilization.mp4", poster: "demo/page/thumbs/civilization.jpg",
+      eyebrow: "4X strategy", title: "Civilization prototype",
+      desc: "A turn-based strategy demo with grid movement, unit combat, objective capture, and client/server play.",
+      tags: ["4X Strategy", "Turn-based", "Tactics", "Client/Server"]
+    }
+  ];
+
+  const root = document.getElementById("demo-cinema");
+  if (!root) return;
+  const video = document.getElementById("cinema-video");
+  const bar = document.getElementById("cinema-progress-bar");
+  const eyebrowEl = document.getElementById("cinema-eyebrow");
+  const titleEl = document.getElementById("cinema-title");
+  const descEl = document.getElementById("cinema-desc");
+  const tagsEl = document.getElementById("cinema-tags");
+  const rail = document.getElementById("cinema-rail");
+
+  const thumbs = DEMOS.map((d, n) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "rail-thumb";
+    b.setAttribute("aria-label", d.title);
+    b.innerHTML =
+      `<span class="rail-frame"><img src="${d.poster}" alt="" loading="lazy"></span>` +
+      `<span class="rail-name">${d.title}</span>`;
+    b.addEventListener("click", () => show(n));
+    rail.appendChild(b);
+    return b;
+  });
+
+  const loadingEl = document.getElementById("cinema-loading");
+  const setLoading = (on) => { if (loadingEl) loadingEl.hidden = !on; };
+
+  let idx = -1;
+
+  function show(i) {
+    const n = (i + DEMOS.length) % DEMOS.length;
+    if (n === idx) {
+      video.play().catch(() => {});
+      return;
+    }
+    setLoading(true); // the selected demo's video may still be buffering
+    const first = idx === -1;
+    idx = n;
+    const d = DEMOS[idx];
+    thumbs.forEach((t, k) => t.classList.toggle("active", k === idx));
+    // Scroll only the rail horizontally; scrollIntoView would also scroll the page
+    const t = thumbs[idx];
+    rail.scrollTo({
+      left: t.offsetLeft - (rail.clientWidth - t.offsetWidth) / 2,
+      behavior: "smooth"
+    });
+    eyebrowEl.textContent = d.eyebrow;
+    titleEl.textContent = d.title;
+    descEl.textContent = d.desc;
+    tagsEl.innerHTML = d.tags.map((t) => `<span>${t}</span>`).join("");
+    bar.style.width = "0%";
+    if (first) {
+      video.src = d.src;
+      video.play().catch(() => {});
+      return;
+    }
+    video.classList.add("switching");
+    setTimeout(() => {
+      video.src = d.src;
+      video.play().catch(() => {});
+    }, 200);
+  }
+
+  video.addEventListener("playing", () => { video.classList.remove("switching"); setLoading(false); });
+  video.addEventListener("canplay", () => setLoading(false));
+  video.addEventListener("waiting", () => setLoading(true));
+  video.addEventListener("ended", () => show(idx + 1));
+  video.addEventListener("timeupdate", () => {
+    if (video.duration) bar.style.width = (video.currentTime / video.duration) * 100 + "%";
+  });
+
+  root.querySelector(".cinema-arrow.prev").addEventListener("click", () => show(idx - 1));
+  root.querySelector(".cinema-arrow.next").addEventListener("click", () => show(idx + 1));
+
+  document.addEventListener("keydown", (e) => {
+    if (!root.matches(":hover") && !root.contains(document.activeElement)) return;
+    if (e.key === "ArrowLeft") show(idx - 1);
+    if (e.key === "ArrowRight") show(idx + 1);
+  });
+
+  // Pause the reel while it is offscreen
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }, { threshold: 0.25 });
+  io.observe(root);
+
+  show(0);
+})();
+
+// ---- Code availability notice ----
+(() => {
+  const toast = document.querySelector(".code-soon-toast");
+  if (!toast) return;
+  let timer = 0;
+  document.querySelectorAll("[data-code-soon]").forEach((button) => {
+    button.addEventListener("click", () => {
+      window.clearTimeout(timer);
+      toast.classList.add("visible");
+      timer = window.setTimeout(() => toast.classList.remove("visible"), 2200);
+    });
+  });
+})();
+
+// ---- Overview lightbox ----
+(() => {
+  const box = document.getElementById("lightbox");
+  if (!box) return;
+  const boxImg = box.querySelector("img");
+  const open = (src, alt) => {
+    boxImg.src = src;
+    boxImg.alt = alt || "";
+    box.hidden = false;
+    document.body.style.overflow = "hidden";
+  };
+  const close = () => {
+    box.hidden = true;
+    document.body.style.overflow = "";
+  };
+  document.querySelectorAll("#overview .overview-figure img, .panel-media img").forEach((img) => {
+    img.addEventListener("click", () => open(img.src, img.alt));
+  });
+  box.addEventListener("click", close);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !box.hidden) close();
+  });
+})();
+</script>
+
+<script>
+// Q2 scale-to-fit for the Abstract: lay the block out at its fixed design size,
+// then uniformly scale it so it exactly fills one screen at any resolution.
+// The outer .abstract-scaler is set to the SCALED footprint so page layout
+// matches the visual (no phantom scrollbars). Desktop only (>=900px); narrower
+// screens keep the normal responsive flow.
+(() => {
+  const section = document.getElementById("abstract");
+  if (!section) return;
+  const scaler = section.querySelector(".abstract-scaler");
+  const stage = section.querySelector(".abstract-stage");
+  if (!scaler || !stage) return;
+  const mq = window.matchMedia("(min-width: 900px)");
+
+  function fit() {
+    if (!mq.matches) {                 // narrow: hand back to normal flow
+      stage.style.transform = "";
+      scaler.style.width = scaler.style.height = "";
+      return;
+    }
+    // Measure the natural (unscaled) design box.
+    stage.style.transform = "none";
+    scaler.style.width = scaler.style.height = "";
+    const w = stage.offsetWidth, h = stage.offsetHeight;
+    if (!w || !h) return;
+    const cs = getComputedStyle(section);
+    const availW = section.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const availH = section.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const scale = Math.min(availW / w, availH / h);
+    // Give the block a real footprint equal to its scaled size, then scale from
+    // the top-left corner so the visual fills that footprint exactly.
+    scaler.style.width = (w * scale) + "px";
+    scaler.style.height = (h * scale) + "px";
+    stage.style.transform = "scale(" + scale + ")";
+  }
+
+  let raf = 0;
+  const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); };
+  window.addEventListener("resize", schedule);
+  mq.addEventListener && mq.addEventListener("change", schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  window.addEventListener("load", schedule);
+  schedule();
+})();
+</script>
+
+<script>
+// Keep the section you're looking at in place through a resize / browser zoom.
+// Every section is ~100svh, so a viewport change reflows them all and the scroll
+// offset would otherwise land on a different section ("jumping between pages").
+// We record which section the viewport top is in and HOW FAR into it as a
+// FRACTION of its height (a scale-free ratio — crucial for browser zoom, which
+// changes the CSS-px scale, so an absolute-pixel offset would be wrong). resize
+// fires after the reflow, so the fraction must be captured earlier, on scroll.
+// On resize we restore that same fraction each frame until the burst settles.
+(() => {
+  const getSections = () => [...document.querySelectorAll(".hero, .section")];
+  let anchorEl = null, anchorFrac = 0, resizing = false, raf = 0, release = 0;
+  function topSection() {
+    const list = getSections();
+    for (const s of list) { const r = s.getBoundingClientRect(); if (r.top <= 2 && r.bottom > 2) return s; }
+    let best = list[0] || null, bestD = Infinity;
+    for (const s of list) { const d = Math.abs(s.getBoundingClientRect().top); if (d < bestD) { bestD = d; best = s; } }
+    return best;
+  }
+  function record() {
+    if (resizing) return;                       // freeze the anchor during a resize burst
+    const s = topSection();
+    if (s) { const r = s.getBoundingClientRect(); anchorEl = s; anchorFrac = r.height ? (-r.top / r.height) : 0; }
+  }
+  window.addEventListener("scroll", record, { passive: true });
+  window.addEventListener("resize", () => {
+    resizing = true;
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      if (!anchorEl) return;
+      const r = anchorEl.getBoundingClientRect();
+      const delta = r.top + anchorFrac * r.height;   // scroll so the same fraction sits at the viewport top
+      if (Math.abs(delta) > 0.5) {
+        const prev = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = "auto"; // never smooth-animate a resize correction
+        window.scrollBy(0, delta);
+        document.documentElement.style.scrollBehavior = prev;
+      }
+    });
+    clearTimeout(release);
+    release = setTimeout(() => { resizing = false; record(); }, 300); // burst ended: resume recording
+  }, { passive: true });
+  window.addEventListener("load", record);
+  record();
+})();
+</script>
+</body>
+</html>
