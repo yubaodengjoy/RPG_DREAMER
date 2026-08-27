@@ -992,7 +992,7 @@ body:not(.hero-in-view) .brand {
 }
 
 #result .paper-heading {
-  text-align: left;
+  text-align: center;
 }
 
 .result-table-wrap {
@@ -1010,6 +1010,7 @@ body:not(.hero-in-view) .brand {
 .result-table {
   width: 100%;
   min-width: 1080px;
+  table-layout: fixed;
   border-collapse: collapse;
   color: #26354b;
   font-size: 14px;
@@ -1018,11 +1019,7 @@ body:not(.hero-in-view) .brand {
 
 .result-table col:nth-child(1) { width: 18%; }
 .result-table col:nth-child(2) { width: 18%; }
-.result-table col:nth-child(3) { width: 14%; }
-.result-table col:nth-child(4) { width: 14%; }
-.result-table col:nth-child(5) { width: 18%; }
-.result-table col:nth-child(6) { width: 10%; }
-.result-table col:nth-child(7) { width: 8%; }
+.result-table col:nth-child(n + 3) { width: 12.8%; }
 
 .result-table th,
 .result-table td {
@@ -1784,6 +1781,7 @@ body.hero-sequence-revealed .hero-content::after {
 <script>
 (() => {
   const loader = document.querySelector('[data-page-loader]');
+  window.__rpgDreamerLoaderComplete = !loader;
   if (!loader) return;
 
   const startedAt = performance.now();
@@ -1816,7 +1814,11 @@ body.hero-sequence-revealed .hero-content::after {
     window.setTimeout(() => {
       document.body.classList.remove('is-page-loading');
       loader.classList.add('is-leaving');
-      window.setTimeout(() => loader.remove(), 560);
+      window.setTimeout(() => {
+        loader.remove();
+        window.__rpgDreamerLoaderComplete = true;
+        document.dispatchEvent(new Event('rpgdreamer:loader-complete'));
+      }, 560);
     }, remaining);
   });
 })();
@@ -1867,6 +1869,7 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   const videos = [intro, loop];
   let heroVisible = true;
   let phase = "preloading";
+  let loaderComplete = window.__rpgDreamerLoaderComplete === true;
   let announced = false;
   let fallbackTimer = 0;
 
@@ -1875,6 +1878,7 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
     video.setAttribute("muted", "");
     video.playsInline = true;
     video.preload = "auto";
+    video.pause();
   });
 
   const bufferedAhead = (video) => {
@@ -1910,12 +1914,12 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   const activeVideo = () => (phase === "loop" ? loop : intro);
 
   const playActiveIfVisible = () => {
-    if (phase === "preloading" || !heroVisible || document.hidden) return;
+    if (!loaderComplete || phase === "preloading" || !heroVisible || document.hidden) return;
     activeVideo().play().catch(() => {});
   };
 
   const startLoop = () => {
-    if (phase === "loop") return;
+    if (!loaderComplete || phase === "loop") return;
     if (loop.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
       hero.classList.add("is-buffering");
       loop.addEventListener("canplay", startLoop, { once: true });
@@ -1935,7 +1939,7 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   };
 
   const startIntro = (force = false) => {
-    if (phase !== "preloading") return;
+    if (!loaderComplete || phase !== "preloading") return;
     if (!force && !hasUsefulBuffer(intro)) return;
     phase = "intro";
     window.clearTimeout(fallbackTimer);
@@ -1959,6 +1963,17 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
     video.addEventListener("stalled", () => hero.classList.add("is-buffering"));
     video.addEventListener("playing", () => hero.classList.remove("is-buffering"));
   });
+
+  document.addEventListener("rpgdreamer:loader-complete", () => {
+    loaderComplete = true;
+    videos.forEach((video) => {
+      video.pause();
+      if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        video.currentTime = 0;
+      }
+    });
+    startIntro(true);
+  }, { once: true });
 
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(([entry]) => {
