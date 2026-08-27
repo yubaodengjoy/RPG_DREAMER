@@ -303,6 +303,10 @@ body:not(.hero-in-view) .brand {
 
 @media (max-width: 640px) {
   .abstract-paper-title { white-space: normal; }
+  .abstract-title-grid {
+    grid-template-columns: max-content minmax(0, 1fr);
+    width: 100%;
+  }
 }
 
 .abstract-paper-title .brand-accent {
@@ -310,6 +314,19 @@ body:not(.hero-in-view) .brand {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.abstract-title-grid {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: center;
+  column-gap: 0.22em;
+}
+
+.abstract-title-lead,
+.abstract-title-continuation {
+  grid-column: 2;
+  text-align: left;
 }
 
 .abstract-panel {
@@ -1558,7 +1575,13 @@ body.hero-sequence-revealed .hero-content::after {
     <div class="abstract-stage">
     <div class="section-inner reveal">
       <img class="abstract-logo" src="logo.png" alt="RPG Dreamer logo">
-      <h2 class="abstract-paper-title"><span class="brand-accent">RPG Dreamer:</span> Towards Agent-Driven Generation of<br>Long-Horizon Interactive Worlds</h2>
+      <h2 class="abstract-paper-title">
+        <span class="abstract-title-grid">
+          <span class="brand-accent">RPG Dreamer:</span>
+          <span class="abstract-title-lead">Towards Agent-Driven Generation of</span>
+          <span class="abstract-title-continuation">Long-Horizon Interactive Worlds</span>
+        </span>
+      </h2>
       <h3 class="paper-heading">Abstract</h3>
       <div class="abstract-panel">
         <p class="abstract-body">
