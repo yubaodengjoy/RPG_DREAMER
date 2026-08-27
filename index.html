@@ -303,64 +303,6 @@ body:not(.hero-in-view) .brand {
   color: transparent;
 }
 
-.abstract-affiliation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  font-family: var(--sans);
-  font-size: 14px;
-  line-height: 1.25;
-  color: #5a6373;
-  text-align: center;
-  margin: 0 0 44px;
-}
-
-.abstract-affiliation-item {
-  min-width: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  white-space: nowrap;
-}
-
-.abstract-affiliation-mark {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-}
-
-.abstract-affiliation-mark.is-fitx {
-  width: 52px;
-}
-
-.abstract-affiliation-mark img {
-  max-width: 100%;
-  max-height: 100%;
-  display: block;
-  object-fit: contain;
-}
-
-@media (max-width: 640px) {
-  .abstract-affiliation {
-    gap: 10px 18px;
-    margin-bottom: 36px;
-    font-size: 12px;
-  }
-
-  .abstract-affiliation-mark {
-    width: 28px;
-    height: 28px;
-  }
-
-  .abstract-affiliation-mark.is-fitx {
-    width: 46px;
-  }
-}
-
 .abstract-panel {
   max-width: 880px;
   margin: 0 auto;
@@ -462,7 +404,6 @@ body:not(.hero-in-view) .brand {
      depend on the viewport — the transform does the scaling, not vw units. */
   #abstract.abstract-fit .abstract-logo { width: 86px; margin-bottom: 18px; }
   #abstract.abstract-fit .abstract-paper-title { font-size: 36px; white-space: normal; }
-  #abstract.abstract-fit .abstract-affiliation { font-size: 15px; margin-bottom: 38px; }
   #abstract.abstract-fit .paper-heading { font-size: 40px; margin-bottom: 30px; }
   #abstract.abstract-fit .abstract-panel { max-width: 940px; padding: 40px 54px 46px; }
   #abstract.abstract-fit .abstract-body { font-size: 16px; line-height: 1.72; }
@@ -1566,7 +1507,7 @@ body.hero-sequence-revealed .hero-content::after {
 
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
-<link href="project-page/rpg-demo.css?v=20260827-04" rel="stylesheet">
+<link href="project-page/rpg-demo.css?v=20260827-05" rel="stylesheet">
 <meta name="build" content="20260722-41">
 </head>
 <body class="hero-in-view hero-sequence-pending">
@@ -1609,20 +1550,6 @@ body.hero-sequence-revealed .hero-content::after {
     <div class="section-inner reveal">
       <img class="abstract-logo" src="logo.png" alt="RPG Dreamer logo">
       <h2 class="abstract-paper-title"><span class="brand-accent">RPG Dreamer:</span> Towards Agent-Driven Generation of Long-Horizon Interactive Worlds</h2>
-      <div class="abstract-affiliation" aria-label="Author affiliations">
-        <span class="abstract-affiliation-item">
-          <span class="abstract-affiliation-mark is-fitx"><img src="Author_logo/fitx-logo.png" alt="FitX logo"></span>
-          <span>FitX Technology (Hong Kong) Limited</span>
-        </span>
-        <span class="abstract-affiliation-item">
-          <span class="abstract-affiliation-mark"><img src="Author_logo/hitsz-logo.png" alt="Harbin Institute of Technology logo"></span>
-          <span>Harbin Institute of Technology, Shenzhen</span>
-        </span>
-        <span class="abstract-affiliation-item">
-          <span class="abstract-affiliation-mark"><img src="Author_logo/csu-logo.png" alt="Central South University logo"></span>
-          <span>Central South University</span>
-        </span>
-      </div>
       <h3 class="paper-heading">Abstract</h3>
       <div class="abstract-panel">
         <p class="abstract-body">
@@ -1688,6 +1615,16 @@ body.hero-sequence-revealed .hero-content::after {
                   <small>RPG DREAMER · STANDBY</small>
                   <h3 data-rpg-placeholder-title>INSERT CARTRIDGE</h3>
                   <p data-rpg-placeholder-copy>Choose one of the playable world cartridges from the library below.</p>
+                  <div class="rpg-demo-standby-tips" aria-label="Gameplay tips">
+                    <div class="rpg-demo-standby-tip">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H5a1 1 0 0 1-1-1v-5Zm16 0h-3v6h2a1 1 0 0 0 1-1v-5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      <span>This game includes sound. Please check your device volume.</span>
+                    </div>
+                    <div class="rpg-demo-standby-tip">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      <span>Use the Fullscreen button to enter or exit fullscreen.</span>
+                    </div>
+                  </div>
                   <button class="rpg-demo-load" type="button" data-rpg-load disabled>
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 7 8 5-8 5V7Z" fill="currentColor"/></svg>
                     Power on selected world
