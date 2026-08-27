@@ -3,34 +3,35 @@
   const root = document.getElementById('rpg-play-demo');
   if (!root) return;
 
+  const r2Base = 'https://pub-f92b6274842f4c76bae0e87541458375.r2.dev/rpg-dreamer/';
+
   const games = {
     'world-40': {
       title: '武松·最后一虎',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: 'src-40/src/dist/',
-      // Consumed from project-page/rpg-demo.css, so this URL is CSS-relative.
-      poster: '../src-40/src/dist/cover.webp',
+      src: `${r2Base}src-40/src/dist/index.html`,
+      poster: `${r2Base}src-40/src/dist/cover.webp`,
       copy: 'Follow Wu Song into a final confrontation shaped by duty, survival, and the legend of the last tiger.',
     },
     'magic-brush': {
       title: '神笔：移命录',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: 'src-41/src/dist/',
-      poster: '../src-41/src/dist/cover.webp',
+      src: `${r2Base}src-41/src/dist/index.html`,
+      poster: `${r2Base}src-41/src/dist/cover.webp`,
       copy: 'A four-chapter journey about Ma Liang and a magic brush whose miracles transfer their cost to others.',
     },
     'world-42': {
       title: 'Pinocchio: The City That Swallows Truth',
       meta: 'Long-horizon generated RPG · English',
-      src: 'src-42/src/dist/',
-      poster: '../src-42/src/dist/cover.webp',
+      src: `${r2Base}src-42/src/dist/index.html`,
+      poster: `${r2Base}src-42/src/dist/cover.webp`,
       copy: 'Enter a city where truth is consumed, identities are rewritten, and every choice tests what it means to remain real.',
     },
     'vanishing-emperor': {
       title: 'The Vanishing Emperor',
       meta: 'Long-horizon generated RPG · English',
-      src: 'src-43/src/dist/',
-      poster: '../src-43/src/dist/cover.webp',
+      src: `${r2Base}src-43/src/dist/index.html`,
+      poster: `${r2Base}src-43/src/dist/cover.webp`,
       copy: 'Investigate Valdris after its emperor vanishes, leaving an empty crown, a disputed voice, and a kingdom built on uncertain truth.',
     },
   };
@@ -98,7 +99,7 @@
   function sendToGame(id, type) {
     states[id]?.frame?.contentWindow?.postMessage(
       { source: 'rpg-dreamer-host', type },
-      window.location.origin,
+      new URL(games[id].src).origin,
     );
   }
 
@@ -165,7 +166,10 @@
       if (!item.frame) return;
       const selected = id === activeId && poweredOn;
       item.frame.hidden = !selected;
-      item.frame.style.visibility = selected && item.ready ? 'visible' : 'hidden';
+      // Keep the selected iframe renderable while the compiler panel covers it.
+      // Chromium heavily throttles cross-origin frames with visibility:hidden,
+      // which can otherwise stall Phaser's boot scene before it becomes ready.
+      item.frame.style.visibility = selected ? 'visible' : 'hidden';
       item.frame.setAttribute('aria-hidden', String(!selected));
       sendToGame(id, selected && !document.hidden ? 'resume' : 'pause');
       if (selected) window.requestAnimationFrame(() => sendToGame(id, 'resize'));
@@ -382,7 +386,8 @@
     frame.allow = 'fullscreen; autoplay';
     frame.setAttribute('allowfullscreen', '');
     frame.sandbox = 'allow-scripts allow-same-origin';
-    frame.src = game.src;
+    const hostOrigin = encodeURIComponent(window.location.origin);
+    frame.src = `${game.src}#rpg-host-origin=${hostOrigin}`;
     frame.dataset.gameId = activeId;
     frame.addEventListener('load', () => {
       state.progress = Math.max(state.progress, 0.08);
@@ -523,9 +528,8 @@
   });
 
   window.addEventListener('message', (event) => {
-    if (event.origin !== window.location.origin || event.data?.source !== 'rpg-dreamer-game') return;
     const id = Object.keys(states).find((gameId) => event.source === states[gameId].frame?.contentWindow);
-    if (!id) return;
+    if (!id || event.origin !== new URL(games[id].src).origin || event.data?.source !== 'rpg-dreamer-game') return;
     const state = states[id];
 
     if (event.data.type === 'loading') {

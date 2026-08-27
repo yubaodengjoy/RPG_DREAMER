@@ -6,11 +6,25 @@
   let completedResources = 0;
   let lastProgress = 0;
 
+  function normalizeOrigin(value) {
+    try {
+      const parsed = new URL(value);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return '';
+      return parsed.origin;
+    } catch {
+      return '';
+    }
+  }
+
+  const hostParams = new URLSearchParams(window.location.hash.slice(1));
+  const hostOrigin = normalizeOrigin(hostParams.get('rpg-host-origin'))
+    || normalizeOrigin(document.referrer);
+
   function post(type, detail = {}) {
-    if (window.parent === window) return;
+    if (window.parent === window || !hostOrigin) return;
     window.parent.postMessage(
       { source: GAME_SOURCE, type, ...detail },
-      window.location.origin,
+      hostOrigin,
     );
   }
 
@@ -45,7 +59,7 @@
   }
 
   window.addEventListener('message', (event) => {
-    if (event.origin !== window.location.origin || event.data?.source !== HOST_SOURCE) return;
+    if (event.origin !== hostOrigin || event.data?.source !== HOST_SOURCE) return;
     if (event.data.type === 'pause') paused = true;
     if (event.data.type === 'resume') paused = false;
     if (event.data.type === 'resize') window.__WEBRPG_GAME__?.scale?.refresh();

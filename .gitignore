@@ -7,6 +7,10 @@
 !/.github/
 !/.github/workflows/
 !/.github/workflows/deploy-pages.yml
+!/github-redirect/
+!/github-redirect/index.html
+!/scripts/
+!/scripts/build-cloudflare-site.sh
 
 # Landing-page runtime files.
 !/index.html

@@ -28,42 +28,13 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Assemble runtime-only site
+      - name: Assemble redirect-only site
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p _site/project-page/play-games
-
-          cp \
-            index.html \
-            logo.png \
-            method.png \
-            rpg-bench-overview.png \
-            teaser.png \
-            rpg-dreamer-top-hero-poster.webp \
-            top-video-intro-poster.webp \
-            top_video_1.mp4 \
-            top_video_2.mp4 \
-            _site/
-
-          cp -a fonts Author_logo _site/
-          cp project-page/rpg-demo.css project-page/rpg-demo.js _site/project-page/
-          cp -a project-page/cartridge-covers _site/project-page/
-          cp project-page/play-games/rpg-embed-host.js _site/project-page/play-games/
-
-          for game_id in 40 41 42 43; do
-            mkdir -p "_site/src-${game_id}/src"
-            cp -a "src-${game_id}/src/dist" "_site/src-${game_id}/src/"
-          done
-
+          mkdir -p _site
+          cp github-redirect/index.html _site/index.html
           touch _site/.nojekyll
-
-          site_bytes="$(du -sb _site | cut -f1)"
-          echo "Runtime-only Pages artifact: ${site_bytes} bytes"
-          if (( site_bytes > 950000000 )); then
-            echo "Pages artifact exceeds the 950 MB safety ceiling." >&2
-            exit 1
-          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
