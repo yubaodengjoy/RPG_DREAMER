@@ -466,7 +466,10 @@
     const active = document.fullscreenElement === root || fallbackFullscreen;
     enterFullscreen.hidden = active;
     exitFullscreen.hidden = !active;
-    window.requestAnimationFrame(() => sendToGame(activeId, 'resize'));
+    window.requestAnimationFrame(() => {
+      sendToGame(activeId, 'resize');
+      window.requestAnimationFrame(() => sendToGame(activeId, 'resize'));
+    });
   }
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -491,6 +494,10 @@
   });
   cartridgeStrip?.addEventListener('scroll', syncCartridgeScrollButtons, { passive: true });
   new ResizeObserver(syncCartridgeScrollButtons).observe(cartridgeStrip);
+  new ResizeObserver(() => {
+    if (!hasCartridge || !poweredOn || !activeState().frame) return;
+    window.requestAnimationFrame(() => sendToGame(activeId, 'resize'));
+  }).observe(stage);
 
   choices.forEach((choice) => {
     choice.addEventListener('click', () => {
