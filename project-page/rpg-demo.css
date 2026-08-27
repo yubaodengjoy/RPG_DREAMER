@@ -1014,6 +1014,18 @@ body.rpg-demo-fullscreen-fallback {
 
 .rpg-handheld-player .rpg-demo-placeholder h3 {
   margin-top: 15px;
+  font-family: "Jersey 10", var(--mono);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0.02em;
+}
+
+#demos .rpg-demo-actions button,
+#demos .rpg-demo-load {
+  font-family: "Jersey 10", var(--mono);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0.04em;
 }
 
 .rpg-demo-standby-tips {
