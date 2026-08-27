@@ -293,7 +293,8 @@ body:not(.hero-in-view) .brand {
 }
 
 #demos .paper-heading,
-#overview .paper-heading {
+#overview .paper-heading,
+#result .paper-heading {
   font-family: "Jersey 10", var(--mono);
   font-weight: 400;
   font-synthesis: none;
@@ -873,125 +874,33 @@ body:not(.hero-in-view) .brand {
 }
 
 .result-compare {
-  margin-top: clamp(34px, 5vw, 64px);
-}
-
-.result-intro {
-  max-width: 820px;
-  margin: 12px auto 0;
-  color: #596573;
-  font-family: var(--serif);
-  font-size: clamp(16px, 1.35vw, 19px);
-  line-height: 1.75;
-  text-align: center;
-}
-
-.result-summary {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.result-stat {
-  position: relative;
-  min-height: 178px;
-  overflow: hidden;
-  padding: 24px 26px;
-  border: 1px solid rgba(22, 34, 58, 0.12);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.68);
-  box-shadow: 0 18px 44px -28px rgba(22, 34, 58, 0.28);
-}
-
-.result-stat::after {
-  content: "";
-  position: absolute;
-  right: -34px;
-  bottom: -44px;
-  width: 128px;
-  height: 128px;
-  border-radius: 50%;
-  background: rgba(128, 215, 255, 0.16);
-}
-
-.result-stat.is-primary {
-  border-color: rgba(176, 101, 60, 0.34);
-  background: linear-gradient(145deg, rgba(255, 248, 229, 0.94), rgba(255, 255, 255, 0.76));
-}
-
-.result-stat-label,
-.result-block-kicker {
-  color: #8a5a40;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.result-stat-value {
-  display: block;
-  margin-top: 16px;
-  color: #16223a;
-  font-family: var(--sans);
-  font-size: clamp(42px, 5vw, 66px);
-  font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: -0.055em;
-}
-
-.result-stat-value small {
-  margin-left: 4px;
-  font-size: 0.38em;
-  letter-spacing: 0;
-}
-
-.result-stat p {
-  position: relative;
-  z-index: 1;
-  margin: 14px 0 0;
-  color: #65717d;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.result-block {
-  margin-top: clamp(54px, 7vw, 86px);
-}
-
-.result-block-head {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 18px;
-}
-
-.result-block-title {
-  margin: 8px 0 0;
-  color: #16223a;
-  font-family: var(--sans);
-  font-size: clamp(24px, 3vw, 36px);
-  letter-spacing: -0.025em;
-}
-
-.result-block-note {
-  max-width: 520px;
-  margin: 0;
-  color: #687480;
-  font-family: var(--serif);
-  font-size: 14px;
-  line-height: 1.55;
-  text-align: right;
+  width: min(1080px, 100%);
+  margin: clamp(30px, 5vw, 58px) auto 0;
 }
 
 .result-table-wrap {
+  position: relative;
   overflow-x: auto;
   border: 1px solid rgba(22, 34, 58, 0.12);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.76);
-  box-shadow: 0 22px 54px -34px rgba(22, 34, 58, 0.28);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 24px 60px -34px rgba(22, 34, 58, 0.32),
+    0 1px 0 rgba(255, 255, 255, 0.84) inset;
+  backdrop-filter: blur(8px);
   scrollbar-width: thin;
+}
+
+.result-table-wrap::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 22px;
+  left: 22px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(128, 215, 255, 0.9), rgba(255, 210, 122, 0.82), transparent);
+  pointer-events: none;
 }
 
 .result-table {
@@ -1000,11 +909,12 @@ body:not(.hero-in-view) .brand {
   border-collapse: collapse;
   color: #26354b;
   font-size: 14px;
+  font-variant-numeric: tabular-nums;
 }
 
-.result-table.is-wide {
-  min-width: 1100px;
-}
+.result-table col:nth-child(1) { width: 22%; }
+.result-table col:nth-child(2) { width: 22%; }
+.result-table col:nth-child(n + 3) { width: 11.2%; }
 
 .result-table th,
 .result-table td {
@@ -1016,12 +926,13 @@ body:not(.hero-in-view) .brand {
 
 .result-table th:first-child,
 .result-table td:first-child,
-.result-table .is-text {
+.result-table th:nth-child(2),
+.result-table td:nth-child(2) {
   text-align: left;
 }
 
 .result-table thead th {
-  background: #16223a;
+  background: linear-gradient(180deg, #1b2942, #142036);
   color: #f8f6ef;
   font-family: var(--mono);
   font-size: 11px;
@@ -1030,114 +941,57 @@ body:not(.hero-in-view) .brand {
   text-transform: uppercase;
 }
 
-.result-table thead tr + tr th {
-  padding-block: 10px;
-  background: #22324d;
-  color: rgba(248, 246, 239, 0.72);
-}
-
-.result-table tbody th {
+.result-table .result-group th {
+  position: relative;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 30px;
+  background: rgba(22, 34, 58, 0.055);
   color: #16223a;
-  font-family: var(--sans);
-  font-weight: 650;
-}
-
-.result-table tbody td {
   font-family: var(--mono);
-  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
 }
 
-.result-table tbody tr:last-child th,
-.result-table tbody tr:last-child td {
+.result-table .result-group th::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  width: 4px;
+  height: 15px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #58bce9, #4472ac);
+  transform: translateY(-50%);
+}
+
+.result-table tbody:last-child tr:last-child td {
   border-bottom: 0;
 }
 
-.result-table tbody tr:hover {
+.result-table tbody tr:not(.result-group):hover {
   background: rgba(128, 215, 255, 0.08);
 }
 
 .result-table .is-rpgdreamer {
-  background: rgba(255, 210, 122, 0.17);
+  background: linear-gradient(90deg, rgba(128, 215, 255, 0.22), rgba(128, 215, 255, 0.11));
+  box-shadow: inset 3px 0 #58bce9;
 }
 
-.result-table .is-rpgdreamer th {
-  color: #9b512e;
+.result-table .is-rpgdreamer td:first-child {
+  color: #16223a;
+  font-weight: 700;
 }
 
-.result-table .best-score {
+.result-table .is-rpgdreamer strong {
   color: #9b512e;
   font-weight: 800;
 }
 
-.result-table .correlation-row {
-  background: rgba(128, 215, 255, 0.12);
-}
-
-.result-source {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
-}
-
-.result-source a {
-  color: #536777;
-  font-family: var(--mono);
-  font-size: 11px;
-  text-decoration: none;
-}
-
-.result-source a:hover {
-  color: #9b512e;
-}
-
-.result-validation-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
-  gap: 18px;
-}
-
-.result-validation-grid .result-table {
-  min-width: 0;
-}
-
-.result-validation-copy {
-  display: grid;
-  align-content: center;
-  padding: clamp(24px, 4vw, 42px);
-  border: 1px solid rgba(22, 34, 58, 0.12);
-  border-radius: 16px;
-  background: linear-gradient(145deg, rgba(22, 34, 58, 0.96), rgba(34, 50, 77, 0.94));
-  color: #f8f6ef;
-}
-
-.result-validation-copy strong {
-  font-family: var(--sans);
-  font-size: clamp(32px, 5vw, 58px);
-  letter-spacing: -0.04em;
-}
-
-.result-validation-copy p {
-  margin: 12px 0 0;
-  color: rgba(248, 246, 239, 0.68);
-  font-family: var(--serif);
-  line-height: 1.65;
-}
-
 @media (max-width: 820px) {
-  .result-summary,
-  .result-validation-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .result-block-head {
-    display: block;
-  }
-
-  .result-block-note {
-    margin-top: 10px;
-    text-align: left;
-  }
-
   .result-table-wrap {
     margin-right: calc(clamp(18px, 4vw, 64px) * -0.5);
   }
@@ -1769,124 +1623,41 @@ body.hero-sequence-revealed .hero-content::after {
     <div class="section-inner">
       <div class="studio-head reveal">
         <h2 class="paper-heading">Result</h2>
-        <p class="result-intro">We evaluate complete, hour-scale RPG generation on all 150 RPG-Bench instances. Scores are normalized to a 0–100 scale across requirement fidelity, content richness, visual and interaction quality, and playability.</p>
       </div>
       <div class="result-compare reveal">
-        <div class="result-summary" aria-label="Key RPG Dreamer results">
-          <article class="result-stat is-primary">
-            <span class="result-stat-label">Automatic overall</span>
-            <strong class="result-stat-value">83.2<small>/100</small></strong>
-            <p>Highest overall score in the RPG-Bench comparison.</p>
-          </article>
-          <article class="result-stat">
-            <span class="result-stat-label">Human overall</span>
-            <strong class="result-stat-value">65.9<small>/100</small></strong>
-            <p>Human evaluation of RPG Dreamer with GPT 5.6 Sol.</p>
-          </article>
-          <article class="result-stat">
-            <span class="result-stat-label">Intent reproduction</span>
-            <strong class="result-stat-value">100<small>%</small></strong>
-            <p>Human-achievable intents reproduced through the Agent Interface.</p>
-          </article>
+        <div class="result-table-wrap" tabindex="0" role="region" aria-label="RPG-Bench automatic and human evaluation comparison">
+          <table class="result-table">
+            <colgroup>
+              <col><col><col><col><col><col><col>
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">Harness</th>
+                <th scope="col">Model</th>
+                <th scope="col"><abbr title="Requirement fidelity">RF</abbr></th>
+                <th scope="col"><abbr title="Content richness">CR</abbr></th>
+                <th scope="col"><abbr title="Visual and interaction quality">VI</abbr></th>
+                <th scope="col"><abbr title="Playability">PL</abbr></th>
+                <th scope="col">Overall</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="result-group"><th colspan="7" scope="rowgroup">Automatic evaluation</th></tr>
+              <tr><td>Claude Code</td><td>Mimo-V2.5</td><td>44.0</td><td>6.3</td><td>38.4</td><td>13.9</td><td>22.0</td></tr>
+              <tr><td>OpenGame</td><td>Opus 4.8</td><td>80.0</td><td>31.6</td><td>41.4</td><td>45.7</td><td>43.6</td></tr>
+              <tr><td>Qwen-code</td><td>Qwen3.8-Max</td><td>84.0</td><td>32.2</td><td>55.0</td><td>27.6</td><td>42.8</td></tr>
+              <tr><td>Kimi-code</td><td>Kimi K3</td><td>96.0</td><td>48.6</td><td>67.9</td><td>40.9</td><td>56.8</td></tr>
+              <tr><td>Codex</td><td>GPT 5.6 Sol</td><td>96.0</td><td>57.9</td><td>56.2</td><td>63.8</td><td>63.0</td></tr>
+              <tr class="is-rpgdreamer"><td>RPG Dreamer</td><td>GPT 5.6 Sol</td><td><strong>92.0</strong></td><td><strong>75.4</strong></td><td><strong>72.6</strong></td><td><strong>86.5</strong></td><td><strong>79.6</strong></td></tr>
+            </tbody>
+            <tbody>
+              <tr class="result-group"><th colspan="7" scope="rowgroup">Human evaluation</th></tr>
+              <tr><td>Claude Code</td><td>Mimo-V2.5</td><td>0.8</td><td>0.1</td><td>1.3</td><td>0.4</td><td>0.6</td></tr>
+              <tr><td>Codex</td><td>GPT 5.6 Sol</td><td>44.0</td><td>32.1</td><td>31.5</td><td>34.6</td><td>33.9</td></tr>
+              <tr class="is-rpgdreamer"><td>RPG Dreamer</td><td>GPT 5.6 Sol</td><td><strong>69.7</strong></td><td><strong>61.3</strong></td><td><strong>70.5</strong></td><td><strong>62.0</strong></td><td><strong>65.1</strong></td></tr>
+            </tbody>
+          </table>
         </div>
-
-        <section class="result-block" aria-labelledby="result-main-title">
-          <header class="result-block-head">
-            <div>
-              <span class="result-block-kicker">Main comparison</span>
-              <h3 class="result-block-title" id="result-main-title">Performance on RPG-Bench</h3>
-            </div>
-            <p class="result-block-note">The overall score is the arithmetic mean of the four evaluation dimensions. A dash denotes an unavailable result in the report.</p>
-          </header>
-          <div class="result-table-wrap" tabindex="0" role="region" aria-label="RPG-Bench method comparison table">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th scope="col">Harness</th>
-                  <th scope="col" class="is-text">Model</th>
-                  <th scope="col"><abbr title="Requirement fidelity">RF</abbr></th>
-                  <th scope="col"><abbr title="Content richness">CR</abbr></th>
-                  <th scope="col"><abbr title="Visual and interaction quality">VI</abbr></th>
-                  <th scope="col"><abbr title="Playability">PL</abbr></th>
-                  <th scope="col">Overall</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">Claude</th><td class="is-text">Mimo-V2.5</td><td>44.0</td><td>6.3</td><td>19.8</td><td>100.0</td><td>42.5</td></tr>
-                <tr><th scope="row">OpenGame</th><td class="is-text">Claude Opus 4.8</td><td>76.0</td><td>30.6</td><td>36.7</td><td>100.0</td><td>60.8</td></tr>
-                <tr><th scope="row">Qwen-code</th><td class="is-text">Qwen 3.8 Max</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
-                <tr><th scope="row">Kimi-code</th><td class="is-text">Kimi K3</td><td class="best-score">96.0</td><td>50.9</td><td>66.3</td><td>100.0</td><td>78.3</td></tr>
-                <tr><th scope="row">Codex</th><td class="is-text">GPT 5.6 Sol</td><td>88.0</td><td>54.5</td><td>51.0</td><td>100.0</td><td>73.4</td></tr>
-                <tr class="is-rpgdreamer"><th scope="row">RPGDreamer</th><td class="is-text">GPT 5.6 Sol</td><td>88.0</td><td class="best-score">71.4</td><td class="best-score">73.4</td><td class="best-score">100.0</td><td class="best-score">83.2</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="result-source"><a href="technical_report.pdf#page=9">Technical report · Table 1 ↗</a></div>
-        </section>
-
-        <section class="result-block" aria-labelledby="result-human-title">
-          <header class="result-block-head">
-            <div>
-              <span class="result-block-kicker">Human validation</span>
-              <h3 class="result-block-title" id="result-human-title">Automatic and human evaluation</h3>
-            </div>
-            <p class="result-block-note">Playability in the human evaluation averages gameplay/system completion and process/functional stability. Pearson’s <em>r</em> reports agreement.</p>
-          </header>
-          <div class="result-table-wrap" tabindex="0" role="region" aria-label="Automatic and human evaluation results table">
-            <table class="result-table is-wide">
-              <thead>
-                <tr>
-                  <th scope="col" rowspan="2">Method</th>
-                  <th scope="colgroup" colspan="2">RF</th>
-                  <th scope="colgroup" colspan="2">CR</th>
-                  <th scope="colgroup" colspan="2">VI</th>
-                  <th scope="colgroup" colspan="2">PL</th>
-                  <th scope="colgroup" colspan="2">Overall</th>
-                </tr>
-                <tr>
-                  <th scope="col">Auto</th><th scope="col">Human</th>
-                  <th scope="col">Auto</th><th scope="col">Human</th>
-                  <th scope="col">Auto</th><th scope="col">Human</th>
-                  <th scope="col">Auto</th><th scope="col">Human</th>
-                  <th scope="col">Auto</th><th scope="col">Human</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">Claude + Mimo-V2.5</th><td>44.0</td><td>0.8</td><td>6.3</td><td>0.1</td><td>19.7</td><td>1.3</td><td>76.7</td><td>0.4</td><td>36.7</td><td>0.7</td></tr>
-                <tr><th scope="row">Codex + GPT 5.6 Sol</th><td>88.0</td><td>44.0</td><td>54.5</td><td>32.1</td><td>51.0</td><td>31.5</td><td>100.0</td><td>34.6</td><td>73.4</td><td>35.7</td></tr>
-                <tr class="is-rpgdreamer"><th scope="row">RPGDreamer + GPT 5.6 Sol</th><td>88.0</td><td class="best-score">69.7</td><td>71.4</td><td class="best-score">61.3</td><td>73.4</td><td class="best-score">70.5</td><td>100.0</td><td class="best-score">62.0</td><td>83.2</td><td class="best-score">65.9</td></tr>
-                <tr class="correlation-row"><th scope="row">Pearson’s <em>r</em></th><td colspan="2">0.57</td><td colspan="2">0.88</td><td colspan="2">0.86</td><td colspan="2">0.38</td><td colspan="2" class="best-score">0.79</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="result-source"><a href="technical_report.pdf#page=10">Technical report · Table 2 ↗</a></div>
-        </section>
-
-        <section class="result-block" aria-labelledby="result-interface-title">
-          <header class="result-block-head">
-            <div>
-              <span class="result-block-kicker">Agent Interface validation</span>
-              <h3 class="result-block-title" id="result-interface-title">Intent reproduction</h3>
-            </div>
-          </header>
-          <div class="result-validation-grid">
-            <div class="result-table-wrap">
-              <table class="result-table" aria-label="Agent Interface intent reproduction table">
-                <thead><tr><th scope="col">Method</th><th scope="col">Success rate</th></tr></thead>
-                <tbody>
-                  <tr><th scope="row">Claude + Kimi K3</th><td>75%</td></tr>
-                  <tr><th scope="row">Codex + GPT 5.6 Sol</th><td class="best-score">100%</td></tr>
-                  <tr class="is-rpgdreamer"><th scope="row">RPGDreamer + GPT 5.6 Sol</th><td class="best-score">100%</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <aside class="result-validation-copy">
-              <strong>100%</strong>
-              <p>Percentage of human-achievable intents that the RPG Dreamer Gameplay Agent successfully completes from the same initial game state.</p>
-            </aside>
-          </div>
-          <div class="result-source"><a href="technical_report.pdf#page=11">Technical report · Table 4 ↗</a></div>
-        </section>
       </div>
     </div>
   </section>
