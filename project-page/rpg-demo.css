@@ -1006,14 +1006,8 @@ body.rpg-demo-fullscreen-fallback {
   backdrop-filter: none;
 }
 
-.rpg-handheld-player .rpg-demo-placeholder-content > small {
-  color: #a7bbc3;
-  font: 8px/1 var(--mono);
-  letter-spacing: 0.12em;
-}
-
 .rpg-handheld-player .rpg-demo-placeholder h3 {
-  margin-top: 15px;
+  margin-top: 0;
   font-family: "Jersey 10", var(--mono);
   font-weight: 400;
   font-synthesis: none;
@@ -1387,10 +1381,6 @@ body.rpg-demo-fullscreen-fallback {
   .rpg-handheld-player .rpg-demo-placeholder-content {
     width: calc(100% - 8px);
     padding: 7px 4px;
-  }
-
-  .rpg-handheld-player .rpg-demo-placeholder-content > small {
-    font-size: 5px;
   }
 
   .rpg-handheld-player .rpg-demo-placeholder h3 {
