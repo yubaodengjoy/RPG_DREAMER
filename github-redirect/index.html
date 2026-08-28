@@ -3,18 +3,44 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
-  <meta http-equiv="refresh" content="0; url=https://rpg-dreamer.pages.dev/">
   <link rel="canonical" href="https://rpg-dreamer.pages.dev/">
+  <link rel="icon" type="image/png" href="https://rpg-dreamer.pages.dev/logo.png">
   <title>RPG Dreamer</title>
+  <style>
+    html,
+    body,
+    iframe {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+    }
+
+    html,
+    body {
+      overflow: hidden;
+      background: #05070c;
+    }
+
+    iframe {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <iframe
+    id="rpg-dreamer-site"
+    title="RPG Dreamer"
+    src="https://rpg-dreamer.pages.dev/"
+    allow="autoplay; fullscreen"
+    allowfullscreen
+  ></iframe>
   <script>
+    const frame = document.getElementById('rpg-dreamer-site');
     const destination = new URL('https://rpg-dreamer.pages.dev/');
     destination.search = window.location.search;
     destination.hash = window.location.hash;
-    window.location.replace(destination);
+    if (window.location.search || window.location.hash) frame.src = destination.href;
   </script>
-</head>
-<body>
-  <p>Opening <a href="https://rpg-dreamer.pages.dev/">RPG Dreamer</a>…</p>
 </body>
 </html>
