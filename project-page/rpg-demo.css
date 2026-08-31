@@ -422,7 +422,7 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-demo-switcher::before {
-  content: "CARTRIDGE LIBRARY · 4 LIVE / 4 COMING SOON";
+  content: "CARTRIDGE LIBRARY · 5 LIVE / 4 COMING SOON";
   position: absolute;
   top: 11px;
   left: 16px;
@@ -1640,7 +1640,24 @@ body.rpg-demo-fullscreen-fallback {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: linear-gradient(115deg, rgba(255, 255, 255, 0.05), transparent 34% 72%, rgba(0, 0, 0, 0.2));
+}
+
+.rpg-demo-choice-cover[data-rpg-language]::before {
+  content: attr(data-rpg-language);
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 2;
+  padding: 4px 6px;
+  border: 1px solid rgba(183, 235, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(5, 13, 19, 0.82);
+  color: #c5efff;
+  font: 600 6px/1 var(--mono);
+  letter-spacing: 0.045em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
 }
 
 .rpg-demo-choice-caption {
