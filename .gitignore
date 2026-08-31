@@ -40,31 +40,8 @@
 /project-page/play-games/*
 !/project-page/play-games/rpg-embed-host.js
 
-# Four compiled games. Source and build-time files remain excluded.
-!/src-40/
-/src-40/*
-!/src-40/src/
-/src-40/src/*
-!/src-40/src/dist/
-!/src-40/src/dist/**
-
-!/src-41/
-/src-41/*
-!/src-41/src/
-/src-41/src/*
-!/src-41/src/dist/
-!/src-41/src/dist/**
-
-!/src-42/
-/src-42/*
-!/src-42/src/
-/src-42/src/*
-!/src-42/src/dist/
-!/src-42/src/dist/**
-
-!/src-43/
-/src-43/*
-!/src-43/src/
-/src-43/src/*
-!/src-43/src/dist/
-!/src-43/src/dist/**
+# Compiled games stay local for development and are deployed separately to R2.
+/src-40/
+/src-41/
+/src-42/
+/src-43/
