@@ -28,6 +28,21 @@
     );
   }
 
+  // The generated games call window.close() from their main-menu Exit button.
+  // Embedded frames cannot close the browser tab, so hand that action back to
+  // the cartridge host instead.
+  if (window.parent !== window && hostOrigin) {
+    const requestHostExit = () => post('exit');
+    try {
+      Object.defineProperty(window, 'close', {
+        configurable: true,
+        value: requestHostExit,
+      });
+    } catch {
+      window.close = requestHostExit;
+    }
+  }
+
   function postProgress(value) {
     const normalized = Math.max(lastProgress, Math.min(0.96, value));
     if (normalized - lastProgress < 0.01) return;

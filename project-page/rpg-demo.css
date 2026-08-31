@@ -998,7 +998,7 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-handheld-player .rpg-demo-placeholder-content {
-  width: min(610px, calc(100% - 34px));
+  width: min(680px, calc(100% - 34px));
   padding: 28px;
   border: 0;
   background: transparent;
@@ -1009,9 +1009,17 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-handheld-player .rpg-demo-placeholder h3 {
   margin-top: 0;
   font-family: "Jersey 10", var(--mono);
+  font-size: clamp(32px, 4vw, 48px);
   font-weight: 400;
   font-synthesis: none;
   letter-spacing: 0.02em;
+}
+
+.rpg-handheld-player .rpg-demo-placeholder p {
+  max-width: 620px;
+  margin-bottom: 26px;
+  font-size: 16px;
+  line-height: 1.55;
 }
 
 #demos .rpg-demo-actions button,
@@ -1023,10 +1031,10 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-demo-standby-tips {
-  width: min(430px, calc(100% - 20px));
+  width: min(520px, calc(100% - 20px));
   display: grid;
-  gap: 7px;
-  margin: -10px auto 18px;
+  gap: 9px;
+  margin: -8px auto 22px;
 }
 
 #demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-standby-tips {
@@ -1037,21 +1045,27 @@ body.rpg-demo-fullscreen-fallback {
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr);
   align-items: center;
-  gap: 9px;
-  padding: 7px 10px;
+  gap: 11px;
+  padding: 9px 12px;
   border: 1px solid rgba(167, 187, 195, 0.16);
   border-radius: 7px;
   background: rgba(4, 12, 18, 0.38);
   color: rgba(213, 226, 232, 0.78);
-  font: 500 9px/1.3 var(--mono);
+  font: 500 12px/1.35 var(--mono);
   letter-spacing: 0.025em;
   text-align: left;
 }
 
 .rpg-demo-standby-tip svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   color: #9edbf2;
+}
+
+.rpg-handheld-player .rpg-demo-load {
+  min-height: 50px;
+  padding-inline: 26px;
+  font-size: 18px;
 }
 
 .rpg-handheld-player .rpg-demo-progress {
@@ -1385,41 +1399,41 @@ body.rpg-demo-fullscreen-fallback {
 
   .rpg-handheld-player .rpg-demo-placeholder h3 {
     margin: 7px 0 4px;
-    font-size: 17px;
+    font-size: 21px;
   }
 
   .rpg-handheld-player .rpg-demo-placeholder p {
-    max-width: 210px;
-    margin-bottom: 7px;
-    font-size: 7px;
-    line-height: 1.25;
+    max-width: 250px;
+    margin-bottom: 9px;
+    font-size: 9px;
+    line-height: 1.3;
     -webkit-line-clamp: 2;
   }
 
   .rpg-demo-standby-tips {
-    width: min(250px, calc(100% - 8px));
-    gap: 3px;
-    margin: 0 auto 5px;
+    width: min(290px, calc(100% - 8px));
+    gap: 4px;
+    margin: 0 auto 7px;
   }
 
   .rpg-demo-standby-tip {
-    grid-template-columns: 10px minmax(0, 1fr);
-    gap: 4px;
-    padding: 3px 5px;
+    grid-template-columns: 12px minmax(0, 1fr);
+    gap: 5px;
+    padding: 4px 6px;
     border-radius: 4px;
-    font-size: 5px;
-    line-height: 1.18;
+    font-size: 7px;
+    line-height: 1.22;
   }
 
   .rpg-demo-standby-tip svg {
-    width: 9px;
-    height: 9px;
+    width: 11px;
+    height: 11px;
   }
 
   .rpg-handheld-player .rpg-demo-load {
-    min-height: 27px;
-    padding-inline: 9px;
-    font-size: 8px;
+    min-height: 31px;
+    padding-inline: 12px;
+    font-size: 11px;
   }
 
   .rpg-handheld-player .rpg-demo-progress {

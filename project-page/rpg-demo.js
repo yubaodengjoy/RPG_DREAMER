@@ -20,35 +20,35 @@
       meta: 'Long-horizon generated RPG · Chinese',
       src: `${gameAssetBase}src-40/src/dist/index.html`,
       poster: `${gameAssetBase}src-40/src/dist/cover.webp`,
-      copy: 'Follow Wu Song into a final confrontation shaped by duty, survival, and the legend of the last tiger.',
+      copy: 'Follow Wu Song beyond the familiar legend and into a final hunt where every trail conceals a harder choice. Explore a dangerous mountain world shaped by duty, survival, and the mystery of the last tiger.',
     },
     'magic-brush': {
       title: '神笔：移命录',
       meta: 'Long-horizon generated RPG · Chinese',
       src: `${gameAssetBase}src-41/src/dist/index.html`,
       poster: `${gameAssetBase}src-41/src/dist/cover.webp`,
-      copy: 'A four-chapter journey about Ma Liang and a magic brush whose miracles transfer their cost to others.',
+      copy: 'Join Ma Liang on a four-chapter journey through a world transformed by the power of a magic brush. Every miracle transfers its hidden cost to someone else, turning each act of creation into a difficult moral choice.',
     },
     'world-42': {
       title: 'Pinocchio: The City That Swallows Truth',
       meta: 'Long-horizon generated RPG · English',
       src: `${gameAssetBase}src-42/src/dist/index.html`,
       poster: `${gameAssetBase}src-42/src/dist/cover.webp`,
-      copy: 'Enter a city where truth is consumed, identities are rewritten, and every choice tests what it means to remain real.',
+      copy: 'Enter a city that consumes truth and rewrites the identities of everyone who lives within its walls. Investigate its shifting districts, confront manufactured memories, and decide what it means to remain real.',
     },
     'vanishing-emperor': {
       title: 'The Vanishing Emperor',
       meta: 'Long-horizon generated RPG · English',
       src: `${gameAssetBase}src-43/src/dist/index.html`,
       poster: `${gameAssetBase}src-43/src/dist/cover.webp`,
-      copy: 'Investigate Valdris after its emperor vanishes, leaving an empty crown, a disputed voice, and a kingdom built on uncertain truth.',
+      copy: 'Investigate the kingdom of Valdris after its emperor vanishes without explanation, leaving an empty crown and a disputed voice. Follow competing accounts, uncover concealed loyalties, and determine which truth the kingdom will inherit.',
     },
     'journey-west': {
       title: '西游·女儿国情劫',
       meta: 'Long-horizon generated RPG · Chinese',
       src: `${gameAssetBase}src-44/src/dist/index.html`,
       poster: `${gameAssetBase}src-44/src/dist/assets/main-menu-TS6JUrUr.png`,
-      copy: '陪孙悟空护送唐僧走过女儿国与黑水河，在取经之路上面对凡心、执念与离别。',
+      copy: '陪孙悟空护送唐僧走过女儿国、西行古道与黑水河，在妖劫与人心之间继续取经之路。探索多处场景、完成支线委托，并通过关键选择面对凡心、执念、责任与离别。',
     },
   };
   const standbyPoster = '../rpg-dreamer-top-hero-poster.webp';
@@ -179,7 +179,7 @@
     }
 
     placeholderTitle.textContent = game.title;
-    placeholderCopy.textContent = `${game.copy} Insert this cartridge to enter the generated world.`;
+    placeholderCopy.textContent = game.copy;
     progressTitle.textContent = `Booting ${game.title}`;
     setProgress(state.progress, state.progressLabel);
 
@@ -384,6 +384,33 @@
     syncActiveUi();
   }
 
+  function resetGameFrame(id) {
+    const state = states[id];
+    if (!state) return;
+    window.clearTimeout(state.timer);
+    window.clearTimeout(state.readyTimer);
+    state.frame?.remove();
+    state.frame = null;
+    state.progress = 0;
+    state.progressLabel = 'Reading world cartridge…';
+    state.ready = false;
+    state.readyPending = false;
+    state.status = 'Standby';
+    state.timer = 0;
+    state.readyTimer = 0;
+    state.startedAt = 0;
+  }
+
+  async function returnToLibrary(id) {
+    if (id !== activeId || cartridgeMoving) return;
+    if (document.fullscreenElement || fallbackFullscreen) {
+      await exitGameFullscreen();
+    }
+    await ejectCartridge();
+    resetGameFrame(id);
+    syncActiveUi();
+  }
+
   function loadGame() {
     if (!hasCartridge || poweredOn || cartridgeMoving) return;
     const game = games[activeId];
@@ -552,6 +579,11 @@
     const id = Object.keys(states).find((gameId) => event.source === states[gameId].frame?.contentWindow);
     if (!id || event.origin !== new URL(games[id].src).origin || event.data?.source !== 'rpg-dreamer-game') return;
     const state = states[id];
+
+    if (event.data.type === 'exit') {
+      void returnToLibrary(id);
+      return;
+    }
 
     if (event.data.type === 'loading') {
       if (state.readyPending) return;
