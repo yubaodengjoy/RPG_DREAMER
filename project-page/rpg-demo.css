@@ -2428,6 +2428,22 @@ body.rpg-demo-fullscreen-fallback {
   font: 500 8px/1.35 var(--mono);
 }
 
+/* Keep language and cartridge-state badges on one exact visual baseline. */
+#demos .rpg-demo-choice-cover[data-rpg-language]::before,
+#demos .rpg-demo-choice.is-active::after,
+#demos .rpg-demo-choice.is-coming::after {
+  box-sizing: border-box;
+  height: 16px;
+  min-height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border-width: 1px;
+  font: 600 6px/1 var(--mono);
+  letter-spacing: 0.045em;
+}
+
 @media (min-width: 721px) {
   #demos .rpg-handheld-player .rpg-guide-action {
     right: auto;
