@@ -422,7 +422,7 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-demo-switcher::before {
-  content: "CARTRIDGE LIBRARY · 5 LIVE / 4 COMING SOON";
+  content: "CARTRIDGE LIBRARY · 1 LIVE / 8 COMING SOON";
   position: absolute;
   top: 11px;
   left: 16px;

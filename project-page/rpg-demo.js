@@ -88,7 +88,9 @@
   const power = root.querySelector('[data-rpg-power]');
   const powerOffButton = root.querySelector('[data-rpg-power-off]');
   const powerOnButton = root.querySelector('[data-rpg-power-on]');
-  const choices = [...root.querySelectorAll('[data-rpg-game]')];
+  // Disabled cartridges remain listed and stored on R2, but are excluded from
+  // all selection and launch behavior until they are re-enabled.
+  const choices = [...root.querySelectorAll('[data-rpg-game]:not(:disabled)')];
   choices.forEach((choice) => {
     const game = games[choice.dataset.rpgGame];
     const cover = choice.querySelector('.rpg-demo-choice-cover');
