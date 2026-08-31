@@ -1,4 +1,4 @@
-// RPG Dreamer — four independently cached, explicitly loaded playable worlds.
+// RPG Dreamer — five independently cached, explicitly loaded playable worlds.
 (() => {
   const root = document.getElementById('rpg-play-demo');
   if (!root) return;
@@ -42,6 +42,13 @@
       src: `${gameAssetBase}src-43/src/dist/index.html`,
       poster: `${gameAssetBase}src-43/src/dist/cover.webp`,
       copy: 'Investigate Valdris after its emperor vanishes, leaving an empty crown, a disputed voice, and a kingdom built on uncertain truth.',
+    },
+    'journey-west': {
+      title: '西游·女儿国情劫',
+      meta: 'Long-horizon generated RPG · Chinese',
+      src: `${gameAssetBase}src-44/src/dist/index.html`,
+      poster: `${gameAssetBase}src-44/src/dist/assets/main-menu-TS6JUrUr.png`,
+      copy: '陪孙悟空护送唐僧走过女儿国与黑水河，在取经之路上面对凡心、执念与离别。',
     },
   };
   const standbyPoster = '../rpg-dreamer-top-hero-poster.webp';
