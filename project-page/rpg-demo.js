@@ -46,7 +46,7 @@
     'journey-west': {
       title: '西游·女儿国情劫',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-44/src/dist/index.html`,
+      src: `${gameAssetBase}src-44/src/dist/index.html?v=20260831-layout-01`,
       poster: `${gameAssetBase}src-44/src/dist/assets/main-menu-TS6JUrUr.png`,
       copy: '陪孙悟空护送唐僧走过女儿国、西行古道与黑水河，在妖劫与人心之间继续取经之路。探索多处场景、完成支线委托，并通过关键选择面对凡心、执念、责任与离别。',
     },
@@ -77,6 +77,9 @@
   const placeholderTitle = root.querySelector('[data-rpg-placeholder-title]');
   const placeholderCopy = root.querySelector('[data-rpg-placeholder-copy]');
   const loadButton = root.querySelector('[data-rpg-load]');
+  const openControlsButton = root.querySelector('[data-rpg-open-controls]');
+  const closeControlsButton = root.querySelector('[data-rpg-close-controls]');
+  const controlsPage = root.querySelector('[data-rpg-controls-page]');
   const enterFullscreen = root.querySelector('[data-rpg-enter-fullscreen]');
   const exitFullscreen = root.querySelector('[data-rpg-exit-fullscreen]');
   const compilerLines = [...root.querySelectorAll('.rpg-compiler-log span')];
@@ -98,6 +101,7 @@
   let poweredOn = false;
   let cartridgeMoving = false;
   let fallbackFullscreen = false;
+  let controlsOpen = false;
 
   function activeState() {
     return states[activeId];
@@ -122,6 +126,30 @@
       { source: 'rpg-dreamer-host', type },
       new URL(games[id].src).origin,
     );
+  }
+
+  function openControlsPage() {
+    if (!controlsPage || controlsOpen) return;
+    controlsOpen = true;
+    controlsPage.hidden = false;
+    root.classList.add('is-controls-open');
+    openControlsButton?.setAttribute('aria-expanded', 'true');
+    if (hasCartridge && poweredOn && activeState().ready) sendToGame(activeId, 'pause');
+    enterFullscreen.disabled = true;
+    window.requestAnimationFrame(() => closeControlsButton?.focus());
+  }
+
+  function closeControlsPage({ restoreFocus = true, resume = true } = {}) {
+    if (!controlsPage || !controlsOpen) return;
+    controlsOpen = false;
+    controlsPage.hidden = true;
+    root.classList.remove('is-controls-open');
+    openControlsButton?.setAttribute('aria-expanded', 'false');
+    enterFullscreen.disabled = !hasCartridge || !poweredOn || !activeState().ready;
+    if (resume && hasCartridge && poweredOn && activeState().ready && !document.hidden) {
+      sendToGame(activeId, 'resume');
+    }
+    if (restoreFocus) openControlsButton?.focus();
   }
 
   function syncChoiceState() {
@@ -192,13 +220,13 @@
       // which can otherwise stall Phaser's boot scene before it becomes ready.
       item.frame.style.visibility = selected ? 'visible' : 'hidden';
       item.frame.setAttribute('aria-hidden', String(!selected));
-      sendToGame(id, selected && !document.hidden ? 'resume' : 'pause');
+      sendToGame(id, selected && !document.hidden && !controlsOpen ? 'resume' : 'pause');
       if (selected) window.requestAnimationFrame(() => sendToGame(id, 'resize'));
     });
 
     placeholder.hidden = poweredOn && Boolean(state.frame);
     progress.hidden = !poweredOn || !state.frame || state.ready;
-    enterFullscreen.disabled = !poweredOn || !state.ready;
+    enterFullscreen.disabled = controlsOpen || !poweredOn || !state.ready;
     loadButton.disabled = !hasCartridge || poweredOn;
     syncChoiceState();
   }
@@ -372,6 +400,7 @@
 
   async function ejectCartridge() {
     if (!hasCartridge || cartridgeMoving) return;
+    closeControlsPage({ restoreFocus: false, resume: false });
     cartridgeMoving = true;
     poweredOn = false;
     sendToGame(activeId, 'pause');
@@ -413,6 +442,7 @@
 
   function loadGame() {
     if (!hasCartridge || poweredOn || cartridgeMoving) return;
+    closeControlsPage({ restoreFocus: false, resume: false });
     const game = games[activeId];
     const state = activeState();
     poweredOn = true;
@@ -568,11 +598,21 @@
   powerOnButton?.addEventListener('click', loadGame);
   powerOffButton?.addEventListener('click', () => { void ejectCartridge(); });
   insertedCartridge?.addEventListener('click', () => { void ejectCartridge(); });
+  openControlsButton?.addEventListener('click', () => {
+    if (controlsOpen) closeControlsPage();
+    else openControlsPage();
+  });
+  closeControlsButton?.addEventListener('click', () => closeControlsPage());
   enterFullscreen.addEventListener('click', requestGameFullscreen);
   exitFullscreen.addEventListener('click', exitGameFullscreen);
   document.addEventListener('fullscreenchange', syncFullscreenUi);
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && fallbackFullscreen) void exitGameFullscreen();
+    if (event.key !== 'Escape') return;
+    if (controlsOpen) {
+      closeControlsPage();
+      return;
+    }
+    if (fallbackFullscreen) void exitGameFullscreen();
   });
 
   window.addEventListener('message', (event) => {
@@ -612,7 +652,7 @@
       const visible = entries.some((entry) => entry.isIntersecting);
       Object.keys(states).forEach((id) => {
         if (!states[id].ready) return;
-        sendToGame(id, hasCartridge && poweredOn && id === activeId && (visible || document.fullscreenElement === root) ? 'resume' : 'pause');
+        sendToGame(id, hasCartridge && poweredOn && !controlsOpen && id === activeId && (visible || document.fullscreenElement === root) ? 'resume' : 'pause');
       });
     }, { threshold: 0.05 });
     observer.observe(root);
@@ -621,7 +661,7 @@
   document.addEventListener('visibilitychange', () => {
     Object.keys(states).forEach((id) => {
       if (!states[id].ready) return;
-      sendToGame(id, hasCartridge && poweredOn && !document.hidden && id === activeId ? 'resume' : 'pause');
+      sendToGame(id, hasCartridge && poweredOn && !controlsOpen && !document.hidden && id === activeId ? 'resume' : 'pause');
     });
   });
 

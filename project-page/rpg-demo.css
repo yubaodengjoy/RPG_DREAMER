@@ -1394,46 +1394,46 @@ body.rpg-demo-fullscreen-fallback {
 
   .rpg-handheld-player .rpg-demo-placeholder-content {
     width: calc(100% - 8px);
-    padding: 7px 4px;
+    padding: 3px 4px;
   }
 
   .rpg-handheld-player .rpg-demo-placeholder h3 {
-    margin: 7px 0 4px;
-    font-size: 21px;
+    margin: 3px 0 2px;
+    font-size: 19px;
   }
 
   .rpg-handheld-player .rpg-demo-placeholder p {
     max-width: 250px;
-    margin-bottom: 9px;
-    font-size: 9px;
-    line-height: 1.3;
+    margin-bottom: 5px;
+    font-size: 8.5px;
+    line-height: 1.2;
     -webkit-line-clamp: 2;
   }
 
   .rpg-demo-standby-tips {
     width: min(290px, calc(100% - 8px));
-    gap: 4px;
-    margin: 0 auto 7px;
+    gap: 3px;
+    margin: 0 auto 5px;
   }
 
   .rpg-demo-standby-tip {
-    grid-template-columns: 12px minmax(0, 1fr);
-    gap: 5px;
-    padding: 4px 6px;
+    grid-template-columns: 11px minmax(0, 1fr);
+    gap: 4px;
+    padding: 3px 5px;
     border-radius: 4px;
-    font-size: 7px;
-    line-height: 1.22;
+    font-size: 6.5px;
+    line-height: 1.15;
   }
 
   .rpg-demo-standby-tip svg {
-    width: 11px;
-    height: 11px;
+    width: 10px;
+    height: 10px;
   }
 
   .rpg-handheld-player .rpg-demo-load {
-    min-height: 31px;
-    padding-inline: 12px;
-    font-size: 11px;
+    min-height: 27px;
+    padding-inline: 10px;
+    font-size: 10px;
   }
 
   .rpg-handheld-player .rpg-demo-progress {
@@ -2231,5 +2231,309 @@ body.rpg-demo-fullscreen-fallback {
     margin-top: 0;
     padding-bottom: 12px;
     background: transparent;
+  }
+}
+
+/* ---------- How to Play subpage ---------- */
+
+#demos .rpg-handheld-player .rpg-guide-action {
+  right: auto;
+  left: 28px;
+}
+
+#demos .rpg-controls-page {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 34px 42px;
+  overflow: auto;
+  background:
+    linear-gradient(150deg, rgba(3, 12, 17, 0.97), rgba(7, 20, 28, 0.97)),
+    var(--rpg-demo-poster, url("../rpg-dreamer-top-hero-poster.webp")) center / cover;
+  color: #d8e5e9;
+  text-align: center;
+}
+
+#demos .rpg-controls-page[hidden] {
+  display: none;
+}
+
+#demos .rpg-controls-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(128, 215, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128, 215, 255, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 90%);
+}
+
+#demos .rpg-controls-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 2;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid rgba(128, 215, 255, 0.26);
+  border-radius: 7px;
+  background: rgba(5, 14, 20, 0.78);
+  color: #c7eaf5;
+  cursor: pointer;
+  font: 600 9px/1 var(--mono);
+}
+
+#demos .rpg-controls-close:hover {
+  border-color: rgba(128, 215, 255, 0.7);
+  color: #fff;
+}
+
+#demos .rpg-controls-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+#demos .rpg-controls-panel {
+  position: relative;
+  z-index: 1;
+  width: min(680px, 100%);
+}
+
+#demos .rpg-controls-panel > small {
+  color: #79cce9;
+  font: 600 9px/1 var(--mono);
+  letter-spacing: 0.16em;
+}
+
+#demos .rpg-controls-panel > h3 {
+  margin: 9px 0 5px;
+  color: #f5f8f7;
+  font: 400 clamp(32px, 4vw, 46px)/0.95 "Jersey 10", var(--mono);
+  letter-spacing: 0.04em;
+}
+
+#demos .rpg-controls-panel > p {
+  margin: 0 auto 17px;
+  color: #9fb2ba;
+  font: 500 11px/1.35 var(--mono);
+}
+
+#demos .rpg-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#demos .rpg-control-card {
+  position: relative;
+  min-width: 0;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 13px 14px;
+  border: 1px solid rgba(128, 215, 255, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(155deg, rgba(20, 43, 55, 0.84), rgba(7, 18, 26, 0.9));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.035), 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+#demos .rpg-control-number {
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  color: rgba(128, 215, 255, 0.48);
+  font: 600 8px/1 var(--mono);
+  letter-spacing: 0.08em;
+}
+
+#demos .rpg-control-keys {
+  width: 130px;
+  min-height: 61px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+#demos .rpg-control-keys > span {
+  flex-basis: 100%;
+  color: #758b95;
+  font: 600 6px/1 var(--mono);
+  text-transform: uppercase;
+}
+
+#demos .rpg-control-keys kbd {
+  min-width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  padding: 0 5px;
+  border: 1px solid rgba(180, 225, 240, 0.42);
+  border-bottom-width: 3px;
+  border-radius: 5px;
+  background: #142935;
+  color: #e7f5f8;
+  font: 600 10px/1 var(--mono);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.24);
+}
+
+#demos .rpg-control-keys-wide {
+  align-items: center;
+}
+
+#demos .rpg-control-keys-wide kbd {
+  min-width: 105px;
+}
+
+#demos .rpg-control-mouse {
+  min-height: 61px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #d8f3fb;
+}
+
+#demos .rpg-control-mouse svg {
+  width: 37px;
+  height: 47px;
+}
+
+#demos .rpg-control-mouse span {
+  color: #fff1bd;
+  font: 600 9px/1 var(--mono);
+  letter-spacing: 0.08em;
+}
+
+#demos .rpg-control-card h4 {
+  margin: 12px 0 5px;
+  color: #f7faf9;
+  font: 400 24px/1 "Jersey 10", var(--mono);
+  letter-spacing: 0.08em;
+}
+
+#demos .rpg-control-card p {
+  margin: 0;
+  color: #93a8b1;
+  font: 500 8px/1.35 var(--mono);
+}
+
+@media (min-width: 721px) {
+  #demos .rpg-handheld-player .rpg-guide-action {
+    right: auto;
+    left: 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  #demos .rpg-handheld-player .rpg-guide-action {
+    right: auto;
+    left: 12px;
+  }
+
+  #demos .rpg-controls-page {
+    padding: 14px 8px 4px;
+    overflow: hidden;
+  }
+
+  #demos .rpg-controls-close {
+    top: 5px;
+    right: 6px;
+    min-height: 20px;
+    gap: 3px;
+    padding-inline: 5px;
+    border-radius: 4px;
+    font-size: 5px;
+  }
+
+  #demos .rpg-controls-close svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  #demos .rpg-controls-panel > small {
+    font-size: 4px;
+  }
+
+  #demos .rpg-controls-panel > h3 {
+    margin: 3px 0 2px;
+    font-size: 18px;
+  }
+
+  #demos .rpg-controls-panel > p {
+    margin-bottom: 5px;
+    font-size: 5px;
+  }
+
+  #demos .rpg-controls-grid {
+    gap: 4px;
+  }
+
+  #demos .rpg-control-card {
+    min-height: 98px;
+    padding: 8px 4px 5px;
+    border-radius: 5px;
+  }
+
+  #demos .rpg-control-number {
+    top: 4px;
+    left: 5px;
+    font-size: 4px;
+  }
+
+  #demos .rpg-control-keys {
+    width: 72px;
+    min-height: 38px;
+    gap: 2px;
+  }
+
+  #demos .rpg-control-keys kbd {
+    min-width: 15px;
+    height: 15px;
+    padding: 0 2px;
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    font-size: 5px;
+  }
+
+  #demos .rpg-control-keys > span {
+    font-size: 3px;
+  }
+
+  #demos .rpg-control-keys-wide kbd {
+    min-width: 62px;
+  }
+
+  #demos .rpg-control-mouse {
+    min-height: 38px;
+    gap: 4px;
+  }
+
+  #demos .rpg-control-mouse svg {
+    width: 22px;
+    height: 30px;
+  }
+
+  #demos .rpg-control-mouse span {
+    font-size: 5px;
+  }
+
+  #demos .rpg-control-card h4 {
+    margin: 5px 0 2px;
+    font-size: 12px;
+  }
+
+  #demos .rpg-control-card p {
+    display: none;
   }
 }

@@ -1464,7 +1464,7 @@ body.hero-sequence-revealed .hero-content::after {
 
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
-<link href="project-page/rpg-demo.css?v=20260831-02" rel="stylesheet">
+<link href="project-page/rpg-demo.css?v=20260831-04" rel="stylesheet">
 <meta name="build" content="20260722-41">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
@@ -1569,6 +1569,12 @@ body.hero-sequence-revealed .hero-content::after {
               <span data-rpg-cartridge-label>NO CARTRIDGE</span>
             </button>
             <div class="rpg-handheld-body">
+              <div class="rpg-demo-actions rpg-guide-action">
+                <button type="button" data-rpg-open-controls aria-expanded="false" aria-controls="rpg-controls-page">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v6M5 8h6M15.5 7.5h.01M18.5 10.5h.01M7 15h3l2 3 2-3h3a4 4 0 0 0 3.8-5.2l-1-3A4 4 0 0 0 16 4H8a4 4 0 0 0-3.8 2.8l-1 3A4 4 0 0 0 7 15Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Controls
+                </button>
+              </div>
               <div class="rpg-demo-actions">
                 <button type="button" data-rpg-enter-fullscreen disabled aria-label="Open game in fullscreen">
                   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1594,6 +1600,10 @@ body.hero-sequence-revealed .hero-content::after {
                       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                       <span>Use the Fullscreen button to enter or exit fullscreen.</span>
                     </div>
+                    <div class="rpg-demo-standby-tip rpg-demo-controls-tip">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v6M5 8h6M15.5 7.5h.01M18.5 10.5h.01M7 15h3l2 3 2-3h3a4 4 0 0 0 3.8-5.2l-1-3A4 4 0 0 0 16 4H8a4 4 0 0 0-3.8 2.8l-1 3A4 4 0 0 0 7 15Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      <span>Open Controls for movement, interaction, and mouse controls.</span>
+                    </div>
                   </div>
                   <button class="rpg-demo-load" type="button" data-rpg-load disabled>
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 7 8 5-8 5V7Z" fill="currentColor"/></svg>
@@ -1613,6 +1623,44 @@ body.hero-sequence-revealed .hero-content::after {
                   </div>
                   <div class="rpg-demo-progress-track" aria-hidden="true"><span data-rpg-progress-bar></span></div>
                   <span class="rpg-compiler-status" data-rpg-progress-label>Reading world cartridge…</span>
+                </div>
+                <div class="rpg-controls-page" id="rpg-controls-page" data-rpg-controls-page role="dialog" aria-modal="true" aria-labelledby="rpg-controls-title" hidden>
+                  <button class="rpg-controls-close" type="button" data-rpg-close-controls aria-label="Close Controls">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    Back
+                  </button>
+                  <div class="rpg-controls-panel">
+                    <small>PLAYER GUIDE · CORE CONTROLS</small>
+                    <h3 id="rpg-controls-title">CONTROLS</h3>
+                    <p>Use these three controls to explore every generated world.</p>
+                    <div class="rpg-controls-grid">
+                      <article class="rpg-control-card">
+                        <span class="rpg-control-number">01</span>
+                        <div class="rpg-control-keys" aria-hidden="true">
+                          <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+                          <span>or</span>
+                          <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd>
+                        </div>
+                        <h4>MOVE</h4>
+                        <p>Move your character through the world.</p>
+                      </article>
+                      <article class="rpg-control-card">
+                        <span class="rpg-control-number">02</span>
+                        <div class="rpg-control-keys rpg-control-keys-wide" aria-hidden="true"><kbd>SPACE</kbd></div>
+                        <h4>INTERACT</h4>
+                        <p>Talk, inspect objects, and continue dialogue.</p>
+                      </article>
+                      <article class="rpg-control-card">
+                        <span class="rpg-control-number">03</span>
+                        <div class="rpg-control-mouse" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 0 0-6 6v6a6 6 0 0 0 12 0V9a6 6 0 0 0-6-6Zm0 0v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M10 7h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                          <span>CLICK</span>
+                        </div>
+                        <h4>SELECT</h4>
+                        <p>Choose menus, dialogue options, and actions.</p>
+                      </article>
+                    </div>
+                  </div>
                 </div>
               </div>
               <span class="rpg-handheld-buttons" aria-hidden="true"></span>
@@ -1784,7 +1832,7 @@ body.hero-sequence-revealed .hero-content::after {
 
 </main>
 
-<script src="project-page/rpg-demo.js?v=20260831-03"></script>
+<script src="project-page/rpg-demo.js?v=20260831-04"></script>
 <script>
 (() => {
   const loader = document.querySelector('[data-page-loader]');
