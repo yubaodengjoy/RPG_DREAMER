@@ -1644,11 +1644,10 @@ body.rpg-demo-fullscreen-fallback {
   background: linear-gradient(115deg, rgba(255, 255, 255, 0.05), transparent 34% 72%, rgba(0, 0, 0, 0.2));
 }
 
-.rpg-demo-choice-cover[data-rpg-language]::before {
-  content: attr(data-rpg-language);
+.rpg-language-badge {
   position: absolute;
-  top: 5px;
-  left: 5px;
+  top: 8px;
+  left: 8px;
   z-index: 2;
   padding: 4px 6px;
   border: 1px solid rgba(183, 235, 255, 0.3);
@@ -2429,7 +2428,7 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 /* Keep language and cartridge-state badges on one exact visual baseline. */
-#demos .rpg-demo-choice-cover[data-rpg-language]::before,
+#demos .rpg-language-badge,
 #demos .rpg-demo-choice.is-active::after,
 #demos .rpg-demo-choice.is-coming::after {
   box-sizing: border-box;
