@@ -3,35 +3,44 @@
   const root = document.getElementById('rpg-play-demo');
   if (!root) return;
 
-  const r2Base = 'https://pub-f92b6274842f4c76bae0e87541458375.r2.dev/rpg-dreamer/';
+  const hostname = window.location.hostname;
+  const isLocalHost = hostname === 'localhost'
+    || hostname === '127.0.0.1'
+    || hostname === '::1'
+    || /^10\./.test(hostname)
+    || /^192\.168\./.test(hostname)
+    || /^172\.(1[6-9]|2\d|3[01])\./.test(hostname);
+  const gameAssetBase = isLocalHost
+    ? new URL('./', document.baseURI).href
+    : 'https://pub-f92b6274842f4c76bae0e87541458375.r2.dev/rpg-dreamer/';
 
   const games = {
     'world-40': {
       title: '武松·最后一虎',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${r2Base}src-40/src/dist/index.html`,
-      poster: `${r2Base}src-40/src/dist/cover.webp`,
+      src: `${gameAssetBase}src-40/src/dist/index.html`,
+      poster: `${gameAssetBase}src-40/src/dist/cover.webp`,
       copy: 'Follow Wu Song into a final confrontation shaped by duty, survival, and the legend of the last tiger.',
     },
     'magic-brush': {
       title: '神笔：移命录',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${r2Base}src-41/src/dist/index.html`,
-      poster: `${r2Base}src-41/src/dist/cover.webp`,
+      src: `${gameAssetBase}src-41/src/dist/index.html`,
+      poster: `${gameAssetBase}src-41/src/dist/cover.webp`,
       copy: 'A four-chapter journey about Ma Liang and a magic brush whose miracles transfer their cost to others.',
     },
     'world-42': {
       title: 'Pinocchio: The City That Swallows Truth',
       meta: 'Long-horizon generated RPG · English',
-      src: `${r2Base}src-42/src/dist/index.html`,
-      poster: `${r2Base}src-42/src/dist/cover.webp`,
+      src: `${gameAssetBase}src-42/src/dist/index.html`,
+      poster: `${gameAssetBase}src-42/src/dist/cover.webp`,
       copy: 'Enter a city where truth is consumed, identities are rewritten, and every choice tests what it means to remain real.',
     },
     'vanishing-emperor': {
       title: 'The Vanishing Emperor',
       meta: 'Long-horizon generated RPG · English',
-      src: `${r2Base}src-43/src/dist/index.html`,
-      poster: `${r2Base}src-43/src/dist/cover.webp`,
+      src: `${gameAssetBase}src-43/src/dist/index.html`,
+      poster: `${gameAssetBase}src-43/src/dist/cover.webp`,
       copy: 'Investigate Valdris after its emperor vanishes, leaving an empty crown, a disputed voice, and a kingdom built on uncertain truth.',
     },
   };
@@ -70,6 +79,11 @@
   const powerOffButton = root.querySelector('[data-rpg-power-off]');
   const powerOnButton = root.querySelector('[data-rpg-power-on]');
   const choices = [...root.querySelectorAll('[data-rpg-game]')];
+  choices.forEach((choice) => {
+    const game = games[choice.dataset.rpgGame];
+    const cover = choice.querySelector('.rpg-demo-choice-cover');
+    if (game && cover) cover.style.setProperty('--rpg-card-cover', `url("${game.poster}")`);
+  });
   const cartridgeStrip = root.querySelector('.rpg-demo-switcher');
   const cartridgeScrollButtons = [...root.querySelectorAll('[data-rpg-scroll]')];
   let activeId = choices[0]?.dataset.rpgGame || Object.keys(games)[0];
