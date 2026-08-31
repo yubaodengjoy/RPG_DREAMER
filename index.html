@@ -1492,7 +1492,7 @@ body.hero-sequence-revealed .hero-content::after {
   </nav>
 
   <section class="hero" id="top">
-    <video class="hero-image hero-intro-video" data-hero-intro muted playsinline preload="auto" poster="top-video-intro-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+    <video class="hero-image hero-intro-video" data-hero-intro muted playsinline preload="auto" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
       <source src="top_video_1.mp4" type="video/mp4">
     </video>
     <video class="hero-image hero-loop-video" data-hero-loop muted loop playsinline preload="auto" poster="rpg-dreamer-top-hero-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
@@ -1807,9 +1807,7 @@ body.hero-sequence-revealed .hero-content::after {
     [...document.querySelectorAll('[data-hero-intro], [data-hero-loop]')].map(waitForVideo),
   );
   const resourcesReady = Promise.all([waitForWindow, waitForFonts, waitForHeroMedia]);
-  const safetyTimeout = new Promise((resolve) => window.setTimeout(resolve, 20000));
-
-  Promise.race([resourcesReady, safetyTimeout]).then(() => {
+  resourcesReady.then(() => {
     const remaining = Math.max(0, 700 - (performance.now() - startedAt));
     window.setTimeout(() => {
       document.body.classList.remove('is-page-loading');
@@ -1871,7 +1869,6 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   let phase = "preloading";
   let loaderComplete = window.__rpgDreamerLoaderComplete === true;
   let announced = false;
-  let fallbackTimer = 0;
 
   videos.forEach((video) => {
     video.muted = true;
@@ -1942,7 +1939,6 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
     if (!loaderComplete || phase !== "preloading") return;
     if (!force && !hasUsefulBuffer(intro)) return;
     phase = "intro";
-    window.clearTimeout(fallbackTimer);
     if (heroVisible && !document.hidden) {
       intro.play().catch(startLoop);
     }
@@ -1992,9 +1988,6 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   window.addEventListener("pagehide", () => videos.forEach((video) => video.pause()));
   window.addEventListener("pageshow", playActiveIfVisible);
 
-  // Do not leave a slow connection on a blank poster forever. Both requests
-  // continue in parallel even if the intro is allowed to begin early.
-  fallbackTimer = window.setTimeout(() => startIntro(true), 3000);
   videos.forEach((video) => {
     if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
   });

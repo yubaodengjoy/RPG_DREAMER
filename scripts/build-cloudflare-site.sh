@@ -14,7 +14,6 @@ cp \
   "${repo_root}/rpg-bench-overview.png" \
   "${repo_root}/teaser.png" \
   "${repo_root}/rpg-dreamer-top-hero-poster.webp" \
-  "${repo_root}/top-video-intro-poster.webp" \
   "${repo_root}/top_video_1.mp4" \
   "${repo_root}/top_video_2.mp4" \
   "${site_dir}/"
