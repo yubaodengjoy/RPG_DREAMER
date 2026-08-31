@@ -19,7 +19,7 @@ cp \
   "${repo_root}/top_video_2.mp4" \
   "${site_dir}/"
 
-cp -a "${repo_root}/fonts" "${repo_root}/Author_logo" "${site_dir}/"
+cp -a "${repo_root}/fonts" "${site_dir}/"
 cp "${repo_root}/project-page/rpg-demo.css" "${repo_root}/project-page/rpg-demo.js" "${site_dir}/project-page/"
 cp -a "${repo_root}/project-page/cartridge-covers" "${site_dir}/project-page/"
 touch "${site_dir}/.nojekyll"

@@ -23,11 +23,9 @@
 !/top_video_1.mp4
 !/top_video_2.mp4
 
-# Local fonts and author marks.
+# Local fonts used by the landing page.
 !/fonts/
 !/fonts/**
-!/Author_logo/
-!/Author_logo/**
 
 # Demo controller and same-origin game bridge only.
 !/project-page/
