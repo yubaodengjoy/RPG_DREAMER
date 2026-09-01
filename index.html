@@ -995,6 +995,18 @@ body:not(.hero-in-view) .brand {
   text-align: center;
 }
 
+#result,
+#result .paper-heading,
+#result .result-table,
+#result .result-table thead th,
+#result .result-table .result-group th,
+#result .result-chart-title,
+#result .result-chart-svg .chart-tick,
+#result .result-chart-svg .chart-axis-title,
+#result .result-tooltip-value {
+  font-family: var(--serif);
+}
+
 .result-table-wrap {
   overflow-x: auto;
   border: 1px solid rgba(22, 34, 58, 0.12);
@@ -1033,11 +1045,10 @@ body:not(.hero-in-view) .brand {
   background: linear-gradient(180deg, #1b2942, #142036);
   color: #f8f6ef;
   font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   line-height: 1.35;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   white-space: normal;
 }
 
@@ -1049,11 +1060,10 @@ body:not(.hero-in-view) .brand {
   background: rgba(22, 34, 58, 0.055);
   color: #16223a;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   text-align: left;
-  text-transform: uppercase;
 }
 
 .result-table .result-group th::before {
@@ -1105,17 +1115,6 @@ body:not(.hero-in-view) .brand {
     0 28px 68px -38px rgba(22, 34, 58, 0.36),
     0 1px 0 rgba(255, 255, 255, 0.9) inset;
   backdrop-filter: blur(8px);
-}
-
-.result-chart-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: clamp(22px, 3vw, 34px);
-  width: 76px;
-  height: 3px;
-  border-radius: 0 0 999px 999px;
-  background: linear-gradient(90deg, #58bce9, #4472ac);
 }
 
 .result-chart-head {
