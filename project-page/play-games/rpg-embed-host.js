@@ -19,24 +19,6 @@
   const hostParams = new URLSearchParams(window.location.hash.slice(1));
   const hostOrigin = normalizeOrigin(hostParams.get('rpg-host-origin'))
     || normalizeOrigin(document.referrer);
-  const isEmbedded = window.parent !== window && Boolean(hostOrigin);
-
-  // Keep gameplay gestures inside the cartridge. Phaser still receives these
-  // events; only the browser's default page/iframe scrolling is suppressed.
-  if (isEmbedded) {
-    const lockScroll = () => {
-      document.documentElement.style.overscrollBehavior = 'none';
-      if (document.body) document.body.style.overscrollBehavior = 'none';
-    };
-    lockScroll();
-    document.addEventListener('DOMContentLoaded', lockScroll, { once: true });
-    const scrollKeys = new Set([' ', 'Spacebar', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
-    window.addEventListener('keydown', (event) => {
-      if (scrollKeys.has(event.key)) event.preventDefault();
-    }, { capture: true });
-    window.addEventListener('wheel', (event) => event.preventDefault(), { capture: true, passive: false });
-    window.addEventListener('touchmove', (event) => event.preventDefault(), { capture: true, passive: false });
-  }
 
   function post(type, detail = {}) {
     if (window.parent === window || !hostOrigin) return;
@@ -49,7 +31,7 @@
   // The generated games call window.close() from their main-menu Exit button.
   // Embedded frames cannot close the browser tab, so hand that action back to
   // the cartridge host instead.
-  if (isEmbedded) {
+  if (window.parent !== window && hostOrigin) {
     const requestHostExit = () => post('exit');
     try {
       Object.defineProperty(window, 'close', {
