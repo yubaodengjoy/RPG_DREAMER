@@ -25,7 +25,7 @@
     'magic-brush': {
       title: '神笔：移命录',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-41/src/dist/index.html`,
+      src: `${gameAssetBase}src-41/src/dist/index.html?v=20260901-src41-01`,
       poster: `${gameAssetBase}src-41/src/dist/cover.webp`,
       copy: 'Join Ma Liang on a four-chapter journey through a world transformed by the power of a magic brush. Every miracle transfers its hidden cost to someone else, turning each act of creation into a difficult moral choice.',
     },
