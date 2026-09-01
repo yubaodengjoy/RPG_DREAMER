@@ -1754,7 +1754,7 @@ body.hero-sequence-revealed .hero-content::after {
           <h2 class="paper-heading">Teaser</h2>
           <img src="teaser.png?v=20260827-03" alt="RPG Dreamer teaser showing automatic generation and a long-horizon generated RPG" loading="lazy">
           <figcaption class="overview-figure-caption">
-            <strong>Capability overview of RPG Dreamer.</strong> Gameplay screenshots serve as narrative nodes in an hours-long, left-to-right progression whose routes branch, reconverge, and branch again as player decisions alter persistent story state. Distinct final choices lead to four visibly different endings.
+            RPG Dreamer is capable of automatically generating games that offer coherent, hours-long playthroughs. Given a prompt, RPG Dreamer combines an Agent-Oriented Game Engine (AOGE) with the Reviewer-centric Generation Loop (RGL) to generate a complete game. The generated game integrates dialogue, battle, and trading systems across a branching narrative with multiple endings, delivering a long-horizon and coherent gameplay experience.
           </figcaption>
         </figure>
 
@@ -1762,7 +1762,7 @@ body.hero-sequence-revealed .hero-content::after {
           <h2 class="paper-heading">Method</h2>
           <img src="method.png?v=20260821-01" alt="RPG Dreamer method: Agent-Oriented Game Engine and Reviewer-centric Generation Loop" loading="lazy">
           <figcaption class="overview-figure-caption">
-            <strong>Method of RPG Dreamer.</strong> (a) AOGE organizes a game type into reusable mechanics, content slots, and a mechanics-grounded Agent Interface. (b) RGL instantiates the content slots by producing the game design, code implementation, and assets, assembles the resulting content with the mechanics and Agent Interface into a candidate game, and evaluates it with code, content, and gameplay reviewers. Review feedback returns to the building process, forming a self-evolving loop that iteratively refines the candidate into the target game.
+            The generation is split into two stages. In the first stage, AOGE decouples reusable game mechanics from game-specific content and provides unified observation and action interfaces for agents. In the second stage, RGL instantiates the content slots by producing the game design, code implementation, and assets. It is a closed-loop generation pipeline that enables iterative evolution of generated game content through a multi-reviewer system, including a team of gameplay agents that target latent bugs via playtesting.
           </figcaption>
         </figure>
 
@@ -1770,7 +1770,7 @@ body.hero-sequence-revealed .hero-content::after {
           <h2 class="paper-heading">Overview</h2>
           <img src="rpg-bench-overview.png?v=20260821-01" alt="RPG-Bench theme coverage and five complementary gameplay modes" loading="lazy">
           <figcaption class="overview-figure-caption">
-            Overview of the theme coverage of RPG-Bench and the gameplay modes for agent-based evaluation. RPG-Bench contains 150 evaluation instances, and evaluators are required to play the game under five complementary modes to examine game quality.
+            RPG-Bench is a benchmark comprising 150 evaluation instances for generating hour-scale RPGs across diverse genres and themes, with metrics grounded in dynamic gameplay trajectories that assess requirement fidelity, content richness, visual and interaction quality, and playability. During gameplay, evaluation agents explore the game in five modes, covering both normal multi-branch playthroughs and unconventional actions.
           </figcaption>
         </figure>
       </div>
@@ -1814,16 +1814,14 @@ body.hero-sequence-revealed .hero-content::after {
             </thead>
             <tbody>
               <tr class="result-group"><th colspan="7" scope="rowgroup">Automatic evaluation</th></tr>
-              <tr><td>Claude Code</td><td>Mimo-V2.5</td><td>44.0</td><td>6.3</td><td>38.4</td><td>13.9</td><td>22.0</td></tr>
-              <tr><td>OpenGame</td><td>Opus 4.8</td><td>80.0</td><td>31.6</td><td>41.4</td><td>45.7</td><td>43.6</td></tr>
-              <tr><td>Qwen-code</td><td>Qwen3.8-Max</td><td>84.0</td><td>32.2</td><td>55.0</td><td>27.6</td><td>42.8</td></tr>
-              <tr><td>Kimi-code</td><td>Kimi K3</td><td>96.0</td><td>48.6</td><td>67.9</td><td>40.9</td><td>56.8</td></tr>
-              <tr><td>Codex</td><td>GPT 5.6 Sol</td><td>96.0</td><td>57.9</td><td>56.2</td><td>63.8</td><td>63.0</td></tr>
-              <tr class="is-rpgdreamer"><td>RPG Dreamer</td><td>GPT 5.6 Sol</td><td><strong>92.0</strong></td><td><strong>75.4</strong></td><td><strong>72.6</strong></td><td><strong>86.5</strong></td><td><strong>79.6</strong></td></tr>
+              <tr><td>OpenGame</td><td>Opus 4.8</td><td>78.3</td><td>31.6</td><td>41.4</td><td>46.0</td><td>43.5</td></tr>
+              <tr><td>Qwen-code</td><td>Qwen3.8-Max</td><td>84.0</td><td>32.2</td><td>55.0</td><td>29.6</td><td>43.4</td></tr>
+              <tr><td>Kimi-code</td><td>Kimi K3</td><td>91.7</td><td>48.6</td><td>67.9</td><td>42.3</td><td>56.8</td></tr>
+              <tr><td>Codex</td><td>GPT 5.6 Sol</td><td>92.3</td><td>57.1</td><td>55.9</td><td>63.5</td><td>62.2</td></tr>
+              <tr class="is-rpgdreamer"><td>RPG Dreamer</td><td>GPT 5.6 Sol</td><td><strong>92.7</strong></td><td><strong>77.1</strong></td><td><strong>73.2</strong></td><td><strong>87.4</strong></td><td><strong>80.6</strong></td></tr>
             </tbody>
             <tbody>
               <tr class="result-group"><th colspan="7" scope="rowgroup">Human evaluation</th></tr>
-              <tr><td>Claude Code</td><td>Mimo-V2.5</td><td>0.8</td><td>0.1</td><td>1.3</td><td>0.4</td><td>0.6</td></tr>
               <tr><td>Codex</td><td>GPT 5.6 Sol</td><td>44.0</td><td>32.1</td><td>31.5</td><td>34.6</td><td>33.9</td></tr>
               <tr class="is-rpgdreamer"><td>RPG Dreamer</td><td>GPT 5.6 Sol</td><td><strong>69.7</strong></td><td><strong>61.3</strong></td><td><strong>70.5</strong></td><td><strong>62.0</strong></td><td><strong>65.1</strong></td></tr>
             </tbody>
