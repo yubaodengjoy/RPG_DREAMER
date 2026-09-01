@@ -48,7 +48,7 @@
       meta: 'Long-horizon generated RPG · Chinese',
       src: `${gameAssetBase}src-44/src/dist/index.html?v=20260831-layout-01`,
       poster: `${gameAssetBase}src-44/src/dist/assets/main-menu-TS6JUrUr.png`,
-      copy: '陪孙悟空护送唐僧走过女儿国、西行古道与黑水河，在妖劫与人心之间继续取经之路。探索多处场景、完成支线委托，并通过关键选择面对凡心、执念、责任与离别。',
+      copy: 'Accompany Sun Wukong as he escorts Tang Sanzang through the Kingdom of Women, the western road, and the Blackwater River. Explore diverse locations, complete side quests, and make pivotal choices that confront mortal desire, attachment, duty, and farewell.',
     },
   };
   const standbyPoster = '../rpg-dreamer-top-hero-poster.webp';
