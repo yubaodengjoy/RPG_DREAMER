@@ -1009,7 +1009,7 @@ body:not(.hero-in-view) .brand {
 
 .result-table {
   width: 100%;
-  min-width: 1080px;
+  min-width: 0;
   table-layout: fixed;
   border-collapse: collapse;
   color: #26354b;
@@ -1121,21 +1121,7 @@ body:not(.hero-in-view) .brand {
 .result-chart-head {
   position: relative;
   z-index: 1;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 22px;
-}
-
-.result-chart-kicker {
-  margin-bottom: 7px;
-  color: #4472ac;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  margin-bottom: 16px;
 }
 
 .result-chart-title {
@@ -1144,29 +1130,6 @@ body:not(.hero-in-view) .brand {
   font-size: clamp(22px, 2.6vw, 31px);
   font-weight: 700;
   line-height: 1.15;
-}
-
-.result-chart-caption {
-  max-width: 620px;
-  margin-top: 8px;
-  color: #657184;
-  font-size: 13px;
-  line-height: 1.55;
-}
-
-.result-chart-note {
-  flex: 0 0 auto;
-  padding: 8px 12px;
-  border: 1px solid rgba(68, 114, 172, 0.18);
-  border-radius: 999px;
-  background: rgba(128, 215, 255, 0.1);
-  color: #315f91;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .result-chart-legend {
@@ -1403,18 +1366,18 @@ body:not(.hero-in-view) .brand {
 }
 
 @media (max-width: 820px) {
-  .result-table-wrap {
-    margin-right: calc(clamp(18px, 4vw, 64px) * -0.5);
-  }
-
-  .result-chart-head {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-  }
-
   .result-chart-plot {
     margin-right: calc(clamp(22px, 3vw, 34px) * -0.45);
+  }
+}
+
+@media (max-width: 640px) {
+  .result-table {
+    min-width: 680px;
+  }
+
+  .result-table-wrap {
+    margin-right: calc(clamp(18px, 4vw, 64px) * -0.5);
   }
 }
 
@@ -2149,16 +2112,9 @@ body.hero-sequence-revealed .hero-content::after {
           </table>
         </div>
 
-        <figure class="result-chart-card reveal" aria-labelledby="completion-chart-title completion-chart-caption">
+        <figure class="result-chart-card reveal" aria-labelledby="completion-chart-title">
           <div class="result-chart-head">
-            <div>
-              <p class="result-chart-kicker">Complexity scaling</p>
-              <h3 class="result-chart-title" id="completion-chart-title">Completion Across Game Complexity</h3>
-              <p class="result-chart-caption" id="completion-chart-caption">
-                Completion rate from L1 to L5 game complexity. Each point reports the percentage of successfully completed evaluation instances.
-              </p>
-            </div>
-            <span class="result-chart-note">Higher is better</span>
+            <h3 class="result-chart-title" id="completion-chart-title">Completion by Game Complexity</h3>
           </div>
 
           <div class="result-chart-legend" role="group" aria-label="Select a method to highlight its line">
