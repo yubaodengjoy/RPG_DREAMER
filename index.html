@@ -678,12 +678,34 @@ body:not(.hero-in-view) .brand {
   z-index: 1;
 }
 
+#demos {
+  padding-top: clamp(52px, 5vw, 64px);
+  padding-bottom: clamp(52px, 5vw, 64px);
+}
+
+#overview {
+  padding-top: clamp(52px, 5vw, 64px);
+  padding-bottom: clamp(52px, 5vw, 64px);
+}
+
+#result {
+  padding-top: clamp(52px, 5vw, 64px);
+}
+
 .demo-head {
   position: relative;
   z-index: 1;
   text-align: center;
   max-width: 900px;
-  margin: 0 auto 54px;
+  margin: 0 auto 18px;
+}
+
+#demos .paper-heading {
+  margin-bottom: 0;
+}
+
+#demos .rpg-play-demo {
+  margin-top: 0;
 }
 
 .demo-head .section-title {
@@ -1801,7 +1823,7 @@ body.hero-sequence-revealed .hero-content::after {
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
 <link href="project-page/rpg-demo.css?v=20260903-04" rel="stylesheet">
-<meta name="build" content="20260903-11">
+<meta name="build" content="20260903-12">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
