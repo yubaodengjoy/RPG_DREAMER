@@ -176,6 +176,7 @@ img, video { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
   padding: 22px max(var(--content-gutter), calc((100% - var(--content-max)) / 2));
   color: rgba(248,246,239,0.78);
   font-family: var(--mono);
@@ -187,6 +188,7 @@ img, video { max-width: 100%; display: block; }
 
 .brand {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 10px;
   font-family: "Jersey 10", var(--mono);
@@ -217,6 +219,10 @@ body:not(.hero-in-view) .brand {
 
 .nav-links {
   display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
   gap: clamp(16px, 3.4vw, 34px);
 }
 
@@ -1535,7 +1541,22 @@ body:not(.hero-in-view) .brand {
 }
 
 @media (max-width: 880px) {
-  .nav-links { display: none; }
+  .nav {
+    gap: 10px;
+    font-size: clamp(8px, 1.25vw, 11px);
+  }
+  .brand {
+    gap: 6px;
+    font-size: clamp(15px, 2.2vw, 18px);
+  }
+  .brand img {
+    width: 26px;
+    height: 26px;
+  }
+  .nav-links {
+    display: flex;
+    gap: clamp(5px, 1.4vw, 12px);
+  }
   .feature-strip,
   .studio-stage {
     grid-template-columns: 1fr;
@@ -1546,6 +1567,10 @@ body:not(.hero-in-view) .brand {
   }
   .feature-strip article:last-child { border-bottom: 0; }
   .dash-panel { padding-top: 44px; }
+}
+
+@media (max-width: 360px) {
+  .brand span { display: none; }
 }
 
 @media (max-width: 520px) {
@@ -1773,7 +1798,7 @@ body.hero-sequence-revealed .hero-content::after {
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
 <link href="project-page/rpg-demo.css?v=20260903-02" rel="stylesheet">
-<meta name="build" content="20260903-06">
+<meta name="build" content="20260903-07">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
