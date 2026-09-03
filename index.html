@@ -844,7 +844,7 @@ body:not(.hero-in-view) .brand {
   content: "";
   position: absolute;
   top: 50%;
-  left: 18px;
+  left: clamp(8px, 1.8cqi, 18px);
   width: 4px;
   height: 15px;
   border-radius: 999px;
@@ -1102,12 +1102,31 @@ body:not(.hero-in-view) .brand {
 }
 
 @media (max-width: 640px) {
+  .result-table col:nth-child(1),
+  .result-table col:nth-child(2) {
+    width: 20%;
+  }
+
+  .result-table col:nth-child(n + 3) {
+    width: 12%;
+  }
+
   .result-table {
     min-width: 0;
   }
 
   .result-table-wrap {
     margin-right: 0;
+  }
+
+  .result-table .result-group th {
+    padding-left: 21px;
+  }
+
+  .result-table .result-group th::before {
+    left: 8px;
+    width: 3px;
+    height: 14px;
   }
 }
 
@@ -1687,8 +1706,8 @@ body.hero-sequence-revealed .hero-content::after {
 
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
-<link href="project-page/rpg-demo.css?v=20260903-06" rel="stylesheet">
-<meta name="build" content="20260903-34">
+<link href="project-page/rpg-demo.css?v=20260903-07" rel="stylesheet">
+<meta name="build" content="20260903-35">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
