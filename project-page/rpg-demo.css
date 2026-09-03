@@ -337,11 +337,17 @@
 .rpg-play-demo:fullscreen,
 .rpg-play-demo.is-fallback-fullscreen {
   width: 100vw;
+  width: 100dvw;
   height: 100vh;
+  height: 100dvh;
   margin: 0;
   border: 0;
   border-radius: 0;
   background: #000;
+  opacity: 1;
+  filter: none;
+  transform: none !important;
+  transition: none;
 }
 
 .rpg-play-demo:fullscreen {
@@ -359,12 +365,31 @@
   position: fixed;
   z-index: 100000;
   inset: 0;
+  max-width: none;
+  max-height: none;
   display: flex;
   flex-direction: column;
 }
 
+html.rpg-demo-fullscreen-fallback,
 body.rpg-demo-fullscreen-fallback {
   overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body.rpg-demo-fullscreen-fallback .nav {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.rpg-demo-fullscreen-fallback #demos {
+  z-index: 100000;
+}
+
+.rpg-demo-fullscreen-placeholder {
+  width: 100%;
+  min-height: 1px;
 }
 
 @media (max-width: 720px) {
@@ -1203,6 +1228,7 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-play-demo:fullscreen .rpg-demo-stage,
 .rpg-play-demo.is-fallback-fullscreen .rpg-demo-stage {
   height: 100vh;
+  height: 100dvh;
   padding: 0;
   border: 0;
 }
@@ -1336,6 +1362,7 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-play-demo:fullscreen .rpg-handheld-body,
 .rpg-play-demo.is-fallback-fullscreen .rpg-handheld-body {
   grid-template-columns: 0 minmax(0, min(100vw, calc(100vh * 4 / 3))) 0;
+  grid-template-columns: 0 minmax(0, min(100dvw, calc(100dvh * 4 / 3))) 0;
   justify-content: center;
   padding: 0;
   background: #000;
@@ -1345,8 +1372,10 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-play-demo:fullscreen .rpg-handheld-screen,
 .rpg-play-demo.is-fallback-fullscreen .rpg-handheld-screen {
   width: min(100vw, calc(100vh * 4 / 3));
+  width: min(100dvw, calc(100dvh * 4 / 3));
   height: auto;
   max-height: 100vh;
+  max-height: 100dvh;
   aspect-ratio: var(--rpg-game-ratio);
   border-radius: 0;
   box-shadow: none;
@@ -2640,4 +2669,34 @@ body.rpg-demo-fullscreen-fallback {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+}
+
+/* Fullscreen rules must remain last so narrow-screen presentation styles
+   cannot reintroduce the handheld frame or constrain the viewport. */
+#demos .rpg-play-demo:fullscreen .rpg-demo-stage,
+#demos .rpg-play-demo.is-fallback-fullscreen .rpg-demo-stage {
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+#demos .rpg-play-demo:fullscreen .rpg-handheld-body,
+#demos .rpg-play-demo.is-fallback-fullscreen .rpg-handheld-body {
+  grid-template-columns: 0 minmax(0, min(100vw, calc(100vh * 4 / 3))) 0;
+  grid-template-columns: 0 minmax(0, min(100dvw, calc(100dvh * 4 / 3))) 0;
+  gap: 0;
+  padding: 0;
+}
+
+#demos .rpg-play-demo:fullscreen .rpg-handheld-screen,
+#demos .rpg-play-demo.is-fallback-fullscreen .rpg-handheld-screen {
+  width: min(100vw, calc(100vh * 4 / 3));
+  width: min(100dvw, calc(100dvh * 4 / 3));
+  height: auto;
+  max-height: 100vh;
+  max-height: 100dvh;
 }

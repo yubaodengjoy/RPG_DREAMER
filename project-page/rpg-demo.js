@@ -103,6 +103,7 @@
   let poweredOn = false;
   let cartridgeMoving = false;
   let fallbackFullscreen = false;
+  let fallbackMount = null;
   let controlsOpen = false;
 
   function activeState() {
@@ -516,8 +517,25 @@
   }
 
   function enterFallbackFullscreen() {
+    if (fallbackFullscreen) return;
+    const parent = root.parentNode;
+    const host = root.closest('#demos') || document.body;
+    const placeholder = document.createElement('div');
+    const bounds = root.getBoundingClientRect();
+    placeholder.className = 'rpg-demo-fullscreen-placeholder';
+    placeholder.setAttribute('aria-hidden', 'true');
+    placeholder.style.height = `${bounds.height}px`;
+    parent.insertBefore(placeholder, root);
+    fallbackMount = {
+      parent,
+      placeholder,
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    };
+    host.appendChild(root);
     fallbackFullscreen = true;
     root.classList.add('is-fallback-fullscreen');
+    document.documentElement.classList.add('rpg-demo-fullscreen-fallback');
     document.body.classList.add('rpg-demo-fullscreen-fallback');
     syncFullscreenUi();
   }
@@ -543,7 +561,17 @@
     }
     fallbackFullscreen = false;
     root.classList.remove('is-fallback-fullscreen');
+    document.documentElement.classList.remove('rpg-demo-fullscreen-fallback');
     document.body.classList.remove('rpg-demo-fullscreen-fallback');
+    if (fallbackMount) {
+      const { parent, placeholder, scrollX, scrollY } = fallbackMount;
+      if (parent && placeholder.parentNode === parent) {
+        parent.insertBefore(root, placeholder);
+        placeholder.remove();
+      }
+      fallbackMount = null;
+      window.requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+    }
     syncFullscreenUi();
   }
 
@@ -654,7 +682,7 @@
       const visible = entries.some((entry) => entry.isIntersecting);
       Object.keys(states).forEach((id) => {
         if (!states[id].ready) return;
-        sendToGame(id, hasCartridge && poweredOn && !controlsOpen && id === activeId && (visible || document.fullscreenElement === root) ? 'resume' : 'pause');
+        sendToGame(id, hasCartridge && poweredOn && !controlsOpen && id === activeId && (visible || document.fullscreenElement === root || fallbackFullscreen) ? 'resume' : 'pause');
       });
     }, { threshold: 0.05 });
     observer.observe(root);
