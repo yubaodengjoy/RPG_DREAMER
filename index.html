@@ -535,7 +535,7 @@ body:not(.hero-in-view) .brand {
    the available viewport without ever being enlarged beyond the design size.
    The outer scaler follows the transformed footprint to avoid phantom overflow.
    Narrow, short, and touch-only screens use the normal responsive flow. */
-@media (min-width: 900px) and (min-height: 760px) and (hover: hover) and (pointer: fine) {
+@media (min-width: 900px) and (min-height: 760px) and (orientation: landscape) and (hover: hover) and (pointer: fine) {
   #abstract.abstract-fit {
     height: calc(100svh - 82px);
     min-height: 0;
@@ -611,27 +611,6 @@ body:not(.hero-in-view) .brand {
 .overview-figure-caption strong {
   color: #16223a;
   font-weight: 700;
-}
-
-/* Video Demonstration: a dark cinema screen inside the light section, so it
-   reads as a player rather than a figure. The poster is the clip's own first
-   frame, so it is 16:9 like the clip and neither is cropped or letterboxed. */
-.video-figure {
-  width: 100%;
-  max-width: var(--content-max);
-  margin: 46px auto 0;
-}
-
-.video-figure video {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #07071e;
-  border: 1px solid rgba(22, 34, 58, 0.1);
-  border-radius: 16px;
-  box-shadow:
-    0 1px 2px rgba(22, 34, 58, 0.04),
-    0 18px 44px -20px rgba(22, 34, 58, 0.16);
 }
 
 .feature-strip {
@@ -716,265 +695,6 @@ body:not(.hero-in-view) .brand {
   margin-left: auto;
   margin-right: auto;
   color: #596573;
-}
-
-.demo-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.demo-tags span {
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 999px;
-  padding: 7px 10px;
-  color: rgba(248,246,239,0.72);
-  font-family: var(--mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0;
-  background: rgba(255,255,255,0.06);
-}
-
-/* ---------- Demo Cinema ---------- */
-
-.demo-cinema {
-  position: relative;
-  z-index: 1;
-  margin-top: 54px;
-}
-
-.cinema-screen {
-  position: relative;
-  border-radius: 22px;
-  overflow: hidden;
-  background: #06080d;
-  aspect-ratio: 16 / 9;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 26px 70px rgba(0, 0, 0, 0.5),
-    0 70px 140px -50px rgba(128, 215, 255, 0.14);
-}
-
-.cinema-screen video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  opacity: 1;
-  transition: opacity 220ms ease;
-}
-
-.cinema-screen video.switching {
-  opacity: 0;
-}
-
-.cinema-progress {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px;
-  z-index: 3;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.cinema-progress span {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: linear-gradient(90deg, var(--gold), var(--ember));
-}
-
-.cinema-loading {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  pointer-events: none;
-  background: rgba(6, 8, 13, 0.55);
-  color: rgba(248, 246, 239, 0.72);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.cinema-loading[hidden] { display: none; }
-.cinema-loading .cinema-spinner {
-  width: 22px;
-  height: 22px;
-  border: 2px solid rgba(248, 246, 239, 0.18);
-  border-top-color: rgba(255, 210, 122, 0.9);
-  border-radius: 50%;
-  animation: preSpin 0.8s linear infinite;
-}
-
-.cinema-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 4;
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  background: rgba(5, 7, 12, 0.55);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  color: rgba(248, 246, 239, 0.85);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 200ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease;
-}
-
-.cinema-screen:hover .cinema-arrow,
-.cinema-arrow:focus-visible {
-  opacity: 1;
-}
-
-.cinema-arrow:hover {
-  background: rgba(255, 210, 122, 0.2);
-  border-color: rgba(255, 210, 122, 0.5);
-  color: var(--gold);
-}
-
-.cinema-arrow.prev { left: 18px; }
-.cinema-arrow.next { right: 18px; }
-
-.cinema-info {
-  margin-top: 28px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 18px 40px;
-  align-items: start;
-}
-
-.cinema-info .eyebrow {
-  color: rgba(255, 210, 122, 0.75);
-  margin-bottom: 10px;
-}
-
-.cinema-info h3 {
-  font-family: var(--sans);
-  font-size: clamp(26px, 4cqi, 40px);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-  color: var(--paper);
-  margin: 0 0 12px;
-}
-
-.cinema-desc {
-  font-family: var(--serif);
-  font-size: clamp(15px, 1.8cqi, 18px);
-  line-height: 1.65;
-  color: rgba(248, 246, 239, 0.76);
-  max-width: 720px;
-  margin: 0;
-}
-
-.cinema-info .demo-tags {
-  justify-content: flex-end;
-  max-width: 320px;
-  margin-top: 4px;
-}
-
-.cinema-rail {
-  margin-top: 34px;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: clamp(128px, 16.8cqi, 168px);
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
-
-.rail-thumb {
-  appearance: none;
-  border: 0;
-  padding: 0;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-  scroll-snap-align: start;
-}
-
-.rail-frame {
-  position: relative;
-  display: block;
-  aspect-ratio: 16 / 9;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  opacity: 0.5;
-  transition: opacity 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
-}
-
-.rail-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.rail-thumb:hover .rail-frame {
-  opacity: 0.85;
-  transform: translateY(-2px);
-}
-
-.rail-thumb.active .rail-frame {
-  opacity: 1;
-  border-color: rgba(255, 210, 122, 0.7);
-  box-shadow: 0 0 0 1px rgba(255, 210, 122, 0.35), 0 8px 28px rgba(0, 0, 0, 0.45);
-}
-
-.rail-name {
-  display: block;
-  margin-top: 8px;
-  font-family: var(--mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(248, 246, 239, 0.5);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 200ms ease;
-}
-
-.rail-thumb.active .rail-name {
-  color: var(--gold);
-}
-
-@media (max-width: 760px) {
-  .cinema-info {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .cinema-info .demo-tags {
-    justify-content: flex-start;
-    max-width: none;
-  }
-  .cinema-rail {
-    grid-auto-columns: 124px;
-  }
-  .cinema-arrow {
-    width: 42px;
-    height: 42px;
-    opacity: 1;
-    background: rgba(5, 7, 12, 0.45);
-  }
-  .cinema-arrow.prev { left: 10px; }
-  .cinema-arrow.next { right: 10px; }
 }
 
 /* ---------- Studio ---------- */
@@ -1508,8 +1228,6 @@ body:not(.hero-in-view) .brand {
   padding: 12px;
 }
 
-@keyframes preSpin { to { transform: rotate(360deg); } }
-
 .reveal {
   opacity: 0;
   transform: translateY(26px);
@@ -1657,8 +1375,6 @@ body:not(.hero-in-view) .brand {
   white-space: nowrap;
 }
 
-#video[hidden],
-.paper-btn[hidden] { display: none !important; }
 
 /* Resource links stay with the abstract instead of entering the top page. */
 .hero-actions {
@@ -1937,6 +1653,32 @@ body.hero-sequence-revealed .hero-content::after {
   }
 }
 
+/* Portrait screens can be much taller than their content. Let each section
+   follow its content instead of reserving a full viewport, while preserving
+   the established 84px transition between adjacent sections. */
+@media (orientation: portrait) {
+  .section {
+    min-height: 0;
+  }
+
+  #abstract.abstract-fit {
+    height: auto;
+    min-height: 0;
+    padding-bottom: 42px;
+    overflow: visible;
+  }
+
+  #demos,
+  #overview {
+    padding-top: 42px;
+    padding-bottom: 42px;
+  }
+
+  #result {
+    padding-top: 42px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-intro { display: none; }
   .hero-main-video { opacity: 1; filter: none; transform: none; }
@@ -1946,7 +1688,7 @@ body.hero-sequence-revealed .hero-content::after {
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
 <link href="project-page/rpg-demo.css?v=20260903-04" rel="stylesheet">
-<meta name="build" content="20260903-29">
+<meta name="build" content="20260903-31">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -2026,10 +1768,6 @@ body.hero-sequence-revealed .hero-content::after {
           <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M181.9 256.1c-5-16-4.9-46.9-2-46.9 8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7 18.3-7 39-17.2 62.9-21.9-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8 4.5-18.5 11.6-46.6 6.2-64.2-4.7-29.4-42.4-26.5-47.8-6.8-5 18.3-.4 44.1 8.1 77-11.6 27.6-28.7 64.6-40.8 85.8-.1 0-.1.1-.2.1-27.1 13.9-73.6 44.5-54.5 68 5.6 6.9 16 10 21.5 10 17.9 0 35.7-18 61.1-61.8 25.8-8.5 54.1-19.1 79-23.2 21.7 11.8 47.1 19.5 64 19.5 29.2 0 31.2-32 19.7-43.4-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9 37.1 15.8 42.8 9 42.8 9z"/></svg>
           <span>Paper</span>
         </button>
-        <a class="paper-btn" href="#video" hidden>
-          <svg viewBox="0 0 576 512" aria-hidden="true"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
-          <span>Video</span>
-        </a>
         <button class="paper-btn" type="button" data-code-soon>
           <svg viewBox="0 0 496 512" aria-hidden="true"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
           <span>GitHub</span>
@@ -2273,17 +2011,6 @@ body.hero-sequence-revealed .hero-content::after {
     </div>
   </section>
 
-  <section class="section paper-section" id="video" hidden>
-    <div class="section-inner">
-      <div class="overview-head reveal">
-        <h2 class="paper-heading">Video Demonstration</h2>
-      </div>
-
-      <figure class="video-figure reveal">
-        <!-- Video demonstration removed. -->
-      </figure>
-    </div>
-  </section>
 
   <section class="section paper-section" id="result">
     <div class="section-inner">
@@ -2336,8 +2063,7 @@ body.hero-sequence-revealed .hero-content::after {
           </div>
 
           <div class="result-chart-plot" tabindex="0" role="region" aria-label="Line chart; scroll horizontally on small screens">
-            <svg class="result-chart-svg" viewBox="0 0 1050 530" role="img" aria-labelledby="completion-svg-title completion-svg-desc">
-              <title id="completion-svg-title">Completion across five levels of game complexity</title>
+            <svg class="result-chart-svg" viewBox="0 0 1050 530" role="img" aria-label="Completion across five levels of game complexity" aria-describedby="completion-svg-desc">
               <desc id="completion-svg-desc">All methods begin at 100 percent completion at L1 and L2. At L5, RPG Dreamer retains 87.9 percent completion, compared with 35 percent for Kimi K3, 26.7 percent for GPT 5.6 Sol, and 20 percent for OpenGame.</desc>
               <defs>
                 <linearGradient id="rpg-area" x1="0" y1="0" x2="0" y2="1">
@@ -2763,159 +2489,6 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
 })();
 
-// ---- Demo cinema ----
-(() => {
-  const DEMOS = [
-    {
-      src: "demo/page/hk.mp4", poster: "demo/page/thumbs/hk.webp",
-      eyebrow: "Oneshot", title: "Hollow Knight boss slice",
-      desc: "A side-view boss fight with jumps, dash movement, air attacks, ground combos, melee pressure, ranged attacks, and room-scale repositioning.",
-      tags: ["Side-view", "Action", "Boss fight", "Combat"]
-    },
-    {
-      src: "demo/page/demonslayer.mp4", poster: "demo/page/thumbs/demonslayer.jpg",
-      eyebrow: "Prompt + reference", title: "HK to Demon Slayer",
-      desc: "The same action framework is steered toward a different visual and combat fantasy from a prompt plus a reference image.",
-      tags: ["Reference image", "Action", "Style transfer"]
-    },
-    {
-      src: "demo/page/sekiro.mp4", poster: "demo/page/thumbs/sekiro.webp",
-      eyebrow: "Soulslike", title: "Pixel Sekiro",
-      desc: "A retro boss-fight prototype with guard, parry timing, attack tells, posture pressure, and deathblow payoff.",
-      tags: ["Soulslike", "Parry", "Boss AI"]
-    },
-    {
-      src: "demo/page/fruit_ninja.mp4", poster: "demo/page/thumbs/fruit_ninja.webp",
-      eyebrow: "Arcade physics", title: "Fruit Ninja",
-      desc: "A fast arcade slice demo focused on readable input, responsive motion, and object feedback.",
-      tags: ["Arcade", "Physics", "Input"]
-    },
-    {
-      src: "demo/page/kof.mp4", poster: "demo/page/thumbs/kof.webp",
-      eyebrow: "Arcade fighter", title: "KOF",
-      desc: "A desktop fighting-game slice with character movement, attack timing, hit response, and stage presentation.",
-      tags: ["Fighting", "Characters", "Hit logic"]
-    },
-    {
-      src: "demo/page/parkour_dash.mp4", poster: "demo/page/thumbs/parkour_dash.webp",
-      eyebrow: "Cartoon parkour", title: "Aniya Parkour",
-      desc: "A movement demo where dash timing and balloon bounce reactions create a chained traversal route.",
-      tags: ["Platformer", "Dash", "Traversal"]
-    },
-    {
-      src: "demo/page/rog.mp4", poster: "demo/page/thumbs/rog.webp",
-      eyebrow: "Roguelike shooter", title: "Dungeon Roguelike",
-      desc: "A top-down dungeon shooter with rooms, corridors, enemies, weapons, pickups, health, shield, and mana systems.",
-      tags: ["Roguelike", "Top-down", "Shooter", "Dungeon"]
-    },
-    {
-      src: "demo/page/werewolf.mp4", poster: "demo/page/thumbs/werewolf.jpg",
-      eyebrow: "AI game", title: "AI Werewolf",
-      desc: "A social deduction game where the built-in LLM module drives the other players through speeches, votes, and night actions.",
-      tags: ["LLM agents", "Party game", "Dialogue"]
-    },
-    {
-      src: "demo/page/civilization.mp4", poster: "demo/page/thumbs/civilization.jpg",
-      eyebrow: "4X strategy", title: "Civilization prototype",
-      desc: "A turn-based strategy demo with grid movement, unit combat, objective capture, and client/server play.",
-      tags: ["4X Strategy", "Turn-based", "Tactics", "Client/Server"]
-    }
-  ];
-
-  const root = document.getElementById("demo-cinema");
-  if (!root) return;
-  const video = document.getElementById("cinema-video");
-  const bar = document.getElementById("cinema-progress-bar");
-  const eyebrowEl = document.getElementById("cinema-eyebrow");
-  const titleEl = document.getElementById("cinema-title");
-  const descEl = document.getElementById("cinema-desc");
-  const tagsEl = document.getElementById("cinema-tags");
-  const rail = document.getElementById("cinema-rail");
-
-  const thumbs = DEMOS.map((d, n) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "rail-thumb";
-    b.setAttribute("aria-label", d.title);
-    b.innerHTML =
-      `<span class="rail-frame"><img src="${d.poster}" alt="" loading="lazy"></span>` +
-      `<span class="rail-name">${d.title}</span>`;
-    b.addEventListener("click", () => show(n));
-    rail.appendChild(b);
-    return b;
-  });
-
-  const loadingEl = document.getElementById("cinema-loading");
-  const setLoading = (on) => { if (loadingEl) loadingEl.hidden = !on; };
-
-  let idx = -1;
-
-  function show(i) {
-    const n = (i + DEMOS.length) % DEMOS.length;
-    if (n === idx) {
-      video.play().catch(() => {});
-      return;
-    }
-    setLoading(true); // the selected demo's video may still be buffering
-    const first = idx === -1;
-    idx = n;
-    const d = DEMOS[idx];
-    thumbs.forEach((t, k) => t.classList.toggle("active", k === idx));
-    // Scroll only the rail horizontally; scrollIntoView would also scroll the page
-    const t = thumbs[idx];
-    rail.scrollTo({
-      left: t.offsetLeft - (rail.clientWidth - t.offsetWidth) / 2,
-      behavior: "smooth"
-    });
-    eyebrowEl.textContent = d.eyebrow;
-    titleEl.textContent = d.title;
-    descEl.textContent = d.desc;
-    tagsEl.innerHTML = d.tags.map((t) => `<span>${t}</span>`).join("");
-    bar.style.width = "0%";
-    if (first) {
-      video.src = d.src;
-      video.play().catch(() => {});
-      return;
-    }
-    video.classList.add("switching");
-    setTimeout(() => {
-      video.src = d.src;
-      video.play().catch(() => {});
-    }, 200);
-  }
-
-  video.addEventListener("playing", () => { video.classList.remove("switching"); setLoading(false); });
-  video.addEventListener("canplay", () => setLoading(false));
-  video.addEventListener("waiting", () => setLoading(true));
-  video.addEventListener("ended", () => show(idx + 1));
-  video.addEventListener("timeupdate", () => {
-    if (video.duration) bar.style.width = (video.currentTime / video.duration) * 100 + "%";
-  });
-
-  root.querySelector(".cinema-arrow.prev").addEventListener("click", () => show(idx - 1));
-  root.querySelector(".cinema-arrow.next").addEventListener("click", () => show(idx + 1));
-
-  document.addEventListener("keydown", (e) => {
-    if (!root.matches(":hover") && !root.contains(document.activeElement)) return;
-    if (e.key === "ArrowLeft") show(idx - 1);
-    if (e.key === "ArrowRight") show(idx + 1);
-  });
-
-  // Pause the reel while it is offscreen
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
-    });
-  }, { threshold: 0.25 });
-  io.observe(root);
-
-  show(0);
-})();
-
 // ---- Resource availability notice ----
 (() => {
   const toast = document.querySelector(".code-soon-toast");
@@ -2967,7 +2540,7 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   const scaler = section.querySelector(".abstract-scaler");
   const stage = section.querySelector(".abstract-stage");
   if (!scaler || !stage) return;
-  const mq = window.matchMedia("(min-width: 900px) and (min-height: 760px) and (hover: hover) and (pointer: fine)");
+  const mq = window.matchMedia("(min-width: 900px) and (min-height: 760px) and (orientation: landscape) and (hover: hover) and (pointer: fine)");
 
   function fit() {
     if (!mq.matches) {                 // narrow: hand back to normal flow
