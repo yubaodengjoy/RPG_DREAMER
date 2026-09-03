@@ -180,7 +180,7 @@ img, video { max-width: 100%; display: block; }
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 22px max(var(--content-gutter), calc((100% - var(--content-max)) / 2));
+  padding: 22px clamp(var(--content-gutter), 8.2vw, calc(var(--content-gutter) + 100px));
   color: rgba(248,246,239,0.78);
   font-family: var(--mono);
   font-size: 12px;
@@ -1057,8 +1057,7 @@ body:not(.hero-in-view) .brand {
 #result .result-table .result-group th,
 #result .result-chart-title,
 #result .result-chart-svg .chart-tick,
-#result .result-chart-svg .chart-axis-title,
-#result .result-tooltip-value {
+#result .result-chart-svg .chart-axis-title {
   font-family: var(--sans);
 }
 
@@ -1356,49 +1355,6 @@ body:not(.hero-in-view) .brand {
   fill: var(--series-color);
   stroke: #fff;
   stroke-width: 3.5;
-}
-
-.result-chart-tooltip {
-  position: absolute;
-  z-index: 3;
-  min-width: 128px;
-  padding: 9px 11px;
-  border: 1px solid rgba(128, 215, 255, 0.24);
-  border-radius: 10px;
-  background: rgba(17, 29, 48, 0.94);
-  color: #f8f6ef;
-  box-shadow: 0 12px 28px rgba(22, 34, 58, 0.24);
-  pointer-events: none;
-  transform: translate(-50%, calc(-100% - 12px));
-}
-
-.result-chart-tooltip[hidden] {
-  display: none;
-}
-
-.result-chart-tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  background: rgba(17, 29, 48, 0.94);
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.result-tooltip-method {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.result-tooltip-value {
-  display: block;
-  margin-top: 2px;
-  color: #9bdfff;
-  font-family: var(--mono);
-  font-size: 10px;
 }
 
 .result-chart-card.visible .series-line {
@@ -1716,17 +1672,17 @@ body:not(.hero-in-view) .brand {
   flex-wrap: wrap;
 }
 
-/* The persistent world montage is the only hero video. A short CSS sequence
-   supplies the opening reveal without loading and switching a second clip. */
+/* The persistent world montage is the only hero video. The opening dialogue
+   is rendered as live text so the first clip does not need to be downloaded. */
 .hero-image {
   z-index: 0;
   opacity: 1;
 }
 
 .hero-main-video {
-  opacity: 0.16;
-  filter: blur(15px) saturate(0.58) brightness(0.48);
-  transform: translateZ(0) scale(1.075);
+  opacity: 0;
+  filter: saturate(0.7) brightness(0.38);
+  transform: translateZ(0) scale(1.025);
   will-change: opacity, filter, transform;
 }
 
@@ -1737,10 +1693,115 @@ body:not(.hero-in-view) .brand {
   inset: 0;
   pointer-events: none;
   opacity: 1;
-  background:
-    linear-gradient(90deg, rgba(3, 8, 16, 0.88), rgba(3, 8, 16, 0.2) 50%, rgba(3, 8, 16, 0.88)),
-    radial-gradient(circle at 50% 48%, rgba(128, 215, 255, 0.16), transparent 34%),
-    #030810;
+  background: #030508;
+}
+
+.hero-intro {
+  --hero-intro-max: calc(var(--content-max) + 400px);
+  --hero-intro-line-inset: min(8%, 77px);
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  right: max(var(--content-gutter), calc((100% - var(--hero-intro-max)) / 2));
+  bottom: 0;
+  left: max(var(--content-gutter), calc((100% - var(--hero-intro-max)) / 2));
+  width: auto;
+  container-type: inline-size;
+  color: #f8fbff;
+  font-family: "Jersey 10", var(--mono);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0.025em;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.96), 0 0 16px rgba(0, 0, 0, 0.72);
+  pointer-events: none;
+  transition: opacity 720ms ease, filter 720ms ease;
+}
+
+.hero-intro-dialogue {
+  position: absolute;
+  top: 35%;
+  right: var(--hero-intro-line-inset);
+  left: var(--hero-intro-line-inset);
+  display: grid;
+  grid-template-rows: repeat(2, 1.22em);
+  row-gap: 0.18em;
+  width: auto;
+  font-size: min(4.66cqi, 54px);
+  transform: translateY(-50%);
+  text-align: left;
+}
+
+.hero-intro-line {
+  margin: 0;
+  font-size: inherit;
+  line-height: 1.22;
+  white-space: nowrap;
+}
+
+.hero-intro-line.is-typing::after,
+.hero-intro-typed.is-typing::after {
+  content: "";
+  display: inline-block;
+  width: 0.46em;
+  height: 0.84em;
+  margin-left: 0.09em;
+  background: currentColor;
+  vertical-align: -0.04em;
+  animation: heroCaretBlink 760ms steps(1, end) infinite;
+}
+
+.hero-intro-closing {
+  position: absolute;
+  top: 52%;
+  right: var(--hero-intro-line-inset);
+  left: var(--hero-intro-line-inset);
+  display: grid;
+  grid-template-rows: repeat(2, 1.22em);
+  row-gap: 0.18em;
+  font-size: min(4.66cqi, 54px);
+  text-align: left;
+}
+
+.hero-intro-response,
+.hero-intro-resolution {
+  position: relative;
+  justify-self: end;
+  width: max-content;
+  margin: 0;
+  font-size: inherit;
+  line-height: 1.22;
+  white-space: nowrap;
+}
+
+.hero-intro-typed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: max-content;
+  opacity: 0;
+  filter: blur(7px);
+  transform: translateY(10px);
+  transition: opacity 680ms ease, filter 680ms ease, transform 680ms ease;
+}
+
+.hero-intro-measure {
+  visibility: hidden;
+}
+
+.hero-intro-typed.is-visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+.hero-intro.is-exiting {
+  opacity: 0;
+  filter: blur(5px);
+}
+
+.hero-intro[hidden] {
+  display: none;
 }
 
 body.hero-sequence-pending .nav {
@@ -1766,12 +1827,14 @@ body.hero-sequence-revealed .hero-content {
   animation: heroIdentityArrival 1300ms cubic-bezier(0.16, 1, 0.3, 1) 560ms both;
 }
 
+body.hero-world-revealing .hero-main-video,
 body.hero-sequence-revealed .hero-main-video {
-  animation: heroVideoCssArrival 2200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: heroVideoCssArrival 3200ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+body.hero-world-revealing .hero::after,
 body.hero-sequence-revealed .hero::after {
-  animation: heroCurtainReveal 2200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: heroCurtainReveal 3200ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .hero-content::after {
@@ -1793,13 +1856,13 @@ body.hero-sequence-revealed .hero-content::after {
 
 @keyframes heroVideoCssArrival {
   0% {
-    opacity: 0.16;
-    filter: blur(15px) saturate(0.58) brightness(0.48);
-    transform: translateZ(0) scale(1.075);
+    opacity: 0;
+    filter: saturate(0.7) brightness(0.38);
+    transform: translateZ(0) scale(1.025);
   }
-  42% {
-    opacity: 0.78;
-    filter: blur(4px) saturate(0.82) brightness(0.72);
+  48% {
+    opacity: 0.6;
+    filter: saturate(0.82) brightness(0.66);
   }
   100% {
     opacity: 1;
@@ -1810,8 +1873,13 @@ body.hero-sequence-revealed .hero-content::after {
 
 @keyframes heroCurtainReveal {
   0% { opacity: 1; }
-  36% { opacity: 0.72; }
+  42% { opacity: 0.62; }
   100% { opacity: 0; visibility: hidden; }
+}
+
+@keyframes heroCaretBlink {
+  0%, 48% { opacity: 1; }
+  49%, 100% { opacity: 0; }
 }
 
 @keyframes heroNavArrival {
@@ -1846,6 +1914,9 @@ body.hero-sequence-revealed .hero-content::after {
 @media (max-width: 520px) {
   .hero { padding: 20px 14px 30px; }
 
+  .hero-intro-dialogue { top: 37%; }
+  .hero-intro-closing { top: 51%; }
+
   .hero-content {
     padding: 14px 18px 14px 14px;
     transform: none;
@@ -1866,10 +1937,16 @@ body.hero-sequence-revealed .hero-content::after {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .hero-intro { display: none; }
+  .hero-main-video { opacity: 1; filter: none; transform: none; }
+  .hero::after { opacity: 0; visibility: hidden; }
+}
+
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
 <link href="project-page/rpg-demo.css?v=20260903-04" rel="stylesheet">
-<meta name="build" content="20260903-14">
+<meta name="build" content="20260903-29">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -1889,7 +1966,7 @@ body.hero-sequence-revealed .hero-content::after {
       <a href="#abstract">Abstract</a>
       <a href="#demos">Demos</a>
       <a href="#method">Method</a>
-      <a href="#overview-figure">Benchmark</a>
+      <a href="#benchmark">Benchmark</a>
       <a href="#result">Result</a>
     </div>
   </nav>
@@ -1898,6 +1975,22 @@ body.hero-sequence-revealed .hero-content::after {
     <video class="hero-image hero-main-video" data-hero-video muted loop playsinline preload="auto" poster="rpg-dreamer-top-hero-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
       <source src="top_video_2.mp4" type="video/mp4">
     </video>
+    <div class="hero-intro" data-hero-intro aria-hidden="true">
+      <div class="hero-intro-dialogue">
+        <p class="hero-intro-line" data-intro-question></p>
+        <p class="hero-intro-line" data-intro-answer></p>
+      </div>
+      <div class="hero-intro-closing">
+        <p class="hero-intro-response">
+          <span class="hero-intro-typed" data-intro-response></span>
+          <span class="hero-intro-measure" aria-hidden="true">Love that idea!</span>
+        </p>
+        <p class="hero-intro-resolution">
+          <span class="hero-intro-typed" data-intro-resolution></span>
+          <span class="hero-intro-measure" aria-hidden="true">Let's turn your imagination into RPG Dreamer.</span>
+        </p>
+      </div>
+    </div>
     <div class="hero-content">
       <div class="hero-brand">
         <img class="hero-logo" src="logo.png" alt="RPG Dreamer logo">
@@ -2168,7 +2261,7 @@ body.hero-sequence-revealed .hero-content::after {
           </div>
         </section>
 
-        <figure class="overview-figure reveal" id="overview-figure">
+        <figure class="overview-figure reveal" id="benchmark">
           <h2 class="paper-heading">Benchmark</h2>
           <img src="rpg-bench-overview.png?v=20260821-01" alt="RPG-Bench theme coverage and five complementary gameplay modes" loading="lazy">
           <figcaption class="overview-figure-caption">
@@ -2328,10 +2421,6 @@ body.hero-sequence-revealed .hero-content::after {
               </g>
             </svg>
           </div>
-          <div class="result-chart-tooltip" role="status" hidden>
-            <span class="result-tooltip-method"></span>
-            <span class="result-tooltip-value"></span>
-          </div>
         </figure>
       </div>
     </div>
@@ -2403,10 +2492,6 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   if (!card) return;
 
   const svg = card.querySelector(".result-chart-svg");
-  const plot = card.querySelector(".result-chart-plot");
-  const tooltip = card.querySelector(".result-chart-tooltip");
-  const tooltipMethod = tooltip.querySelector(".result-tooltip-method");
-  const tooltipValue = tooltip.querySelector(".result-tooltip-value");
   const buttons = [...card.querySelectorAll("[data-chart-series].result-legend-item")];
   const series = [...svg.querySelectorAll(".series[data-chart-series]")];
   const points = [...svg.querySelectorAll(".series-point")];
@@ -2425,25 +2510,6 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
       button.setAttribute("aria-pressed", String(selected));
     });
     highlight(lockedSeries);
-  };
-
-  const showTooltip = (point) => {
-    const raw = point.getAttribute("aria-label") || "";
-    const [method, reading = ""] = raw.split(" · ");
-    tooltipMethod.textContent = method;
-    tooltipValue.textContent = reading;
-
-    const pointRect = point.getBoundingClientRect();
-    const cardRect = card.getBoundingClientRect();
-    const x = pointRect.left + pointRect.width / 2 - cardRect.left;
-    const y = pointRect.top + pointRect.height / 2 - cardRect.top;
-    tooltip.style.left = `${Math.min(Math.max(x, 78), cardRect.width - 78)}px`;
-    tooltip.style.top = `${y}px`;
-    tooltip.hidden = false;
-  };
-
-  const hideTooltip = () => {
-    tooltip.hidden = true;
   };
 
   buttons.forEach((button) => {
@@ -2472,19 +2538,15 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
     const key = point.closest(".series").dataset.chartSeries;
     point.addEventListener("pointerenter", () => {
       if (!lockedSeries) highlight(key);
-      showTooltip(point);
     });
     point.addEventListener("pointerleave", () => {
       if (!lockedSeries) highlight(null);
-      hideTooltip();
     });
     point.addEventListener("focus", () => {
       if (!lockedSeries) highlight(key);
-      showTooltip(point);
     });
     point.addEventListener("blur", () => {
       if (!lockedSeries) highlight(null);
-      hideTooltip();
     });
   });
 
@@ -2493,8 +2555,6 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
     setLocked(lockedSeries);
     buttons[0]?.focus();
   });
-  plot.addEventListener("scroll", hideTooltip, { passive: true });
-  window.addEventListener("resize", hideTooltip, { passive: true });
 })();
 
 // ---- Dashboard panel parallax ----
@@ -2522,18 +2582,26 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   window.addEventListener("resize", onScroll);
   update();
 })();
-// ---- Single-video hero playback ----
-// The persistent montage starts at frame zero and CSS supplies the opening
-// transition, avoiding a second download and a cross-video handoff.
+// ---- Live-text hero intro and single-video playback ----
+// The dialogue recreates the first clip in HTML/CSS. The long montage begins
+// only when the world reveal starts, so no second video or crossfade is needed.
 (() => {
   const video = document.querySelector("[data-hero-video]");
   const hero = video?.closest(".hero");
-  if (!video || !hero) return;
+  const intro = hero?.querySelector("[data-hero-intro]");
+  const question = intro?.querySelector("[data-intro-question]");
+  const answer = intro?.querySelector("[data-intro-answer]");
+  const response = intro?.querySelector("[data-intro-response]");
+  const resolution = intro?.querySelector("[data-intro-resolution]");
+  if (!video || !hero || !intro || !question || !answer || !response || !resolution) return;
 
   let heroVisible = true;
   let started = false;
+  let introRunning = false;
   let loaderComplete = window.__rpgDreamerLoaderComplete === true;
   let announced = false;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const sleep = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
 
   video.muted = true;
   video.setAttribute("muted", "");
@@ -2556,15 +2624,100 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
     announceReady();
   };
 
+  const setTypingLine = (line) => {
+    [question, answer, response, resolution].forEach((element) => {
+      element.classList.toggle("is-typing", line === element);
+    });
+  };
+
+  const typeText = async (element, content, delay = 38) => {
+    setTypingLine(element);
+    for (const character of content) {
+      element.textContent += character;
+      await sleep(delay);
+    }
+  };
+
+  const morphText = async (element, nextText) => {
+    setTypingLine(element);
+    const currentText = element.textContent;
+    let shared = 0;
+    while (shared < currentText.length && shared < nextText.length && currentText[shared] === nextText[shared]) shared += 1;
+    for (let index = currentText.length; index > shared; index -= 1) {
+      element.textContent = currentText.slice(0, index - 1);
+      await sleep(20);
+    }
+    await sleep(180);
+    for (let index = shared; index < nextText.length; index += 1) {
+      element.textContent += nextText[index];
+      await sleep(36);
+    }
+  };
+
   const playIfVisible = () => {
     if (!loaderComplete || !started || !heroVisible || document.hidden) return;
     video.play().catch(() => {});
   };
 
-  const startHero = () => {
-    if (!loaderComplete || started) return;
-    if (video.error) {
+  const beginVideo = () => {
+    document.body.classList.add("hero-world-revealing");
+    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) video.currentTime = 0;
+    playIfVisible();
+  };
+
+  const failOpen = () => {
+    intro.hidden = true;
+    revealIdentity();
+  };
+
+  const runIntro = async () => {
+    if (introRunning) return;
+    introRunning = true;
+
+    if (reduceMotion) {
+      intro.hidden = true;
+      started = true;
+      beginVideo();
       revealIdentity();
+      return;
+    }
+
+    setTypingLine(question);
+    await sleep(360);
+    await typeText(question, "How to make an interesting, unique RPG game?", 42);
+    await sleep(520);
+    await typeText(answer, "Perhaps it's a game with multiple story branches", 37);
+    await sleep(720);
+    await morphText(answer, "Perhaps it's a game with a long storyline");
+    await sleep(720);
+    await morphText(answer, "Perhaps it's a game with varied gameplay systems");
+    await sleep(680);
+    await morphText(answer, "Perhaps it's a game with anything I could imagine.");
+    setTypingLine(null);
+    await sleep(780);
+
+    await sleep(850);
+    response.classList.add("is-visible");
+    await typeText(response, "Love that idea!", 52);
+    setTypingLine(null);
+    await sleep(520);
+
+    started = true;
+    beginVideo();
+    resolution.classList.add("is-visible");
+    await typeText(resolution, "Let's turn your imagination into RPG Dreamer.", 38);
+    setTypingLine(null);
+    await sleep(1500);
+    intro.classList.add("is-exiting");
+    await sleep(760);
+    intro.hidden = true;
+    revealIdentity();
+  };
+
+  const startHero = () => {
+    if (!loaderComplete || started || introRunning) return;
+    if (video.error) {
+      failOpen();
       return;
     }
     if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
@@ -2573,24 +2726,15 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
       if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
       return;
     }
-    started = true;
-    video.currentTime = 0;
-    const playback = heroVisible && !document.hidden ? video.play() : null;
-    if (playback && typeof playback.then === "function") {
-      playback.then(revealIdentity).catch(revealIdentity);
-    } else {
-      revealIdentity();
-    }
-    window.setTimeout(revealIdentity, 700);
+    runIntro();
   };
 
   video.addEventListener("playing", () => {
     hero.classList.remove("is-buffering");
-    revealIdentity();
   });
   video.addEventListener("waiting", () => hero.classList.add("is-buffering"));
   video.addEventListener("stalled", () => hero.classList.add("is-buffering"));
-  video.addEventListener("error", revealIdentity, { once: true });
+  video.addEventListener("error", failOpen, { once: true });
 
   document.addEventListener("rpgdreamer:loader-complete", () => {
     loaderComplete = true;
