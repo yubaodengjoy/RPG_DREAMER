@@ -2552,3 +2552,44 @@ body.rpg-demo-fullscreen-fallback {
     display: none;
   }
 }
+
+@media (max-width: 520px) {
+  #demos .rpg-handheld-player .rpg-demo-actions {
+    top: 7px;
+    right: 10px;
+  }
+
+  #demos .rpg-handheld-player .rpg-guide-action {
+    right: auto;
+    left: 10px;
+  }
+
+  #demos .rpg-handheld-player .rpg-demo-actions button {
+    width: 28px;
+    min-width: 28px;
+    min-height: 24px;
+    gap: 0;
+    padding: 0;
+  }
+
+  #demos .rpg-handheld-player .rpg-demo-actions button span {
+    display: none;
+  }
+
+  #demos .rpg-handheld-player .rpg-demo-actions svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  #demos .rpg-handheld-player .rpg-handheld-body::before {
+    z-index: 13;
+    top: 10px;
+    width: max-content;
+    max-width: calc(100% - 92px);
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
