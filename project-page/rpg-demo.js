@@ -101,6 +101,7 @@
   const insertedCartridge = root.querySelector('[data-rpg-eject]');
   const power = root.querySelector('[data-rpg-power]');
   const powerOffButton = root.querySelector('[data-rpg-power-off]');
+  const powerToggleButton = root.querySelector('[data-rpg-power-toggle]');
   const powerOnButton = root.querySelector('[data-rpg-power-on]');
   // Disabled cartridges remain listed and stored on R2, but are excluded from
   // all selection and launch behavior until they are re-enabled.
@@ -201,8 +202,13 @@
     }
     power?.classList.toggle('is-on', hasCartridge && poweredOn);
     if (powerOffButton) {
-      powerOffButton.disabled = !hasCartridge || cartridgeMoving;
+      powerOffButton.disabled = !hasCartridge || !poweredOn || cartridgeMoving;
       powerOffButton.setAttribute('aria-pressed', String(!poweredOn));
+    }
+    if (powerToggleButton) {
+      powerToggleButton.disabled = !hasCartridge || cartridgeMoving;
+      powerToggleButton.setAttribute('aria-pressed', String(poweredOn));
+      powerToggleButton.setAttribute('aria-label', poweredOn ? 'Turn console off' : 'Turn console on');
     }
     if (powerOnButton) {
       powerOnButton.disabled = !hasCartridge || poweredOn || cartridgeMoving;
@@ -504,6 +510,20 @@
       if (activeState() === state) syncActiveUi();
     }, 30000);
     syncActiveUi();
+  }
+
+  function powerOffGame() {
+    if (!hasCartridge || !poweredOn || cartridgeMoving) return;
+    closeControlsPage({ restoreFocus: false, resume: false });
+    poweredOn = false;
+    releaseVirtualKeys();
+    sendToGame(activeId, 'pause');
+    syncActiveUi();
+  }
+
+  function togglePower() {
+    if (poweredOn) powerOffGame();
+    else loadGame();
   }
 
   function markReady(id) {
@@ -817,7 +837,8 @@
   });
   loadButton.addEventListener('click', loadGame);
   powerOnButton?.addEventListener('click', loadGame);
-  powerOffButton?.addEventListener('click', () => { void ejectCartridge(); });
+  powerOffButton?.addEventListener('click', powerOffGame);
+  powerToggleButton?.addEventListener('click', togglePower);
   insertedCartridge?.addEventListener('click', () => { void ejectCartridge(); });
   openControlsButton?.addEventListener('click', () => {
     if (controlsOpen) closeControlsPage();

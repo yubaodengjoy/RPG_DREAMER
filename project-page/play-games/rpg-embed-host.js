@@ -9,10 +9,10 @@
   let lastPostedAudioState = '';
   const virtualKeysDown = new Map();
   const allowedVirtualKeys = new Map([
-    ['ArrowUp', { key: 'ArrowUp', keyCode: 38 }],
-    ['ArrowDown', { key: 'ArrowDown', keyCode: 40 }],
-    ['ArrowLeft', { key: 'ArrowLeft', keyCode: 37 }],
-    ['ArrowRight', { key: 'ArrowRight', keyCode: 39 }],
+    ['ArrowUp', { key: 'ArrowUp', keyCode: 38, gameKey: 'w', gameCode: 'KeyW', gameKeyCode: 87 }],
+    ['ArrowDown', { key: 'ArrowDown', keyCode: 40, gameKey: 's', gameCode: 'KeyS', gameKeyCode: 83 }],
+    ['ArrowLeft', { key: 'ArrowLeft', keyCode: 37, gameKey: 'a', gameCode: 'KeyA', gameKeyCode: 65 }],
+    ['ArrowRight', { key: 'ArrowRight', keyCode: 39, gameKey: 'd', gameCode: 'KeyD', gameKeyCode: 68 }],
     ['Space', { key: ' ', keyCode: 32 }],
   ]);
 
@@ -184,16 +184,16 @@
     else virtualKeysDown.delete(code);
 
     const event = new KeyboardEvent(phase === 'down' ? 'keydown' : 'keyup', {
-      key: definition.key,
-      code,
+      key: definition.gameKey || definition.key,
+      code: definition.gameCode || code,
       bubbles: true,
       cancelable: true,
       repeat: false,
     });
     try {
       Object.defineProperties(event, {
-        keyCode: { get: () => definition.keyCode },
-        which: { get: () => definition.keyCode },
+        keyCode: { get: () => definition.gameKeyCode || definition.keyCode },
+        which: { get: () => definition.gameKeyCode || definition.keyCode },
       });
     } catch {
       // Modern engines use key/code; legacy numeric properties are optional.

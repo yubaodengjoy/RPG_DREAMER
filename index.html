@@ -1706,8 +1706,8 @@ body.hero-sequence-revealed .hero-content::after {
 
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
-<link href="project-page/rpg-demo.css?v=20260903-09" rel="stylesheet">
-<meta name="build" content="20260903-39">
+<link href="project-page/rpg-demo.css?v=20260903-10" rel="stylesheet">
+<meta name="build" content="20260903-40">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -1981,7 +1981,7 @@ body.hero-sequence-revealed .hero-content::after {
               <span class="rpg-handheld-buttons" aria-hidden="true"></span>
               <div class="rpg-handheld-power" data-rpg-power role="group" aria-label="Console power">
                 <button type="button" data-rpg-power-off aria-pressed="true">OFF</button>
-                <span class="rpg-handheld-power-track" aria-hidden="true"><i></i></span>
+                <button class="rpg-handheld-power-track" type="button" data-rpg-power-toggle aria-label="Turn console on" aria-pressed="false" disabled><i aria-hidden="true"></i></button>
                 <button type="button" data-rpg-power-on aria-pressed="false" disabled>ON</button>
               </div>
             </div>
@@ -2266,7 +2266,7 @@ body.hero-sequence-revealed .hero-content::after {
 
 </main>
 
-<script src="project-page/rpg-demo.js?v=20260903-05"></script>
+<script src="project-page/rpg-demo.js?v=20260903-06"></script>
 <script>
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {

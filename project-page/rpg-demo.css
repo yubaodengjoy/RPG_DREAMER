@@ -779,10 +779,18 @@ body.rpg-demo-fullscreen-fallback #demos {
 .rpg-handheld-power-track {
   position: relative;
   width: 24px;
+  min-width: 24px !important;
   height: 10px;
+  min-height: 10px !important;
+  padding: 0 !important;
   border-radius: 999px;
   background: #05090e;
   box-shadow: inset 0 0 0 1px #465363;
+}
+
+.rpg-handheld-power-track:focus-visible {
+  outline: 1px solid #80d7ff;
+  outline-offset: 2px;
 }
 
 .rpg-handheld-power-track i {
