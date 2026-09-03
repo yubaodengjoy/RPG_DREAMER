@@ -976,7 +976,7 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-handheld-player {
-  width: min(1000px, calc(100% - 20px));
+  width: min(960px, calc(100% - 20px));
   padding-top: 68px;
 }
 
@@ -1789,7 +1789,7 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-handheld-player {
-  width: min(1000px, calc(100% - 12px));
+  width: min(960px, calc(100% - 12px));
   padding-top: 54px;
 }
 
@@ -2027,7 +2027,7 @@ body.rpg-demo-fullscreen-fallback {
 
 #demos .rpg-cartridge-browser {
   order: 2;
-  width: min(1000px, 100%);
+  width: min(960px, 100%);
   margin-top: 20px;
   margin-inline: auto;
   padding: 20px 18px 22px;

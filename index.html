@@ -21,7 +21,7 @@ html { scroll-behavior: smooth; }
   --blue: #183a57;
   --muted: #6e7682;
   --line: rgba(255,255,255,0.16);
-  --content-max: 1000px;
+  --content-max: 960px;
   --content-gutter: 18px;
   --serif: "Fraunces", "Cormorant Garamond", Georgia, serif;
   --sans: "Space Grotesk", "Satoshi", "Avenir Next", sans-serif;
@@ -521,7 +521,7 @@ body:not(.hero-in-view) .brand {
   fill: currentColor;
 }
 
-/* The abstract uses the same fixed 1000px design track as the rest of the page.
+/* The abstract uses the same fixed 960px design track as the rest of the page.
    It stays at that size while space allows, then scales down uniformly to fit
    the available viewport without ever being enlarged beyond the design size.
    The outer scaler follows the transformed footprint to avoid phantom overflow.
@@ -1461,7 +1461,7 @@ body:not(.hero-in-view) .brand {
 
 .overview-figure img { cursor: zoom-in; }
 
-/* Overview figures share the 1000px content track and retain their design size
+/* Overview figures share the 960px content track and retain their design size
    until that track reaches the viewport gutters. */
 @media (min-width: 900px) {
   .overview-section {
@@ -1763,8 +1763,8 @@ body.hero-sequence-revealed .hero-content::after {
 
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
-<link href="project-page/rpg-demo.css?v=20260903-01" rel="stylesheet">
-<meta name="build" content="20260903-03">
+<link href="project-page/rpg-demo.css?v=20260903-02" rel="stylesheet">
+<meta name="build" content="20260903-04">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -2752,7 +2752,7 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
 </script>
 
 <script>
-// Lay the Abstract out on the fixed 1000px design track. Keep it at 1:1 while
+// Lay the Abstract out on the fixed 960px design track. Keep it at 1:1 while
 // space allows, then scale it down uniformly to fit. The outer scaler receives
 // the transformed footprint so layout matches the visual. Narrow screens keep
 // the normal responsive flow.
