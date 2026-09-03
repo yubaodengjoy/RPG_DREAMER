@@ -221,7 +221,7 @@
 
 .rpg-demo-stage {
   position: relative;
-  min-height: min(66vw, 720px);
+  min-height: min(72cqi, 720px);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -262,7 +262,7 @@
 
 .rpg-demo-placeholder h3 {
   margin: 0 0 9px;
-  font-size: clamp(22px, 3vw, 34px);
+  font-size: clamp(22px, 3.4cqi, 34px);
 }
 
 .rpg-demo-placeholder p {
@@ -303,7 +303,7 @@
 }
 
 .rpg-demo-progress-track {
-  width: min(360px, 62vw);
+  width: min(360px, 36cqi);
   height: 5px;
   overflow: hidden;
   border-radius: 999px;
@@ -483,8 +483,8 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-demo-stage {
-  min-height: min(69vw, 760px);
-  border: clamp(8px, 1.2vw, 16px) solid #171f2a;
+  min-height: min(76cqi, 760px);
+  border: clamp(8px, 1.6cqi, 16px) solid #171f2a;
   border-top: 0;
   border-radius: 0 0 24px 24px;
   background: #020508;
@@ -625,7 +625,7 @@ body.rpg-demo-fullscreen-fallback {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px clamp(18px, 3vw, 38px);
+  padding: 24px clamp(18px, 3.8cqi, 38px);
   overflow: hidden;
   border: 7px solid #070a0f;
   border-radius: 14px;
@@ -661,7 +661,7 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-handheld-screen h3 {
   margin: 14px 0 8px;
   color: #f3f7f5;
-  font-size: clamp(22px, 3vw, 36px);
+  font-size: clamp(22px, 3.6cqi, 36px);
   line-height: 1.05;
 }
 
@@ -816,7 +816,7 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-compiler-screen > strong {
   margin: 13px 0 14px;
   color: #e5fff3;
-  font: 600 clamp(13px, 1.5vw, 18px)/1.2 var(--sans);
+  font: 600 clamp(13px, 1.8cqi, 18px)/1.2 var(--sans);
 }
 
 .rpg-compiler-log {
@@ -970,13 +970,13 @@ body.rpg-demo-fullscreen-fallback {
 
 /* Persistent device: selection, compiler and playable iframe share one screen. */
 .rpg-demo-stage {
-  min-height: min(78vw, 900px);
+  min-height: min(90cqi, 900px);
   place-items: center;
   padding: 34px 12px 44px;
 }
 
 .rpg-handheld-player {
-  width: min(1080px, calc(100% - 20px));
+  width: min(1000px, calc(100% - 20px));
   padding-top: 68px;
 }
 
@@ -1009,7 +1009,7 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-handheld-player .rpg-demo-placeholder h3 {
   margin-top: 0;
   font-family: "Jersey 10", var(--mono);
-  font-size: clamp(32px, 4vw, 48px);
+  font-size: clamp(32px, 4.8cqi, 48px);
   font-weight: 400;
   font-synthesis: none;
   letter-spacing: 0.02em;
@@ -1074,7 +1074,7 @@ body.rpg-demo-fullscreen-fallback {
   align-items: stretch;
   justify-content: flex-start;
   gap: 0;
-  padding: clamp(30px, 5vw, 58px);
+  padding: clamp(30px, 5.8cqi, 58px);
   background:
     linear-gradient(rgba(0, 12, 9, 0.88), rgba(0, 8, 7, 0.94)),
     var(--rpg-demo-poster, url("../rpg-dreamer-top-hero-poster.webp")) center / cover;
@@ -1299,7 +1299,7 @@ body.rpg-demo-fullscreen-fallback {
 /* Both playable cartridges render at 800 x 600. The standard widescreen LCD
    keeps that 4:3 canvas centered over seamless black side bars. */
 .rpg-demo-stage {
-  min-height: min(68vw, 760px);
+  min-height: min(76cqi, 760px);
 }
 
 .rpg-handheld-player .rpg-handheld-body {
@@ -1789,7 +1789,7 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-handheld-player {
-  width: min(1140px, calc(100% - 12px));
+  width: min(1000px, calc(100% - 12px));
   padding-top: 54px;
 }
 
@@ -2027,7 +2027,7 @@ body.rpg-demo-fullscreen-fallback {
 
 #demos .rpg-cartridge-browser {
   order: 2;
-  width: min(1180px, 100%);
+  width: min(1000px, 100%);
   margin-top: 20px;
   margin-inline: auto;
   padding: 20px 18px 22px;
@@ -2314,7 +2314,7 @@ body.rpg-demo-fullscreen-fallback {
 #demos .rpg-controls-panel > h3 {
   margin: 9px 0 5px;
   color: #f5f8f7;
-  font: 400 clamp(32px, 4vw, 46px)/0.95 "Jersey 10", var(--mono);
+  font: 400 clamp(32px, 4.6cqi, 46px)/0.95 "Jersey 10", var(--mono);
   letter-spacing: 0.04em;
 }
 

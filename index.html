@@ -21,6 +21,8 @@ html { scroll-behavior: smooth; }
   --blue: #183a57;
   --muted: #6e7682;
   --line: rgba(255,255,255,0.16);
+  --content-max: 1000px;
+  --content-gutter: 18px;
   --serif: "Fraunces", "Cormorant Garamond", Georgia, serif;
   --sans: "Space Grotesk", "Satoshi", "Avenir Next", sans-serif;
   --mono: "JetBrains Mono", "IBM Plex Mono", monospace;
@@ -174,7 +176,7 @@ img, video { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px clamp(18px, 4vw, 64px);
+  padding: 22px max(var(--content-gutter), calc((100% - var(--content-max)) / 2));
   color: rgba(248,246,239,0.78);
   font-family: var(--mono);
   font-size: 12px;
@@ -215,7 +217,7 @@ body:not(.hero-in-view) .brand {
 
 .nav-links {
   display: flex;
-  gap: clamp(16px, 3vw, 34px);
+  gap: clamp(16px, 3.4vw, 34px);
 }
 
 .nav-links a,
@@ -276,7 +278,7 @@ body:not(.hero-in-view) .brand {
   justify-content: center;
   width: fit-content;
   margin-inline: auto;
-  gap: clamp(4px, 0.6vw, 8px);
+  gap: clamp(4px, 0.8vw, 8px);
 }
 
 .hero-logo {
@@ -295,7 +297,7 @@ body:not(.hero-in-view) .brand {
 
 .section {
   position: relative;
-  padding: clamp(92px, 10vw, 150px) clamp(18px, 4vw, 64px);
+  padding: clamp(92px, 15vw, 150px) max(var(--content-gutter), calc((100% - var(--content-max)) / 2));
   min-height: 100svh;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -308,8 +310,10 @@ body:not(.hero-in-view) .brand {
 }
 
 .section-inner {
-  width: min(1180px, 100%);
+  width: 100%;
+  max-width: var(--content-max);
   margin: 0 auto;
+  container-type: inline-size;
 }
 
 .eyebrow {
@@ -323,7 +327,7 @@ body:not(.hero-in-view) .brand {
 
 .section-title {
   font-family: var(--sans);
-  font-size: clamp(40px, 7vw, 92px);
+  font-size: clamp(40px, 9.2cqi, 92px);
   font-weight: 800;
   line-height: 0.98;
   letter-spacing: 0;
@@ -344,13 +348,13 @@ body:not(.hero-in-view) .brand {
   margin-top: 28px;
   color: #3b4652;
   font-family: var(--serif);
-  font-size: clamp(20px, 2.4vw, 29px);
+  font-size: clamp(20px, 2.9cqi, 29px);
   line-height: 1.55;
 }
 
 .abstract-logo {
   display: block;
-  width: clamp(64px, 7vw, 92px);
+  width: clamp(64px, 9.2cqi, 92px);
   height: auto;
   margin: 0 auto 20px;
   border-radius: 20px;
@@ -359,7 +363,7 @@ body:not(.hero-in-view) .brand {
 
 .paper-heading {
   font-family: var(--sans);
-  font-size: clamp(42px, 5vw, 64px);
+  font-size: clamp(42px, 6.4cqi, 64px);
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.01em;
@@ -374,7 +378,7 @@ body:not(.hero-in-view) .brand {
 
 .abstract-paper-title {
   font-family: "Jersey 10", var(--mono);
-  font-size: clamp(30px, 4.4vw, 50px);
+  font-size: clamp(30px, 5cqi, 50px);
   font-weight: 400;
   font-synthesis: none;
   text-align: center;
@@ -387,7 +391,7 @@ body:not(.hero-in-view) .brand {
 
 #abstract .paper-heading {
   font-family: "Jersey 10", var(--mono);
-  font-size: clamp(42px, 5vw, 64px);
+  font-size: clamp(42px, 6.4cqi, 64px);
   font-weight: 400;
   font-synthesis: none;
   letter-spacing: 0;
@@ -405,9 +409,18 @@ body:not(.hero-in-view) .brand {
 @media (max-width: 640px) {
   .abstract-paper-title { white-space: normal; }
   .abstract-title-grid {
-    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     width: 100%;
   }
+  #abstract .abstract-title-grid > * {
+    grid-column: 1;
+    text-align: center;
+  }
+}
+
+.abstract-scaler,
+.abstract-stage {
+  max-width: 100%;
 }
 
 .abstract-paper-title .brand-accent {
@@ -433,7 +446,7 @@ body:not(.hero-in-view) .brand {
 .abstract-panel {
   max-width: 880px;
   margin: 0 auto;
-  padding: clamp(32px, 4vw, 48px) clamp(28px, 4.5vw, 56px) clamp(36px, 4vw, 52px);
+  padding: clamp(32px, 4.8cqi, 48px) clamp(28px, 5.6cqi, 56px) clamp(36px, 5.2cqi, 52px);
   background: #fdfcf6;
   border: 1px solid rgba(22, 34, 58, 0.08);
   border-radius: 22px;
@@ -446,7 +459,7 @@ body:not(.hero-in-view) .brand {
 .abstract-panel .abstract-body {
   font-family: var(--serif);
   color: #2a3242;
-  font-size: clamp(15px, 1.35vw, 17px);
+  font-size: clamp(15px, 1.7cqi, 17px);
   line-height: 1.78;
   margin: 0;
   max-width: none;
@@ -507,23 +520,21 @@ body:not(.hero-in-view) .brand {
   fill: currentColor;
 }
 
-/* Q2 scale-to-fit: the abstract fills exactly one screen at any resolution. Its
-   content is laid out at a fixed DESIGN size (viewport-independent — the vw-based
-   clamps below are pinned to constants) and the whole block is uniformly scaled
-   by JS to fit the viewport, like a slide that always fills the screen. This
-   stops it from floating tiny in a big empty section on large/hi-res monitors.
-   The outer .abstract-scaler is sized by JS to the SCALED footprint so layout
-   matches the visual (no phantom scrollbars from the unscaled inner box).
-   Desktop only; narrow screens keep the normal responsive flow. */
+/* The abstract uses the same fixed 1000px design track as the rest of the page.
+   It stays at that size while space allows, then scales down uniformly to fit
+   the available viewport without ever being enlarged beyond the design size.
+   The outer scaler follows the transformed footprint to avoid phantom overflow.
+   Narrow screens use the normal responsive flow. */
 @media (min-width: 900px) {
   #abstract.abstract-fit {
     height: 100svh;
     min-height: 0;
-    padding: clamp(28px, 4.5vmin, 72px);
+    padding-block: clamp(28px, 4.5vmin, 72px);
+    padding-inline: max(var(--content-gutter), calc((100% - var(--content-max)) / 2));
     overflow: hidden;
   }
   #abstract.abstract-fit .abstract-stage {
-    width: 1080px;
+    width: var(--content-max);
     transform-origin: top left;
     will-change: transform;
   }
@@ -537,7 +548,8 @@ body:not(.hero-in-view) .brand {
 }
 
 .overview-figure {
-  width: min(90%, 1240px);
+  width: 100%;
+  max-width: var(--content-max);
   margin: 46px auto 0;
   scroll-margin-top: 96px;
 }
@@ -555,7 +567,7 @@ body:not(.hero-in-view) .brand {
 
 .overview-gallery {
   display: grid;
-  gap: clamp(42px, 6vw, 76px);
+  gap: clamp(42px, 7.6cqi, 76px);
   margin-top: 0;
 }
 
@@ -571,7 +583,7 @@ body:not(.hero-in-view) .brand {
   border-top: 1px solid rgba(22, 34, 58, 0.16);
   color: #2a3242;
   font-family: var(--serif);
-  font-size: clamp(15px, 1.35vw, 17px);
+  font-size: clamp(15px, 1.7cqi, 17px);
   line-height: 1.78;
   text-align: justify;
   hyphens: auto;
@@ -586,7 +598,8 @@ body:not(.hero-in-view) .brand {
    reads as a player rather than a figure. The poster is the clip's own first
    frame, so it is 16:9 like the clip and neither is cropped or letterboxed. */
 .video-figure {
-  width: min(90%, 1240px);
+  width: 100%;
+  max-width: var(--content-max);
   margin: 46px auto 0;
 }
 
@@ -611,7 +624,7 @@ body:not(.hero-in-view) .brand {
 }
 
 .feature-strip article {
-  padding: 30px clamp(18px, 3vw, 34px);
+  padding: 30px clamp(18px, 3.4cqi, 34px);
   border-right: 1px solid rgba(16,16,22,0.12);
 }
 
@@ -809,7 +822,7 @@ body:not(.hero-in-view) .brand {
 
 .cinema-info h3 {
   font-family: var(--sans);
-  font-size: clamp(26px, 3vw, 40px);
+  font-size: clamp(26px, 4cqi, 40px);
   font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.1;
@@ -819,7 +832,7 @@ body:not(.hero-in-view) .brand {
 
 .cinema-desc {
   font-family: var(--serif);
-  font-size: clamp(15px, 1.25vw, 18px);
+  font-size: clamp(15px, 1.8cqi, 18px);
   line-height: 1.65;
   color: rgba(248, 246, 239, 0.76);
   max-width: 720px;
@@ -836,7 +849,7 @@ body:not(.hero-in-view) .brand {
   margin-top: 34px;
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: clamp(128px, 11vw, 168px);
+  grid-auto-columns: clamp(128px, 16.8cqi, 168px);
   gap: 12px;
   overflow-x: auto;
   padding-bottom: 10px;
@@ -934,7 +947,7 @@ body:not(.hero-in-view) .brand {
   margin: -14px auto 0;
   color: #596573;
   font-family: var(--serif);
-  font-size: clamp(16px, 1.45vw, 19px);
+  font-size: clamp(16px, 1.9cqi, 19px);
   text-align: center;
 }
 
@@ -975,18 +988,20 @@ body:not(.hero-in-view) .brand {
 
 .panel-name {
   font-family: var(--sans);
-  font-size: clamp(19px, 2vw, 24px);
+  font-size: clamp(19px, 2.4cqi, 24px);
   font-weight: 700;
   color: #16223a;
 }
 
 .result-compare {
-  width: min(1080px, 100%);
-  margin: clamp(30px, 5vw, 58px) auto 0;
+  width: 100%;
+  max-width: var(--content-max);
+  margin: clamp(30px, 5.8cqi, 58px) auto 0;
 }
 
 #result .studio-head {
-  width: min(1080px, 100%);
+  width: 100%;
+  max-width: var(--content-max);
   margin: 0 auto;
   text-align: left;
 }
@@ -1007,7 +1022,7 @@ body:not(.hero-in-view) .brand {
 }
 
 .result-table-wrap {
-  overflow-x: auto;
+  overflow-x: hidden;
   border: 1px solid rgba(22, 34, 58, 0.12);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.82);
@@ -1024,7 +1039,7 @@ body:not(.hero-in-view) .brand {
   table-layout: fixed;
   border-collapse: collapse;
   color: #26354b;
-  font-size: 14px;
+  font-size: clamp(8px, 1.4cqi, 14px);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1034,7 +1049,7 @@ body:not(.hero-in-view) .brand {
 
 .result-table th,
 .result-table td {
-  padding: 15px 18px;
+  padding: clamp(7px, 1.5cqi, 15px) clamp(4px, 1.8cqi, 18px);
   border-bottom: 1px solid rgba(22, 34, 58, 0.09);
   text-align: left;
   white-space: nowrap;
@@ -1044,7 +1059,7 @@ body:not(.hero-in-view) .brand {
   background: linear-gradient(180deg, #1b2942, #142036);
   color: #f8f6ef;
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: clamp(8px, 1.4cqi, 14px);
   font-weight: 700;
   line-height: 1.35;
   letter-spacing: 0.01em;
@@ -1055,11 +1070,11 @@ body:not(.hero-in-view) .brand {
   position: relative;
   padding-top: 12px;
   padding-bottom: 12px;
-  padding-left: 30px;
+  padding-left: clamp(18px, 3cqi, 30px);
   background: rgba(22, 34, 58, 0.055);
   color: #16223a;
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: clamp(8px, 1.4cqi, 14px);
   font-weight: 700;
   letter-spacing: 0.01em;
   text-align: left;
@@ -1103,8 +1118,8 @@ body:not(.hero-in-view) .brand {
 .result-chart-card {
   position: relative;
   overflow: hidden;
-  margin: clamp(26px, 4vw, 42px) 0 0;
-  padding: clamp(22px, 3vw, 34px);
+  margin: clamp(26px, 4.2cqi, 42px) 0 0;
+  padding: clamp(22px, 3.4cqi, 34px);
   border: 1px solid rgba(22, 34, 58, 0.12);
   border-radius: 20px;
   background:
@@ -1125,7 +1140,7 @@ body:not(.hero-in-view) .brand {
 .result-chart-title {
   color: #16223a;
   font-family: var(--sans);
-  font-size: clamp(22px, 2.6vw, 31px);
+  font-size: clamp(22px, 3.1cqi, 31px);
   font-weight: 700;
   line-height: 1.15;
 }
@@ -1201,7 +1216,7 @@ body:not(.hero-in-view) .brand {
 .result-chart-plot {
   position: relative;
   z-index: 1;
-  overflow-x: auto;
+  overflow-x: hidden;
   border: 1px solid rgba(22, 34, 58, 0.08);
   border-radius: 14px;
   background: rgba(250, 252, 252, 0.74);
@@ -1211,7 +1226,7 @@ body:not(.hero-in-view) .brand {
 .result-chart-svg {
   display: block;
   width: 100%;
-  min-width: 680px;
+  min-width: 0;
   height: auto;
 }
 
@@ -1365,17 +1380,17 @@ body:not(.hero-in-view) .brand {
 
 @media (max-width: 820px) {
   .result-chart-plot {
-    margin-right: calc(clamp(22px, 3vw, 34px) * -0.45);
+    margin-right: 0;
   }
 }
 
 @media (max-width: 640px) {
   .result-table {
-    min-width: 680px;
+    min-width: 0;
   }
 
   .result-table-wrap {
-    margin-right: calc(clamp(18px, 4vw, 64px) * -0.5);
+    margin-right: 0;
   }
 }
 
@@ -1430,7 +1445,8 @@ body:not(.hero-in-view) .brand {
 }
 
 .overview-section .section-inner {
-  width: min(1400px, 100%);
+  width: 100%;
+  max-width: var(--content-max);
 }
 
 .overview-head {
@@ -1444,11 +1460,8 @@ body:not(.hero-in-view) .brand {
 
 .overview-figure img { cursor: zoom-in; }
 
-/* Overview diagram fills the viewport height at ALL desktop sizes — no abrupt
-   threshold where it snaps small. Previously gated on min-width:1600 AND
-   min-height:1000, so any screen below that band (common laptop heights, or a
-   hi-DPI screen whose CSS height is < 1000) fell back to a tiny 1240px-capped
-   figure floating in a full-height section. */
+/* Overview figures share the 1000px content track and retain their design size
+   until that track reaches the viewport gutters. */
 @media (min-width: 900px) {
   .overview-section {
     padding-top: clamp(84px, 9vh, 130px);
@@ -1456,11 +1469,13 @@ body:not(.hero-in-view) .brand {
   }
 
   .overview-section .section-inner {
-    width: min(94vw, 2800px);
+    width: 100%;
+    max-width: var(--content-max);
   }
 
   .overview-figure {
-    width: min(90%, 1240px);
+    width: 100%;
+    max-width: var(--content-max);
     margin-top: clamp(20px, 3vh, 40px);
   }
 
@@ -1487,7 +1502,7 @@ body:not(.hero-in-view) .brand {
 .lightbox[hidden] { display: none; }
 
 .lightbox img {
-  max-width: 94vw;
+  max-width: min(var(--content-max), 94vw);
   max-height: 92vh;
   width: auto;
   height: auto;
@@ -1554,7 +1569,8 @@ body:not(.hero-in-view) .brand {
 .hero {
   min-height: 100svh;
   place-items: center;
-  padding: clamp(28px, 5vw, 68px);
+  padding: clamp(28px, 6.8vw, 68px);
+  padding-inline: max(14px, calc((100% - var(--content-max)) / 2));
 }
 
 .hero-image {
@@ -1579,7 +1595,7 @@ body:not(.hero-in-view) .brand {
 
 .hero-content {
   width: auto;
-  max-width: calc(100% - 32px);
+  max-width: min(var(--content-max), calc(100% - 32px));
   padding: 24px 40px 24px 28px;
   margin: 0;
   opacity: 1;
@@ -1595,7 +1611,7 @@ body:not(.hero-in-view) .brand {
 
 .hero-brand { gap: 24px; }
 
-.hero-logo { width: clamp(96px, 12vw, 144px); }
+.hero-logo { width: clamp(96px, 14.4vw, 144px); }
 
 .hero-wordmark {
   min-width: 0;
@@ -1608,7 +1624,7 @@ body:not(.hero-in-view) .brand {
   margin: 0;
   color: #f8fbff;
   background: none;
-  font-size: clamp(80px, 10.5vw, 120px);
+  font-size: clamp(80px, 12vw, 120px);
   line-height: 1;
   animation: none;
   filter: drop-shadow(0 0 20px rgba(45, 184, 255, 0.22));
@@ -1617,7 +1633,7 @@ body:not(.hero-in-view) .brand {
 .hero-tagline {
   margin: -6px 0 0;
   color: rgba(248, 251, 255, 0.62);
-  font: 400 clamp(20.7px, 2.736vw, 30.2px)/1.15 "Jersey 10", var(--mono);
+  font: 400 clamp(20.7px, 3.02vw, 30.2px)/1.15 "Jersey 10", var(--mono);
   font-synthesis: none;
   letter-spacing: 0.08em;
   text-align: center;
@@ -1746,8 +1762,8 @@ body.hero-sequence-revealed .hero-content::after {
 
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
-<link href="project-page/rpg-demo.css?v=20260901-01" rel="stylesheet">
-<meta name="build" content="20260903-01">
+<link href="project-page/rpg-demo.css?v=20260903-01" rel="stylesheet">
+<meta name="build" content="20260903-02">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -2735,11 +2751,10 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
 </script>
 
 <script>
-// Q2 scale-to-fit for the Abstract: lay the block out at its fixed design size,
-// then uniformly scale it so it exactly fills one screen at any resolution.
-// The outer .abstract-scaler is set to the SCALED footprint so page layout
-// matches the visual (no phantom scrollbars). Desktop only (>=900px); narrower
-// screens keep the normal responsive flow.
+// Lay the Abstract out on the fixed 1000px design track. Keep it at 1:1 while
+// space allows, then scale it down uniformly to fit. The outer scaler receives
+// the transformed footprint so layout matches the visual. Narrow screens keep
+// the normal responsive flow.
 (() => {
   const section = document.getElementById("abstract");
   if (!section) return;
@@ -2762,7 +2777,7 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
     const cs = getComputedStyle(section);
     const availW = section.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     const availH = section.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    const scale = Math.min(availW / w, availH / h);
+    const scale = Math.min(1, availW / w, availH / h);
     // Give the block a real footprint equal to its scaled size, then scale from
     // the top-left corner so the visual fills that footprint exactly.
     scaler.style.width = (w * scale) + "px";
