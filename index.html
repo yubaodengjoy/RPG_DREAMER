@@ -1716,17 +1716,32 @@ body:not(.hero-in-view) .brand {
   flex-wrap: wrap;
 }
 
-/* Two-part opening: the clean intro plays first, then the persistent world
-   montage takes over and introduces the interface as one composed reveal. */
+/* The persistent world montage is the only hero video. A short CSS sequence
+   supplies the opening reveal without loading and switching a second clip. */
 .hero-image {
   z-index: 0;
-  opacity: 0;
-  transition: opacity 680ms cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 1;
 }
 
-.hero-intro-video { opacity: 1; }
-.hero.is-looping .hero-intro-video { opacity: 0; }
-.hero.is-looping .hero-loop-video { opacity: 1; }
+.hero-main-video {
+  opacity: 0.16;
+  filter: blur(15px) saturate(0.58) brightness(0.48);
+  transform: translateZ(0) scale(1.075);
+  will-change: opacity, filter, transform;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  opacity: 1;
+  background:
+    linear-gradient(90deg, rgba(3, 8, 16, 0.88), rgba(3, 8, 16, 0.2) 50%, rgba(3, 8, 16, 0.88)),
+    radial-gradient(circle at 50% 48%, rgba(128, 215, 255, 0.16), transparent 34%),
+    #030810;
+}
 
 body.hero-sequence-pending .nav {
   opacity: 0;
@@ -1744,11 +1759,19 @@ body.hero-sequence-pending .hero-content {
 }
 
 body.hero-sequence-revealed .nav {
-  animation: heroNavArrival 980ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: heroNavArrival 980ms cubic-bezier(0.16, 1, 0.3, 1) 220ms both;
 }
 
 body.hero-sequence-revealed .hero-content {
-  animation: heroIdentityArrival 1300ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+  animation: heroIdentityArrival 1300ms cubic-bezier(0.16, 1, 0.3, 1) 560ms both;
+}
+
+body.hero-sequence-revealed .hero-main-video {
+  animation: heroVideoCssArrival 2200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.hero-sequence-revealed .hero::after {
+  animation: heroCurtainReveal 2200ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .hero-content::after {
@@ -1765,7 +1788,30 @@ body.hero-sequence-revealed .hero-content {
 }
 
 body.hero-sequence-revealed .hero-content::after {
-  animation: heroIdentityScan 1150ms cubic-bezier(0.22, 1, 0.36, 1) 260ms both;
+  animation: heroIdentityScan 1150ms cubic-bezier(0.22, 1, 0.36, 1) 720ms both;
+}
+
+@keyframes heroVideoCssArrival {
+  0% {
+    opacity: 0.16;
+    filter: blur(15px) saturate(0.58) brightness(0.48);
+    transform: translateZ(0) scale(1.075);
+  }
+  42% {
+    opacity: 0.78;
+    filter: blur(4px) saturate(0.82) brightness(0.72);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0) saturate(1) brightness(1);
+    transform: translateZ(0) scale(1);
+  }
+}
+
+@keyframes heroCurtainReveal {
+  0% { opacity: 1; }
+  36% { opacity: 0.72; }
+  100% { opacity: 0; visibility: hidden; }
 }
 
 @keyframes heroNavArrival {
@@ -1823,7 +1869,7 @@ body.hero-sequence-revealed .hero-content::after {
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
 <link href="project-page/rpg-demo.css?v=20260903-04" rel="stylesheet">
-<meta name="build" content="20260903-13">
+<meta name="build" content="20260903-14">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -1849,10 +1895,7 @@ body.hero-sequence-revealed .hero-content::after {
   </nav>
 
   <section class="hero" id="top">
-    <video class="hero-image hero-intro-video" data-hero-intro muted playsinline preload="auto" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
-      <source src="top_video_1.mp4" type="video/mp4">
-    </video>
-    <video class="hero-image hero-loop-video" data-hero-loop muted loop playsinline preload="auto" poster="rpg-dreamer-top-hero-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+    <video class="hero-image hero-main-video" data-hero-video muted loop playsinline preload="auto" poster="rpg-dreamer-top-hero-poster.webp" aria-hidden="true" tabindex="-1" draggable="false" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
       <source src="top_video_2.mp4" type="video/mp4">
     </video>
     <div class="hero-content">
@@ -2329,7 +2372,7 @@ body.hero-sequence-revealed .hero-content::after {
     });
   };
   const waitForHeroMedia = Promise.all(
-    [...document.querySelectorAll('[data-hero-intro], [data-hero-loop]')].map(waitForVideo),
+    [...document.querySelectorAll('[data-hero-video]')].map(waitForVideo),
   );
   const resourcesReady = Promise.all([waitForWindow, waitForFonts, waitForHeroMedia]);
   resourcesReady.then(() => {
@@ -2479,43 +2522,24 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   window.addEventListener("resize", onScroll);
   update();
 })();
-// ---- Two-part hero playback ----
-// Both clips begin buffering together. The clean intro plays once; its final
-// composition matches the opening of the loop, so the identity can arrive on
-// top without a visible cut.
+// ---- Single-video hero playback ----
+// The persistent montage starts at frame zero and CSS supplies the opening
+// transition, avoiding a second download and a cross-video handoff.
 (() => {
-  const intro = document.querySelector("[data-hero-intro]");
-  const loop = document.querySelector("[data-hero-loop]");
-  const hero = intro?.closest(".hero");
-  if (!intro || !loop || !hero) return;
+  const video = document.querySelector("[data-hero-video]");
+  const hero = video?.closest(".hero");
+  if (!video || !hero) return;
 
-  const videos = [intro, loop];
   let heroVisible = true;
-  let phase = "preloading";
+  let started = false;
   let loaderComplete = window.__rpgDreamerLoaderComplete === true;
   let announced = false;
 
-  videos.forEach((video) => {
-    video.muted = true;
-    video.setAttribute("muted", "");
-    video.playsInline = true;
-    video.preload = "auto";
-    video.pause();
-  });
-
-  const bufferedAhead = (video) => {
-    for (let i = 0; i < video.buffered.length; i += 1) {
-      if (video.buffered.start(i) <= video.currentTime + 0.05 && video.buffered.end(i) >= video.currentTime) {
-        return video.buffered.end(i) - video.currentTime;
-      }
-    }
-    return 0;
-  };
-
-  const hasUsefulBuffer = (video, seconds = 1.25) => (
-    video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA
-    && bufferedAhead(video) >= Math.min(seconds, Math.max(0.5, video.duration || seconds))
-  );
+  video.muted = true;
+  video.setAttribute("muted", "");
+  video.playsInline = true;
+  video.preload = "auto";
+  video.pause();
 
   const announceReady = () => {
     if (announced) return;
@@ -2527,95 +2551,72 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   };
 
   const revealIdentity = () => {
-    hero.classList.add("is-looping");
     document.body.classList.remove("hero-sequence-pending");
     document.body.classList.add("hero-sequence-revealed");
     announceReady();
   };
 
-  const activeVideo = () => (phase === "loop" ? loop : intro);
-
-  const playActiveIfVisible = () => {
-    if (!loaderComplete || phase === "preloading" || !heroVisible || document.hidden) return;
-    activeVideo().play().catch(() => {});
+  const playIfVisible = () => {
+    if (!loaderComplete || !started || !heroVisible || document.hidden) return;
+    video.play().catch(() => {});
   };
 
-  const startLoop = () => {
-    if (!loaderComplete || phase === "loop") return;
-    if (loop.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
-      hero.classList.add("is-buffering");
-      loop.addEventListener("canplay", startLoop, { once: true });
-      if (loop.networkState === HTMLMediaElement.NETWORK_EMPTY) loop.load();
+  const startHero = () => {
+    if (!loaderComplete || started) return;
+    if (video.error) {
+      revealIdentity();
       return;
     }
-    phase = "loop";
-    intro.pause();
-    loop.currentTime = 0;
-    const playback = loop.play();
+    if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+      hero.classList.add("is-buffering");
+      video.addEventListener("canplay", startHero, { once: true });
+      if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
+      return;
+    }
+    started = true;
+    video.currentTime = 0;
+    const playback = heroVisible && !document.hidden ? video.play() : null;
     if (playback && typeof playback.then === "function") {
       playback.then(revealIdentity).catch(revealIdentity);
     } else {
       revealIdentity();
     }
-    window.setTimeout(revealIdentity, 900);
+    window.setTimeout(revealIdentity, 700);
   };
 
-  const startIntro = (force = false) => {
-    if (!loaderComplete || phase !== "preloading") return;
-    if (!force && !hasUsefulBuffer(intro)) return;
-    phase = "intro";
-    if (heroVisible && !document.hidden) {
-      intro.play().catch(startLoop);
-    }
-  };
-
-  ["loadeddata", "canplay", "canplaythrough", "progress"].forEach((eventName) => {
-    videos.forEach((video) => video.addEventListener(eventName, () => startIntro(), { passive: true }));
-  });
-
-  intro.addEventListener("ended", startLoop, { once: true });
-  intro.addEventListener("error", startLoop, { once: true });
-  loop.addEventListener("playing", () => {
+  video.addEventListener("playing", () => {
     hero.classList.remove("is-buffering");
-    if (phase === "loop") revealIdentity();
+    revealIdentity();
   });
-  videos.forEach((video) => {
-    video.addEventListener("waiting", () => hero.classList.add("is-buffering"));
-    video.addEventListener("stalled", () => hero.classList.add("is-buffering"));
-    video.addEventListener("playing", () => hero.classList.remove("is-buffering"));
-  });
+  video.addEventListener("waiting", () => hero.classList.add("is-buffering"));
+  video.addEventListener("stalled", () => hero.classList.add("is-buffering"));
+  video.addEventListener("error", revealIdentity, { once: true });
 
   document.addEventListener("rpgdreamer:loader-complete", () => {
     loaderComplete = true;
-    videos.forEach((video) => {
-      video.pause();
-      if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-        video.currentTime = 0;
-      }
-    });
-    startIntro(true);
+    video.pause();
+    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) video.currentTime = 0;
+    startHero();
   }, { once: true });
 
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(([entry]) => {
       heroVisible = entry.isIntersecting;
       document.body.classList.toggle("hero-in-view", heroVisible);
-      if (heroVisible) playActiveIfVisible();
-      else videos.forEach((video) => video.pause());
+      if (heroVisible) playIfVisible();
+      else video.pause();
     }, { threshold: 0.05 });
     observer.observe(hero);
   }
 
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) videos.forEach((video) => video.pause());
-    else playActiveIfVisible();
+    if (document.hidden) video.pause();
+    else playIfVisible();
   });
-  window.addEventListener("pagehide", () => videos.forEach((video) => video.pause()));
-  window.addEventListener("pageshow", playActiveIfVisible);
+  window.addEventListener("pagehide", () => video.pause());
+  window.addEventListener("pageshow", playIfVisible);
 
-  videos.forEach((video) => {
-    if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
-  });
+  if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
 })();
 
 // ---- Demo cinema ----
