@@ -576,12 +576,20 @@ body:not(.hero-in-view) .brand {
   margin-top: 0;
 }
 
+.overview-method-stack {
+  display: grid;
+  gap: clamp(42px, 5.8cqi, 58px);
+}
+
+.overview-method-item {
+  margin: 0;
+}
+
 .overview-figure-caption {
   display: block;
   width: 100%;
   margin: 16px auto 0;
-  padding: 14px 4px 0;
-  border-top: 1px solid rgba(22, 34, 58, 0.16);
+  padding: 4px 4px 0;
   color: #2a3242;
   font-family: var(--serif);
   font-size: clamp(15px, 1.7cqi, 17px);
@@ -1764,7 +1772,7 @@ body.hero-sequence-revealed .hero-content::after {
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
 <link href="project-page/rpg-demo.css?v=20260903-02" rel="stylesheet">
-<meta name="build" content="20260903-04">
+<meta name="build" content="20260903-05">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -1783,9 +1791,8 @@ body.hero-sequence-revealed .hero-content::after {
     <div class="nav-links">
       <a href="#abstract">Abstract</a>
       <a href="#demos">Demos</a>
-      <a href="#teaser">Teaser</a>
       <a href="#method">Method</a>
-      <a href="#overview-figure">Bench</a>
+      <a href="#overview-figure">Benchmark</a>
       <a href="#result">Result</a>
     </div>
   </nav>
@@ -2049,24 +2056,26 @@ body.hero-sequence-revealed .hero-content::after {
   <section class="section paper-section overview-section" id="overview">
     <div class="section-inner">
       <div class="overview-gallery">
-        <figure class="overview-figure reveal" id="teaser">
-          <h2 class="paper-heading">Teaser</h2>
-          <img src="teaser.png?v=20260827-03" alt="RPG Dreamer teaser showing automatic generation and a long-horizon generated RPG" loading="lazy">
-          <figcaption class="overview-figure-caption">
-            RPG Dreamer is capable of automatically generating games that offer coherent, hours-long playthroughs. Given a prompt, RPG Dreamer combines an Agent-Oriented Game Engine (AOGE) with the Reviewer-centric Generation Loop (RGL) to generate a complete game. The generated game integrates dialogue, battle, and trading systems across a branching narrative with multiple endings, delivering a long-horizon and coherent gameplay experience.
-          </figcaption>
-        </figure>
-
-        <figure class="overview-figure reveal" id="method">
+        <section class="overview-figure overview-method reveal" id="method">
           <h2 class="paper-heading">Method</h2>
-          <img src="method.png?v=20260821-01" alt="RPG Dreamer method: Agent-Oriented Game Engine and Reviewer-centric Generation Loop" loading="lazy">
-          <figcaption class="overview-figure-caption">
-            The generation is split into two stages. In the first stage, AOGE decouples reusable game mechanics from game-specific content and provides unified observation and action interfaces for agents. In the second stage, RGL instantiates the content slots by producing the game design, code implementation, and assets. It is a closed-loop generation pipeline that enables iterative evolution of generated game content through a multi-reviewer system, including a team of gameplay agents that target latent bugs via playtesting.
-          </figcaption>
-        </figure>
+          <div class="overview-method-stack">
+            <figure class="overview-method-item">
+              <img src="teaser.png?v=20260827-03" alt="RPG Dreamer teaser showing automatic generation and a long-horizon generated RPG" loading="lazy">
+              <figcaption class="overview-figure-caption">
+                RPG Dreamer is capable of automatically generating games that offer coherent, hours-long playthroughs. Given a prompt, RPG Dreamer combines an Agent-Oriented Game Engine (AOGE) with the Reviewer-centric Generation Loop (RGL) to generate a complete game. The generated game integrates dialogue, battle, and trading systems across a branching narrative with multiple endings, delivering a long-horizon and coherent gameplay experience.
+              </figcaption>
+            </figure>
+            <figure class="overview-method-item">
+              <img src="method.png?v=20260821-01" alt="RPG Dreamer method: Agent-Oriented Game Engine and Reviewer-centric Generation Loop" loading="lazy">
+              <figcaption class="overview-figure-caption">
+                The generation is split into two stages. In the first stage, AOGE decouples reusable game mechanics from game-specific content and provides unified observation and action interfaces for agents. In the second stage, RGL instantiates the content slots by producing the game design, code implementation, and assets. It is a closed-loop generation pipeline that enables iterative evolution of generated game content through a multi-reviewer system, including a team of gameplay agents that target latent bugs via playtesting.
+              </figcaption>
+            </figure>
+          </div>
+        </section>
 
         <figure class="overview-figure reveal" id="overview-figure">
-          <h2 class="paper-heading">Bench</h2>
+          <h2 class="paper-heading">Benchmark</h2>
           <img src="rpg-bench-overview.png?v=20260821-01" alt="RPG-Bench theme coverage and five complementary gameplay modes" loading="lazy">
           <figcaption class="overview-figure-caption">
             RPG-Bench is a benchmark comprising 150 evaluation instances for generating hour-scale RPGs across diverse genres and themes, with metrics grounded in dynamic gameplay trajectories that assess requirement fidelity, content richness, visual and interaction quality, and playability. During gameplay, evaluation agents explore the game in five modes, covering both normal multi-branch playthroughs and unconventional actions.
