@@ -5,6 +5,14 @@
   let paused = false;
   let completedResources = 0;
   let lastProgress = 0;
+  const virtualKeysDown = new Map();
+  const allowedVirtualKeys = new Map([
+    ['ArrowUp', { key: 'ArrowUp', keyCode: 38 }],
+    ['ArrowDown', { key: 'ArrowDown', keyCode: 40 }],
+    ['ArrowLeft', { key: 'ArrowLeft', keyCode: 37 }],
+    ['ArrowRight', { key: 'ArrowRight', keyCode: 39 }],
+    ['Space', { key: ' ', keyCode: 32 }],
+  ]);
 
   function normalizeOrigin(value) {
     try {
@@ -63,6 +71,36 @@
     game.scale?.refresh();
   }
 
+  function dispatchVirtualKey(code, phase) {
+    const definition = allowedVirtualKeys.get(code);
+    if (!definition || (phase !== 'down' && phase !== 'up')) return;
+    if (phase === 'down' && virtualKeysDown.has(code)) return;
+    if (phase === 'up' && !virtualKeysDown.has(code)) return;
+    if (phase === 'down') virtualKeysDown.set(code, definition);
+    else virtualKeysDown.delete(code);
+
+    const event = new KeyboardEvent(phase === 'down' ? 'keydown' : 'keyup', {
+      key: definition.key,
+      code,
+      bubbles: true,
+      cancelable: true,
+      repeat: false,
+    });
+    try {
+      Object.defineProperties(event, {
+        keyCode: { get: () => definition.keyCode },
+        which: { get: () => definition.keyCode },
+      });
+    } catch {
+      // Modern engines use key/code; legacy numeric properties are optional.
+    }
+    window.dispatchEvent(event);
+  }
+
+  function releaseVirtualKeys() {
+    [...virtualKeysDown.keys()].forEach((code) => dispatchVirtualKey(code, 'up'));
+  }
+
   post('loading', { progress: 0 });
 
   if ('PerformanceObserver' in window) {
@@ -75,11 +113,25 @@
 
   window.addEventListener('message', (event) => {
     if (event.origin !== hostOrigin || event.data?.source !== HOST_SOURCE) return;
-    if (event.data.type === 'pause') paused = true;
+    if (event.data.type === 'pause') {
+      paused = true;
+      releaseVirtualKeys();
+    }
     if (event.data.type === 'resume') paused = false;
     if (event.data.type === 'resize') window.__WEBRPG_GAME__?.scale?.refresh();
+    if (event.data.type === 'virtual-key') {
+      const requested = allowedVirtualKeys.get(event.data.code);
+      if (requested
+        && event.data.key === requested.key
+        && Number(event.data.keyCode) === requested.keyCode) {
+        dispatchVirtualKey(event.data.code, event.data.phase);
+      }
+    }
+    if (event.data.type === 'virtual-keys-release') releaseVirtualKeys();
     syncPlayback();
   });
+
+  window.addEventListener('blur', releaseVirtualKeys);
 
   window.addEventListener('error', (event) => {
     if (ready) return;

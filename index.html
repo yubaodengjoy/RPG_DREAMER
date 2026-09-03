@@ -1706,8 +1706,8 @@ body.hero-sequence-revealed .hero-content::after {
 
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
-<link href="project-page/rpg-demo.css?v=20260903-08" rel="stylesheet">
-<meta name="build" content="20260903-36">
+<link href="project-page/rpg-demo.css?v=20260903-09" rel="stylesheet">
+<meta name="build" content="20260903-37">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -2058,6 +2058,28 @@ body.hero-sequence-revealed .hero-content::after {
             <span aria-hidden="true">›</span>
           </button>
         </div>
+
+        <button class="rpg-virtual-toggle" type="button" data-rpg-virtual-toggle aria-pressed="false" aria-controls="rpg-virtual-controls" hidden>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v6M5 8h6M15.5 7.5h.01M18.5 10.5h.01M7 15h3l2 3 2-3h3a4 4 0 0 0 3.8-5.2l-1-3A4 4 0 0 0 16 4H8a4 4 0 0 0-3.8 2.8l-1 3A4 4 0 0 0 7 15Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Buttons</span>
+        </button>
+        <div class="rpg-virtual-controls" id="rpg-virtual-controls" data-rpg-virtual-controls hidden aria-label="Movable game controls">
+          <section class="rpg-virtual-pad rpg-virtual-dpad" data-rpg-virtual-panel="dpad" aria-label="Direction controls">
+            <button class="rpg-virtual-key is-up" type="button" data-rpg-virtual-key="ArrowUp" aria-label="Move up">▲</button>
+            <button class="rpg-virtual-key is-left" type="button" data-rpg-virtual-key="ArrowLeft" aria-label="Move left">◀</button>
+            <button class="rpg-virtual-drag" type="button" data-rpg-virtual-drag aria-label="Move direction controls">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 6h.01M12 6h.01M16 6h.01M8 12h.01M12 12h.01M16 12h.01M8 18h.01M12 18h.01M16 18h.01" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>
+            </button>
+            <button class="rpg-virtual-key is-right" type="button" data-rpg-virtual-key="ArrowRight" aria-label="Move right">▶</button>
+            <button class="rpg-virtual-key is-down" type="button" data-rpg-virtual-key="ArrowDown" aria-label="Move down">▼</button>
+          </section>
+          <section class="rpg-virtual-pad rpg-virtual-action" data-rpg-virtual-panel="action" aria-label="Action control">
+            <button class="rpg-virtual-drag" type="button" data-rpg-virtual-drag aria-label="Move action control">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 6h.01M12 6h.01M16 6h.01M8 12h.01M12 12h.01M16 12h.01M8 18h.01M12 18h.01M16 18h.01" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>
+            </button>
+            <button class="rpg-virtual-key is-space" type="button" data-rpg-virtual-key="Space" aria-label="Interact with Space">Space</button>
+          </section>
+        </div>
       </section>
     </div>
   </section>
@@ -2244,7 +2266,7 @@ body.hero-sequence-revealed .hero-content::after {
 
 </main>
 
-<script src="project-page/rpg-demo.js?v=20260903-03"></script>
+<script src="project-page/rpg-demo.js?v=20260903-04"></script>
 <script>
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {

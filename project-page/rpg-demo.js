@@ -82,6 +82,10 @@
   const controlsPage = root.querySelector('[data-rpg-controls-page]');
   const enterFullscreen = root.querySelector('[data-rpg-enter-fullscreen]');
   const exitFullscreen = root.querySelector('[data-rpg-exit-fullscreen]');
+  const virtualToggle = root.querySelector('[data-rpg-virtual-toggle]');
+  const virtualControls = root.querySelector('[data-rpg-virtual-controls]');
+  const virtualPanels = [...root.querySelectorAll('[data-rpg-virtual-panel]')];
+  const virtualKeys = [...root.querySelectorAll('[data-rpg-virtual-key]')];
   const compilerLines = [...root.querySelectorAll('.rpg-compiler-log span')];
   const cartridgeLabels = [...root.querySelectorAll('[data-rpg-cartridge-label]')];
   const insertedCartridge = root.querySelector('[data-rpg-eject]');
@@ -105,6 +109,9 @@
   let fallbackFullscreen = false;
   let fallbackMount = null;
   let controlsOpen = false;
+  let virtualControlsEnabled = false;
+  const virtualPointers = new Map();
+  const virtualPanelPositions = loadVirtualPanelPositions();
 
   function activeState() {
     return states[activeId];
@@ -124,15 +131,16 @@
     });
   }
 
-  function sendToGame(id, type) {
+  function sendToGame(id, type, detail = {}) {
     states[id]?.frame?.contentWindow?.postMessage(
-      { source: 'rpg-dreamer-host', type },
+      { source: 'rpg-dreamer-host', type, ...detail },
       new URL(games[id].src).origin,
     );
   }
 
   function openControlsPage() {
     if (!controlsPage || controlsOpen) return;
+    setVirtualControls(false);
     controlsOpen = true;
     controlsPage.hidden = false;
     root.classList.add('is-controls-open');
@@ -516,6 +524,71 @@
     state.readyTimer = window.setTimeout(finish, delay);
   }
 
+  function loadVirtualPanelPositions() {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem('rpg-dreamer-virtual-controls-v1') || '{}');
+      return saved && typeof saved === 'object' ? saved : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveVirtualPanelPositions() {
+    try {
+      window.localStorage.setItem('rpg-dreamer-virtual-controls-v1', JSON.stringify(virtualPanelPositions));
+    } catch {
+      // Private browsing or a locked-down browser may disallow local storage.
+    }
+  }
+
+  function isGameFullscreen() {
+    return document.fullscreenElement === root || fallbackFullscreen;
+  }
+
+  function releaseVirtualKeys() {
+    virtualPointers.clear();
+    virtualKeys.forEach((button) => button.classList.remove('is-pressed'));
+    if (hasCartridge && poweredOn && activeState().frame) {
+      sendToGame(activeId, 'virtual-keys-release');
+    }
+  }
+
+  function placeVirtualPanels() {
+    if (!virtualControls || virtualControls.hidden) return;
+    const bounds = virtualControls.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+
+    virtualPanels.forEach((panel) => {
+      const id = panel.dataset.rpgVirtualPanel;
+      const width = panel.offsetWidth;
+      const height = panel.offsetHeight;
+      const maxX = Math.max(8, bounds.width - width - 8);
+      const maxY = Math.max(8, bounds.height - height - 8);
+      const saved = virtualPanelPositions[id];
+      const hasSavedPosition = saved && Number.isFinite(saved.x) && Number.isFinite(saved.y);
+      const defaultX = id === 'action' ? maxX : 14;
+      const defaultY = Math.max(8, bounds.height - height - 18);
+      const x = hasSavedPosition ? 8 + saved.x * Math.max(0, maxX - 8) : defaultX;
+      const y = hasSavedPosition ? 8 + saved.y * Math.max(0, maxY - 8) : defaultY;
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+      panel.style.left = `${Math.max(8, Math.min(maxX, x))}px`;
+      panel.style.top = `${Math.max(8, Math.min(maxY, y))}px`;
+    });
+  }
+
+  function setVirtualControls(enabled) {
+    virtualControlsEnabled = Boolean(enabled && isGameFullscreen());
+    if (virtualToggle) {
+      virtualToggle.setAttribute('aria-pressed', String(virtualControlsEnabled));
+      virtualToggle.title = virtualControlsEnabled ? 'Hide virtual buttons' : 'Show virtual buttons';
+    }
+    root.classList.toggle('has-virtual-controls', virtualControlsEnabled);
+    if (virtualControls) virtualControls.hidden = !virtualControlsEnabled;
+    if (virtualControlsEnabled) window.requestAnimationFrame(placeVirtualPanels);
+    else releaseVirtualKeys();
+  }
+
   function enterFallbackFullscreen() {
     if (fallbackFullscreen) return;
     const parent = root.parentNode;
@@ -579,6 +652,8 @@
     const active = document.fullscreenElement === root || fallbackFullscreen;
     enterFullscreen.hidden = active;
     exitFullscreen.hidden = !active;
+    if (virtualToggle) virtualToggle.hidden = !active;
+    if (!active) setVirtualControls(false);
     window.requestAnimationFrame(() => {
       sendToGame(activeId, 'resize');
       window.requestAnimationFrame(() => sendToGame(activeId, 'resize'));
@@ -611,6 +686,111 @@
     if (!hasCartridge || !poweredOn || !activeState().frame) return;
     window.requestAnimationFrame(() => sendToGame(activeId, 'resize'));
   }).observe(stage);
+
+  const virtualKeyMap = {
+    ArrowUp: { key: 'ArrowUp', code: 'ArrowUp', keyCode: 38 },
+    ArrowDown: { key: 'ArrowDown', code: 'ArrowDown', keyCode: 40 },
+    ArrowLeft: { key: 'ArrowLeft', code: 'ArrowLeft', keyCode: 37 },
+    ArrowRight: { key: 'ArrowRight', code: 'ArrowRight', keyCode: 39 },
+    Space: { key: ' ', code: 'Space', keyCode: 32 },
+  };
+
+  function sendVirtualKey(code, phase) {
+    const key = virtualKeyMap[code];
+    if (!key || !hasCartridge || !poweredOn || !activeState().frame) return;
+    sendToGame(activeId, 'virtual-key', { phase, ...key });
+  }
+
+  function releaseVirtualPointer(event) {
+    const pressed = virtualPointers.get(event.pointerId);
+    if (!pressed) return;
+    event.preventDefault();
+    event.stopPropagation();
+    virtualPointers.delete(event.pointerId);
+    pressed.button.classList.remove('is-pressed');
+    sendVirtualKey(pressed.code, 'up');
+  }
+
+  virtualKeys.forEach((button) => {
+    button.addEventListener('pointerdown', (event) => {
+      if (!virtualControlsEnabled || !isGameFullscreen()) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const code = button.dataset.rpgVirtualKey;
+      if (!virtualKeyMap[code]) return;
+      try { button.setPointerCapture(event.pointerId); } catch {}
+      virtualPointers.set(event.pointerId, { button, code });
+      button.classList.add('is-pressed');
+      sendVirtualKey(code, 'down');
+    });
+    button.addEventListener('pointerup', releaseVirtualPointer);
+    button.addEventListener('pointercancel', releaseVirtualPointer);
+    button.addEventListener('lostpointercapture', releaseVirtualPointer);
+    button.addEventListener('click', (event) => {
+      if (event.detail !== 0 || !virtualControlsEnabled || !isGameFullscreen()) return;
+      const code = button.dataset.rpgVirtualKey;
+      sendVirtualKey(code, 'down');
+      window.setTimeout(() => sendVirtualKey(code, 'up'), 80);
+    });
+    button.addEventListener('contextmenu', (event) => event.preventDefault());
+  });
+
+  root.querySelectorAll('[data-rpg-virtual-drag]').forEach((handle) => {
+    handle.addEventListener('pointerdown', (event) => {
+      if (!virtualControlsEnabled || !virtualControls) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const panel = handle.closest('[data-rpg-virtual-panel]');
+      const controlsBounds = virtualControls.getBoundingClientRect();
+      const panelBounds = panel.getBoundingClientRect();
+      const offsetX = event.clientX - panelBounds.left;
+      const offsetY = event.clientY - panelBounds.top;
+      panel.classList.add('is-dragging');
+      try { handle.setPointerCapture(event.pointerId); } catch {}
+
+      const move = (moveEvent) => {
+        if (moveEvent.pointerId !== event.pointerId) return;
+        moveEvent.preventDefault();
+        const maxX = Math.max(8, controlsBounds.width - panel.offsetWidth - 8);
+        const maxY = Math.max(8, controlsBounds.height - panel.offsetHeight - 8);
+        const x = Math.max(8, Math.min(maxX, moveEvent.clientX - controlsBounds.left - offsetX));
+        const y = Math.max(8, Math.min(maxY, moveEvent.clientY - controlsBounds.top - offsetY));
+        panel.style.left = `${x}px`;
+        panel.style.top = `${y}px`;
+        panel.style.right = 'auto';
+        panel.style.bottom = 'auto';
+      };
+
+      const finish = (finishEvent) => {
+        if (finishEvent.pointerId !== event.pointerId) return;
+        panel.classList.remove('is-dragging');
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', finish);
+        handle.removeEventListener('pointercancel', finish);
+        handle.removeEventListener('lostpointercapture', finish);
+        const maxX = Math.max(8, controlsBounds.width - panel.offsetWidth - 8);
+        const maxY = Math.max(8, controlsBounds.height - panel.offsetHeight - 8);
+        const x = parseFloat(panel.style.left) || 8;
+        const y = parseFloat(panel.style.top) || 8;
+        virtualPanelPositions[panel.dataset.rpgVirtualPanel] = {
+          x: maxX > 8 ? (x - 8) / (maxX - 8) : 0,
+          y: maxY > 8 ? (y - 8) / (maxY - 8) : 0,
+        };
+        saveVirtualPanelPositions();
+      };
+
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', finish);
+      handle.addEventListener('pointercancel', finish);
+      handle.addEventListener('lostpointercapture', finish);
+    });
+    handle.addEventListener('contextmenu', (event) => event.preventDefault());
+  });
+
+  virtualToggle?.addEventListener('click', () => setVirtualControls(!virtualControlsEnabled));
+  window.addEventListener('resize', () => {
+    if (virtualControlsEnabled) window.requestAnimationFrame(placeVirtualPanels);
+  }, { passive: true });
 
   choices.forEach((choice) => {
     choice.addEventListener('click', () => {
