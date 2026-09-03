@@ -8,7 +8,10 @@
 <meta name="description" content="RPG Dreamer is an AI-native game development studio for turning natural language into playable web games.">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 82px;
+}
 
 :root {
   --ink: #101016;
@@ -531,10 +534,10 @@ body:not(.hero-in-view) .brand {
    It stays at that size while space allows, then scales down uniformly to fit
    the available viewport without ever being enlarged beyond the design size.
    The outer scaler follows the transformed footprint to avoid phantom overflow.
-   Narrow screens use the normal responsive flow. */
-@media (min-width: 900px) {
+   Narrow, short, and touch-only screens use the normal responsive flow. */
+@media (min-width: 900px) and (min-height: 760px) and (hover: hover) and (pointer: fine) {
   #abstract.abstract-fit {
-    height: 100svh;
+    height: calc(100svh - 82px);
     min-height: 0;
     padding-block: clamp(28px, 4.5vmin, 72px);
     padding-inline: max(var(--content-gutter), calc((100% - var(--content-max)) / 2));
@@ -542,6 +545,7 @@ body:not(.hero-in-view) .brand {
   }
   #abstract.abstract-fit .abstract-stage {
     width: var(--content-max);
+    max-width: none;
     transform-origin: top left;
     will-change: transform;
   }
@@ -1797,7 +1801,7 @@ body.hero-sequence-revealed .hero-content::after {
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
 <link href="project-page/rpg-demo.css?v=20260903-04" rel="stylesheet">
-<meta name="build" content="20260903-10">
+<meta name="build" content="20260903-11">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -2796,7 +2800,7 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
   const scaler = section.querySelector(".abstract-scaler");
   const stage = section.querySelector(".abstract-stage");
   if (!scaler || !stage) return;
-  const mq = window.matchMedia("(min-width: 900px)");
+  const mq = window.matchMedia("(min-width: 900px) and (min-height: 760px) and (hover: hover) and (pointer: fine)");
 
   function fit() {
     if (!mq.matches) {                 // narrow: hand back to normal flow
@@ -2841,27 +2845,41 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
 // On resize we restore that same fraction each frame until the burst settles.
 (() => {
   const getSections = () => [...document.querySelectorAll(".hero, .section")];
-  let anchorEl = null, anchorFrac = 0, resizing = false, raf = 0, release = 0;
+  let anchorEl = null, anchorFrac = 0, anchorOffset = 0, resizing = false, raf = 0, release = 0;
+  let viewportWidth = window.innerWidth;
+  const anchorLine = () => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
   function topSection() {
     const list = getSections();
-    for (const s of list) { const r = s.getBoundingClientRect(); if (r.top <= 2 && r.bottom > 2) return s; }
+    const line = anchorLine();
+    for (const s of list) { const r = s.getBoundingClientRect(); if (r.top <= line && r.bottom > line) return s; }
     let best = list[0] || null, bestD = Infinity;
-    for (const s of list) { const d = Math.abs(s.getBoundingClientRect().top); if (d < bestD) { bestD = d; best = s; } }
+    for (const s of list) { const d = Math.abs(s.getBoundingClientRect().top - line); if (d < bestD) { bestD = d; best = s; } }
     return best;
   }
   function record() {
     if (resizing) return;                       // freeze the anchor during a resize burst
     const s = topSection();
-    if (s) { const r = s.getBoundingClientRect(); anchorEl = s; anchorFrac = r.height ? (-r.top / r.height) : 0; }
+    if (s) {
+      const r = s.getBoundingClientRect();
+      anchorEl = s;
+      anchorOffset = anchorLine() - r.top;
+      anchorFrac = r.height ? (anchorOffset / r.height) : 0;
+    }
   }
   window.addEventListener("scroll", record, { passive: true });
   window.addEventListener("resize", () => {
+    const nextWidth = window.innerWidth;
+    const widthChanged = Math.abs(nextWidth - viewportWidth) > 1;
+    viewportWidth = nextWidth;
     resizing = true;
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(() => {
       if (!anchorEl) return;
       const r = anchorEl.getBoundingClientRect();
-      const delta = r.top + anchorFrac * r.height;   // scroll so the same fraction sits at the viewport top
+      // Browser chrome on tablets often changes only the viewport height. Keep
+      // the same pixel position then; use a scale-free fraction for width/zoom.
+      const targetOffset = widthChanged ? anchorFrac * r.height : anchorOffset;
+      const delta = r.top + targetOffset - anchorLine();
       if (Math.abs(delta) > 0.5) {
         const prev = document.documentElement.style.scrollBehavior;
         document.documentElement.style.scrollBehavior = "auto"; // never smooth-animate a resize correction
