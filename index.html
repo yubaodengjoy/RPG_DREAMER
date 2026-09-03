@@ -1688,7 +1688,7 @@ body.hero-sequence-revealed .hero-content::after {
 </style>
 <link href="fonts/fonts.css?v=20260826-08" rel="stylesheet">
 <link href="project-page/rpg-demo.css?v=20260903-04" rel="stylesheet">
-<meta name="build" content="20260903-31">
+<meta name="build" content="20260903-32">
 </head>
 <body class="hero-in-view hero-sequence-pending is-page-loading">
 <div class="page-loader" data-page-loader role="status" aria-live="polite" aria-label="Loading RPG Dreamer">
@@ -1698,6 +1698,71 @@ body.hero-sequence-revealed .hero-content::after {
   <p class="page-loader-label">Loading</p>
 </div>
 <noscript><style>.page-loader { display: none; }</style></noscript>
+<script>
+(function () {
+  var loader = document.querySelector('[data-page-loader]');
+  window.__rpgDreamerLoaderComplete = !loader;
+  if (!loader) return;
+
+  var startedAt = Date.now();
+  var released = false;
+  var watchdog = window.setTimeout(release, 6500);
+
+  function finishRelease() {
+    if (loader.parentNode) loader.parentNode.removeChild(loader);
+    window.__rpgDreamerLoaderComplete = true;
+    document.dispatchEvent(new Event('rpgdreamer:loader-complete'));
+  }
+
+  function release() {
+    if (released) return;
+    released = true;
+    window.clearTimeout(watchdog);
+    var remaining = Math.max(0, 500 - (Date.now() - startedAt));
+    window.setTimeout(function () {
+      document.body.classList.remove('is-page-loading');
+      loader.classList.add('is-leaving');
+      window.setTimeout(finishRelease, 560);
+    }, remaining);
+  }
+
+  var domReady = document.readyState === 'loading'
+    ? new Promise(function (resolve) {
+        document.addEventListener('DOMContentLoaded', resolve, { once: true });
+      })
+    : Promise.resolve();
+  var fontReady = document.fonts && document.fonts.ready
+    ? Promise.race([
+        document.fonts.ready.catch(function () {}),
+        new Promise(function (resolve) { window.setTimeout(resolve, 1200); })
+      ])
+    : Promise.resolve();
+  var heroVideoReady = domReady.then(function () {
+    var video = document.querySelector('[data-hero-video]');
+    if (!video || video.error || video.readyState >= 2) return;
+    return new Promise(function (resolve) {
+      var settled = false;
+      function finish() {
+        if (settled) return;
+        settled = true;
+        video.removeEventListener('loadeddata', finish);
+        video.removeEventListener('canplay', finish);
+        video.removeEventListener('error', finish);
+        resolve();
+      }
+      video.addEventListener('loadeddata', finish, { once: true });
+      video.addEventListener('canplay', finish, { once: true });
+      video.addEventListener('error', finish, { once: true });
+      if (video.networkState === 0) video.load();
+    });
+  });
+
+  Promise.race([
+    Promise.all([domReady, fontReady, heroVideoReady]),
+    new Promise(function (resolve) { window.setTimeout(resolve, 6000); })
+  ]).then(release, release);
+})();
+</script>
 <main class="page">
   <nav class="nav">
     <a class="brand" href="#top">
@@ -2162,48 +2227,6 @@ body.hero-sequence-revealed .hero-content::after {
 
 <script src="project-page/rpg-demo.js?v=20260901-02"></script>
 <script>
-(() => {
-  const loader = document.querySelector('[data-page-loader]');
-  window.__rpgDreamerLoaderComplete = !loader;
-  if (!loader) return;
-
-  const startedAt = performance.now();
-  const waitForWindow = document.readyState === 'complete'
-    ? Promise.resolve()
-    : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
-  const waitForFonts = document.fonts?.ready
-    ? document.fonts.ready.catch(() => undefined)
-    : Promise.resolve();
-  const waitForVideo = (video) => {
-    if (video.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) return Promise.resolve();
-    return new Promise((resolve) => {
-      const finish = () => {
-        video.removeEventListener('canplaythrough', finish);
-        video.removeEventListener('error', finish);
-        resolve();
-      };
-      video.addEventListener('canplaythrough', finish, { once: true });
-      video.addEventListener('error', finish, { once: true });
-    });
-  };
-  const waitForHeroMedia = Promise.all(
-    [...document.querySelectorAll('[data-hero-video]')].map(waitForVideo),
-  );
-  const resourcesReady = Promise.all([waitForWindow, waitForFonts, waitForHeroMedia]);
-  resourcesReady.then(() => {
-    const remaining = Math.max(0, 700 - (performance.now() - startedAt));
-    window.setTimeout(() => {
-      document.body.classList.remove('is-page-loading');
-      loader.classList.add('is-leaving');
-      window.setTimeout(() => {
-        loader.remove();
-        window.__rpgDreamerLoaderComplete = true;
-        document.dispatchEvent(new Event('rpgdreamer:loader-complete'));
-      }, 560);
-    }, remaining);
-  });
-})();
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) entry.target.classList.add("visible");
@@ -2387,6 +2410,7 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
 
   const beginVideo = () => {
     document.body.classList.add("hero-world-revealing");
+    if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
     if (video.readyState >= HTMLMediaElement.HAVE_METADATA) video.currentTime = 0;
     playIfVisible();
   };
@@ -2446,18 +2470,14 @@ document.querySelectorAll(".reveal, .dash-panel").forEach(el => observer.observe
       failOpen();
       return;
     }
-    if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
-      hero.classList.add("is-buffering");
-      video.addEventListener("canplay", startHero, { once: true });
-      if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
-      return;
-    }
+    if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
     runIntro();
   };
 
   video.addEventListener("playing", () => {
     hero.classList.remove("is-buffering");
   });
+  video.addEventListener("canplay", playIfVisible);
   video.addEventListener("waiting", () => hero.classList.add("is-buffering"));
   video.addEventListener("stalled", () => hero.classList.add("is-buffering"));
   video.addEventListener("error", failOpen, { once: true });
