@@ -5,6 +5,12 @@
   let paused = false;
   let completedResources = 0;
   let lastProgress = 0;
+  let audioGate = null;
+  let audioUnlockPromise = null;
+  let audioWasUnlocked = false;
+  let lastPostedAudioState = '';
+  const hasTouchInput = navigator.maxTouchPoints > 0
+    || window.matchMedia?.('(pointer: coarse)').matches;
   const virtualKeysDown = new Map();
   const allowedVirtualKeys = new Map([
     ['ArrowUp', { key: 'ArrowUp', keyCode: 38 }],
@@ -58,6 +64,165 @@
     post('loading', { progress: normalized });
   }
 
+  function getSoundManager() {
+    return window.__WEBRPG_GAME__?.sound || null;
+  }
+
+  function getAudioState() {
+    const sound = getSoundManager();
+    if (!sound) return 'pending';
+    if (sound.context) {
+      return sound.context.state === 'running' && (!sound.locked || sound.unlocked) ? 'running' : 'locked';
+    }
+    return sound.locked ? 'locked' : 'running';
+  }
+
+  function postAudioState(state) {
+    if (state === lastPostedAudioState) return;
+    lastPostedAudioState = state;
+    post('audio-state', { state });
+  }
+
+  function setAudioGateVisible(visible) {
+    if (!audioGate) return;
+    audioGate.hidden = !visible;
+    audioGate.setAttribute('aria-hidden', String(!visible));
+  }
+
+  function syncAudioGate() {
+    const state = getAudioState();
+    postAudioState(state);
+    if (!hasTouchInput || state === 'pending') return;
+    if (state === 'running') {
+      audioWasUnlocked = true;
+      setAudioGateVisible(false);
+      return;
+    }
+    setAudioGateVisible(true);
+  }
+
+  function primeAudioContext(context) {
+    try {
+      const buffer = context.createBuffer(1, 1, context.sampleRate || 22050);
+      const source = context.createBufferSource();
+      source.buffer = buffer;
+      source.connect(context.destination);
+      source.onended = () => source.disconnect();
+      source.start(0);
+    } catch {
+      // Resuming the context is the important part; priming is an iOS fallback.
+    }
+  }
+
+  function finishAudioUnlock(sound) {
+    if (!sound.context) {
+      if (sound.locked) return false;
+      audioWasUnlocked = true;
+      setAudioGateVisible(false);
+      postAudioState('running');
+      return true;
+    }
+    const contextRunning = !sound.context || sound.context.state === 'running';
+    if (!contextRunning) return false;
+    // Phaser clears `locked` and flushes queued sounds on the next update after
+    // `unlocked` is set. This preserves its normal sound-manager lifecycle.
+    if (sound.locked) sound.unlocked = true;
+    audioWasUnlocked = true;
+    setAudioGateVisible(false);
+    postAudioState('running');
+    return true;
+  }
+
+  function unlockAudioFromGesture() {
+    if (audioUnlockPromise) return audioUnlockPromise;
+    const sound = getSoundManager();
+    if (!sound) {
+      syncAudioGate();
+      return Promise.resolve(false);
+    }
+
+    audioGate?.classList.add('is-unlocking');
+    const context = sound.context;
+    if (!context) {
+      // HTML5AudioSoundManager's own body-level touch handler receives this
+      // same gesture. Check its result after the event has completed.
+      audioUnlockPromise = new Promise((resolve) => {
+        window.setTimeout(() => resolve(finishAudioUnlock(sound)), 80);
+      });
+    } else {
+      // resume() must be called synchronously from this iframe-local gesture.
+      // A parent-page click delivered through postMessage is not sufficient on
+      // iOS Safari because transient user activation does not cross origins.
+      primeAudioContext(context);
+      try {
+        audioUnlockPromise = Promise.resolve(context.resume())
+          .then(() => finishAudioUnlock(sound))
+          .catch(() => false);
+      } catch {
+        audioUnlockPromise = Promise.resolve(false);
+      }
+    }
+
+    return audioUnlockPromise.finally(() => {
+      audioUnlockPromise = null;
+      audioGate?.classList.remove('is-unlocking');
+      syncAudioGate();
+    });
+  }
+
+  function createAudioGate() {
+    if (!hasTouchInput || audioGate || !document.body) return;
+    const language = `${document.documentElement.lang} ${navigator.language}`.toLowerCase();
+    const isChinese = language.includes('zh');
+    const style = document.createElement('style');
+    style.textContent = `
+      #rpg-audio-gate {
+        position: fixed;
+        z-index: 2147483647;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        border: 0;
+        background: rgba(1, 7, 12, 0.54);
+        color: #f4fbff;
+        font: 700 clamp(15px, 3.5vw, 20px)/1.2 system-ui, -apple-system, sans-serif;
+        letter-spacing: 0.02em;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+      #rpg-audio-gate[hidden] { display: none; }
+      #rpg-audio-gate span {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 20px;
+        border: 1px solid rgba(145, 220, 255, 0.72);
+        border-radius: 999px;
+        background: rgba(5, 18, 29, 0.9);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.38), inset 0 1px rgba(255, 255, 255, 0.12);
+      }
+      #rpg-audio-gate.is-unlocking span { opacity: 0.68; }
+    `;
+    audioGate = document.createElement('button');
+    audioGate.id = 'rpg-audio-gate';
+    audioGate.type = 'button';
+    audioGate.hidden = true;
+    audioGate.setAttribute('aria-label', isChinese ? '点击开启声音' : 'Tap to enable sound');
+    audioGate.innerHTML = `<span aria-hidden="true">🔊 ${isChinese ? '点击开启声音' : 'Tap to enable sound'}</span>`;
+    audioGate.addEventListener('pointerdown', unlockAudioFromGesture);
+    audioGate.addEventListener('click', unlockAudioFromGesture);
+    document.head.appendChild(style);
+    document.body.appendChild(audioGate);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createAudioGate, { once: true });
+  } else {
+    createAudioGate();
+  }
+
   function syncPlayback() {
     const game = window.__WEBRPG_GAME__;
     if (!game) return;
@@ -68,7 +233,11 @@
     }
     game.loop?.wake();
     game.sound?.resumeAll();
+    if (audioWasUnlocked && game.sound?.context?.state !== 'running') {
+      game.sound.context.resume().catch(() => syncAudioGate());
+    }
     game.scale?.refresh();
+    syncAudioGate();
   }
 
   function dispatchVirtualKey(code, phase) {
@@ -132,6 +301,13 @@
   });
 
   window.addEventListener('blur', releaseVirtualKeys);
+  window.addEventListener('pageshow', () => {
+    syncPlayback();
+    syncAudioGate();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) syncPlayback();
+  });
 
   window.addEventListener('error', (event) => {
     if (ready) return;
@@ -142,6 +318,7 @@
     const game = window.__WEBRPG_GAME__;
     if (!game) return;
     syncPlayback();
+    syncAudioGate();
     if (!game.scene?.isActive?.('menu')) return;
     ready = true;
     lastProgress = 1;
