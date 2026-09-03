@@ -1009,17 +1009,17 @@ body.rpg-demo-fullscreen-fallback {
 .rpg-handheld-player .rpg-demo-placeholder h3 {
   margin-top: 0;
   font-family: "Jersey 10", var(--mono);
-  font-size: clamp(32px, 4.8cqi, 48px);
+  font-size: clamp(28px, 4.1cqi, 41px);
   font-weight: 400;
   font-synthesis: none;
   letter-spacing: 0.02em;
 }
 
 .rpg-handheld-player .rpg-demo-placeholder p {
-  max-width: 620px;
-  margin-bottom: 26px;
-  font-size: 16px;
-  line-height: 1.55;
+  max-width: 600px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 #demos .rpg-demo-actions button,
@@ -1031,10 +1031,10 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-demo-standby-tips {
-  width: min(520px, calc(100% - 20px));
+  width: min(500px, calc(100% - 20px));
   display: grid;
-  gap: 9px;
-  margin: -8px auto 22px;
+  gap: 6px;
+  margin: -4px auto 14px;
 }
 
 #demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-standby-tips {
@@ -1043,22 +1043,22 @@ body.rpg-demo-fullscreen-fallback {
 
 .rpg-demo-standby-tip {
   display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
+  grid-template-columns: 16px minmax(0, 1fr);
   align-items: center;
-  gap: 11px;
-  padding: 9px 12px;
+  gap: 9px;
+  padding: 7px 10px;
   border: 1px solid rgba(167, 187, 195, 0.16);
   border-radius: 7px;
   background: rgba(4, 12, 18, 0.38);
   color: rgba(213, 226, 232, 0.78);
-  font: 500 12px/1.35 var(--mono);
+  font: 500 11px/1.25 var(--mono);
   letter-spacing: 0.025em;
   text-align: left;
 }
 
 .rpg-demo-standby-tip svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   color: #9edbf2;
 }
 
