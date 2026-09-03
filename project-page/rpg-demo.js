@@ -121,6 +121,8 @@
   let fallbackMount = null;
   let controlsOpen = false;
   let virtualControlsEnabled = false;
+  let virtualToggleDrag = null;
+  let suppressVirtualToggleClick = false;
   const virtualPointers = new Map();
   const virtualPanelPositions = loadVirtualPanelPositions();
 
@@ -608,6 +610,33 @@
     });
   }
 
+  function placeVirtualToggle() {
+    if (!virtualToggle || virtualToggle.hidden || !isGameFullscreen()) return;
+    const bounds = root.getBoundingClientRect();
+    const width = virtualToggle.offsetWidth;
+    const height = virtualToggle.offsetHeight;
+    if (!bounds.width || !bounds.height || !width || !height) return;
+
+    const minX = 8;
+    const minY = 8;
+    const maxX = Math.max(minX, bounds.width - width - 8);
+    const maxY = Math.max(minY, bounds.height - height - 8);
+    const saved = virtualPanelPositions.toggle;
+    const hasSavedPosition = saved && Number.isFinite(saved.x) && Number.isFinite(saved.y);
+    const x = hasSavedPosition
+      ? minX + saved.x * Math.max(0, maxX - minX)
+      : (bounds.width - width) / 2;
+    const y = hasSavedPosition
+      ? minY + saved.y * Math.max(0, maxY - minY)
+      : maxY - 4;
+
+    virtualToggle.style.right = 'auto';
+    virtualToggle.style.bottom = 'auto';
+    virtualToggle.style.translate = 'none';
+    virtualToggle.style.left = `${Math.max(minX, Math.min(maxX, x))}px`;
+    virtualToggle.style.top = `${Math.max(minY, Math.min(maxY, y))}px`;
+  }
+
   function setVirtualControls(enabled) {
     virtualControlsEnabled = Boolean(enabled && isGameFullscreen());
     if (virtualToggle) {
@@ -686,6 +715,7 @@
     if (virtualToggle) virtualToggle.hidden = !active;
     if (!active) setVirtualControls(false);
     window.requestAnimationFrame(() => {
+      placeVirtualToggle();
       sendToGame(activeId, 'resize');
       window.requestAnimationFrame(() => sendToGame(activeId, 'resize'));
     });
@@ -818,8 +848,78 @@
     handle.addEventListener('contextmenu', (event) => event.preventDefault());
   });
 
-  virtualToggle?.addEventListener('click', () => setVirtualControls(!virtualControlsEnabled));
+  virtualToggle?.addEventListener('pointerdown', (event) => {
+    if (!isGameFullscreen()) return;
+    const rootBounds = root.getBoundingClientRect();
+    const toggleBounds = virtualToggle.getBoundingClientRect();
+    virtualToggleDrag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startLeft: toggleBounds.left - rootBounds.left,
+      startTop: toggleBounds.top - rootBounds.top,
+      rootBounds,
+      moved: false,
+    };
+    try { virtualToggle.setPointerCapture(event.pointerId); } catch {}
+  });
+
+  virtualToggle?.addEventListener('pointermove', (event) => {
+    const drag = virtualToggleDrag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const deltaX = event.clientX - drag.startX;
+    const deltaY = event.clientY - drag.startY;
+    if (!drag.moved && Math.hypot(deltaX, deltaY) < 5) return;
+    drag.moved = true;
+    event.preventDefault();
+    const minX = 8;
+    const minY = 8;
+    const maxX = Math.max(minX, drag.rootBounds.width - virtualToggle.offsetWidth - 8);
+    const maxY = Math.max(minY, drag.rootBounds.height - virtualToggle.offsetHeight - 8);
+    const x = Math.max(minX, Math.min(maxX, drag.startLeft + deltaX));
+    const y = Math.max(minY, Math.min(maxY, drag.startTop + deltaY));
+    virtualToggle.style.right = 'auto';
+    virtualToggle.style.bottom = 'auto';
+    virtualToggle.style.translate = 'none';
+    virtualToggle.style.left = `${x}px`;
+    virtualToggle.style.top = `${y}px`;
+    virtualToggle.classList.add('is-dragging');
+  });
+
+  const finishVirtualToggleDrag = (event) => {
+    const drag = virtualToggleDrag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    virtualToggleDrag = null;
+    virtualToggle.classList.remove('is-dragging');
+    if (!drag.moved) return;
+
+    const minX = 8;
+    const minY = 8;
+    const maxX = Math.max(minX, drag.rootBounds.width - virtualToggle.offsetWidth - 8);
+    const maxY = Math.max(minY, drag.rootBounds.height - virtualToggle.offsetHeight - 8);
+    const x = parseFloat(virtualToggle.style.left) || minX;
+    const y = parseFloat(virtualToggle.style.top) || minY;
+    virtualPanelPositions.toggle = {
+      x: maxX > minX ? (x - minX) / (maxX - minX) : 0,
+      y: maxY > minY ? (y - minY) / (maxY - minY) : 0,
+    };
+    saveVirtualPanelPositions();
+    suppressVirtualToggleClick = true;
+    window.setTimeout(() => { suppressVirtualToggleClick = false; }, 0);
+  };
+
+  virtualToggle?.addEventListener('pointerup', finishVirtualToggleDrag);
+  virtualToggle?.addEventListener('pointercancel', finishVirtualToggleDrag);
+  virtualToggle?.addEventListener('lostpointercapture', finishVirtualToggleDrag);
+  virtualToggle?.addEventListener('click', (event) => {
+    if (suppressVirtualToggleClick) {
+      event.preventDefault();
+      return;
+    }
+    setVirtualControls(!virtualControlsEnabled);
+  });
   window.addEventListener('resize', () => {
+    if (isGameFullscreen()) window.requestAnimationFrame(placeVirtualToggle);
     if (virtualControlsEnabled) window.requestAnimationFrame(placeVirtualPanels);
   }, { passive: true });
 

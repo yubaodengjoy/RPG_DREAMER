@@ -2732,8 +2732,13 @@ body.rpg-demo-fullscreen-fallback #demos {
   translate: -50% 0;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  touch-action: manipulation;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
 }
+
+.rpg-virtual-toggle.is-dragging { cursor: grabbing; }
 
 .rpg-virtual-toggle[hidden],
 .rpg-virtual-controls[hidden] {
