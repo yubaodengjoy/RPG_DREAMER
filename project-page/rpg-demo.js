@@ -3,6 +3,16 @@
   const root = document.getElementById('rpg-play-demo');
   if (!root) return;
 
+  function configureGameAudioSession() {
+    try {
+      if (navigator.audioSession) navigator.audioSession.type = 'playback';
+    } catch {
+      // The Audio Session API is available only on newer Safari releases.
+    }
+  }
+
+  configureGameAudioSession();
+
   const hostname = window.location.hostname;
   const isLocalHost = hostname === 'localhost'
     || hostname === '127.0.0.1'
@@ -453,6 +463,7 @@
 
   function loadGame() {
     if (!hasCartridge || poweredOn || cartridgeMoving) return;
+    configureGameAudioSession();
     closeControlsPage({ restoreFocus: false, resume: false });
     const game = games[activeId];
     const state = activeState();
@@ -869,6 +880,7 @@
   }
 
   document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) configureGameAudioSession();
     Object.keys(states).forEach((id) => {
       if (!states[id].ready) return;
       sendToGame(id, hasCartridge && poweredOn && !controlsOpen && !document.hidden && id === activeId ? 'resume' : 'pause');
