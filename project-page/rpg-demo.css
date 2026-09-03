@@ -1063,8 +1063,8 @@ body.rpg-demo-fullscreen-fallback {
 }
 
 .rpg-handheld-player .rpg-demo-load {
-  min-height: 50px;
-  padding-inline: 26px;
+  min-height: 44px;
+  padding-inline: 22px;
   font-size: 18px;
 }
 
