@@ -234,7 +234,7 @@
     game.loop?.wake();
     game.sound?.resumeAll();
     if (audioWasUnlocked && game.sound?.context?.state !== 'running') {
-      game.sound.context.resume().catch(() => syncAudioGate());
+      game.sound.context.resume().then(syncAudioGate, syncAudioGate);
     }
     game.scale?.refresh();
     syncAudioGate();
