@@ -7,6 +7,7 @@
   let lastProgress = 0;
   let audioWasUnlocked = false;
   let lastPostedAudioState = '';
+  let packLoading = false;
   const virtualKeysDown = new Map();
   const allowedVirtualKeys = new Map([
     ['ArrowUp', { key: 'ArrowUp', keyCode: 38, gameKey: 'w', gameCode: 'KeyW', gameKeyCode: 87 }],
@@ -55,11 +56,24 @@
   }
 
   function postProgress(value) {
+    if (packLoading) return;
     const normalized = Math.max(lastProgress, Math.min(0.96, value));
     if (normalized - lastProgress < 0.01) return;
     lastProgress = normalized;
     post('loading', { progress: normalized });
   }
+
+  window.__RPG_REPORT_PACK_PROGRESS__ = (value, label) => {
+    packLoading = true;
+    const normalized = Math.max(0, Math.min(0.96, Number(value) * 0.96));
+    lastProgress = normalized;
+    post('loading', { progress: normalized, label });
+  };
+  window.__RPG_REPORT_PACK_COMPLETE__ = () => {
+    packLoading = false;
+    lastProgress = 0.96;
+    post('loading', { progress: 0.96, label: 'Starting game engine…' });
+  };
 
   function getSoundManager() {
     return window.__WEBRPG_GAME__?.sound || null;

@@ -36,6 +36,7 @@
 !/project-page/play-games/
 /project-page/play-games/*
 !/project-page/play-games/rpg-embed-host.js
+!/project-page/play-games/rpg-pack-loader.js
 
 # Compiled games stay local for development and are deployed separately to R2.
 /src-40/
