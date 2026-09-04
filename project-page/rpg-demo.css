@@ -2870,6 +2870,15 @@ body.rpg-demo-fullscreen-fallback #demos {
   text-transform: uppercase;
 }
 
+.rpg-virtual-key.is-escape {
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  font: 600 9px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 @media (max-height: 430px) {
   .rpg-virtual-dpad {
     width: 102px;
@@ -2890,5 +2899,10 @@ body.rpg-demo-fullscreen-fallback #demos {
   .rpg-virtual-key.is-space {
     width: 64px;
     height: 64px;
+  }
+
+  .rpg-virtual-key.is-escape {
+    width: 48px;
+    height: 28px;
   }
 }

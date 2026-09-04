@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 
-const VERSION = '20260904-scene-warmup-02';
+const VERSION = '20260904-scene-warmup-03';
 const root = path.resolve(import.meta.dirname, '..');
 const gameRoots = ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'];
 
@@ -42,11 +42,61 @@ function upgradeWarmupV1(file, source) {
   return true;
 }
 
+function upgradeWarmupV2(file, source) {
+  const registry = capture(
+    source,
+    /function __rpgAdjacentSceneIds\(e\)\{let t=([A-Za-z_$][\w$]*)\(\);/,
+    'warmup content registry',
+    file,
+  )[1];
+  const battleLoader = capture(
+    source,
+    /function ([A-Za-z_$][\w$]*)\(e,t\)\{let n=[A-Za-z_$][\w$]*\(\),r=new Set,i=t\.musicId\?\?n\.defaultBattleMusicId;/,
+    'battle asset loader',
+    file,
+  )[1];
+  const adjacent = capture(
+    source,
+    /function __rpgWarmAdjacent\(e,t\)\{return Promise\.allSettled\(__rpgAdjacentSceneIds\(t\)\.map\(t=>__rpgWarmScene\(e,t\)\)\)\}/,
+    'adjacent scene warmup helper',
+    file,
+  )[0];
+  const battleWarmup = `function __rpgWarmBattles(e,t){let n=${registry}(),r=n.npcs.filter(e=>e.scene===t&&e.battle).map(e=>e.battle);r.forEach(t=>${battleLoader}(e,t)),r.length&&!e.load.isLoading()&&e.load.start()}function __rpgWarmReachable(e,t){return __rpgWarmBattles(e,t),__rpgWarmAdjacent(e,t)}`;
+
+  source = replaceOnce(
+    source,
+    adjacent,
+    adjacent + battleWarmup,
+    'battle warmup helpers',
+    file,
+  );
+  const oldHook = 'e.time.delayedCall(80,()=>__rpgWarmAdjacent(e,e.definition.id))';
+  const hookCount = source.split(oldHook).length - 1;
+  if (hookCount !== 2) throw new Error(`${file}: expected two world warmup hooks; found ${hookCount}`);
+  source = source.replaceAll(
+    oldHook,
+    'e.time.delayedCall(80,()=>__rpgWarmReachable(e,e.definition.id))',
+  );
+  source = replaceOnce(
+    source,
+    '__RPG_SCENE_WARMUP_20260904_02__',
+    '__RPG_SCENE_WARMUP_20260904_03__',
+    'warmup version marker',
+    file,
+  );
+  fs.writeFileSync(file, source);
+  return true;
+}
+
 function patchBundle(file) {
   let source = fs.readFileSync(file, 'utf8');
-  if (source.includes('__RPG_SCENE_WARMUP_20260904_02__')) return false;
+  if (source.includes('__RPG_SCENE_WARMUP_20260904_03__')) return false;
+  if (source.includes('__RPG_SCENE_WARMUP_20260904_02__')) {
+    return upgradeWarmupV2(file, source);
+  }
   if (source.includes('__RPG_SCENE_WARMUP_20260904__')) {
-    return upgradeWarmupV1(file, source);
+    upgradeWarmupV1(file, source);
+    return patchBundle(file);
   }
 
   const loader = capture(
@@ -56,6 +106,13 @@ function patchBundle(file) {
     file,
   );
   const getSceneAssetIds = loader[2];
+
+  const battleLoader = capture(
+    source,
+    /function ([A-Za-z_$][\w$]*)\(e,t\)\{let n=[A-Za-z_$][\w$]*\(\),r=new Set,i=t\.musicId\?\?n\.defaultBattleMusicId;/,
+    'battle asset loader',
+    file,
+  )[1];
 
   const registryAndScene = capture(
     source,
@@ -120,7 +177,23 @@ function patchBundle(file) {
 
   const helpers = `var __RPG_SCENE_WARMUP_20260904_02__=!0,__rpgSceneWarmups=new Map,__rpgJsonWarmups=new Map,__rpgSceneHistory=[];function __rpgWarmJson(e,t,n){if(e.cache.json.exists(t))return Promise.resolve(!0);let r=__rpgJsonWarmups.get(t);if(r)return r;let i=new Promise(r=>{let i=()=>{e.load.off(\`filecomplete\`,a),e.load.off(\`loaderror\`,o),__rpgJsonWarmups.delete(t)},a=(e,n)=>{e===t&&n===\`json\`&&(i(),r(!0))},o=e=>{e.key===t&&(i(),r(!1))};e.load.on(\`filecomplete\`,a),e.load.on(\`loaderror\`,o),e.load.json(t,${assetUrl}(n)),e.load.isLoading()||e.load.start()});return __rpgJsonWarmups.set(t,i),i}function __rpgWarmScene(e,t){if(!t)return Promise.resolve(!1);let n=${getScene}(t);if(!n)return Promise.resolve(!1);let r=__rpgSceneWarmups.get(t);if(r)return r;let i=[...${getSceneAssetIds}(t)].map(t=>${lazyLoad}(e,t)),a=\`pixel-collision.\${t}.manifest\`;n.collisionManifestPath&&i.push(__rpgWarmJson(e,a,n.collisionManifestPath));let o=Promise.all(i).then(e=>e.every(Boolean)).catch(e=>(console.warn(\`Scene warmup failed for "\${t}".\`,e),!1)).finally(()=>__rpgSceneWarmups.delete(t));return __rpgSceneWarmups.set(t,o),o}function __rpgAdjacentSceneIds(e){let t=${registry}();return[...new Set(t.worldInteractions.filter(t=>t.type===\`transition\`&&t.scene===e).map(e=>e.transition.toSceneId).filter(Boolean))]}function __rpgWarmAdjacent(e,t){return Promise.allSettled(__rpgAdjacentSceneIds(t).map(t=>__rpgWarmScene(e,t)))}async function __rpgWarmChapter(e,t){t&&(await __rpgWarmScene(e,t),e.scene.isActive(e.scene.key)&&await __rpgWarmAdjacent(e,t))}function __rpgRememberScene(e){let t=e.scene.key,n=__rpgSceneHistory.indexOf(t);n>=0&&__rpgSceneHistory.splice(n,1),__rpgSceneHistory.push(t);let r=globalThis.matchMedia?.(\`(pointer: coarse)\`)?.matches?2:3;for(;__rpgSceneHistory.length>r;){let t=__rpgSceneHistory.shift();t&&t!==e.scene.key&&e.scene.isSleeping(t)&&e.scene.stop(t)}}function __rpgFinishSceneSwitch(e,t={}){let n=t.__rpgPreviousSceneKey;if(n&&n!==e.scene.key){let t=e.scene.get(n);t?.__rpgTransitionTimer?.remove(!1),t&&(t.__rpgTransitionTimer=void 0),e.scene.isActive(n)&&e.scene.sleep(n)}e.scene.bringToTop(e.scene.key),__rpgRememberScene(e)}function __rpgWorldWake(e,t={}){e.sceneTransitionPending=!1,e.input.enabled=!0,${syncMusic}(e,e.definition.id),e.resolvePlayerSpawn?.(t),e.refreshAfterQuestStateChange?.(),e.syncNpcs?.(),e.syncQuestPickups?.(),e.refreshQuestTracker?.(),e.refreshQuestTrackerToggle?.(),e.refreshInventoryBar?.(),e.configureMainCameraBounds?.(),e.queueArrivalCutscene?.(t),e.queueChapterStartCutscene?.(t),__rpgFinishSceneSwitch(e,t),e.time.delayedCall(80,()=>__rpgWarmAdjacent(e,e.definition.id))}function __rpgWorldReady(e,t={}){e.sceneTransitionPending=!1,e.input.enabled=!0,e.__rpgWakeHandler||(e.__rpgWakeHandler=(t,n)=>__rpgWorldWake(e,n),e.events.on(\`wake\`,e.__rpgWakeHandler),e.events.once(\`shutdown\`,()=>{e.events.off(\`wake\`,e.__rpgWakeHandler),e.__rpgWakeHandler=void 0})),__rpgFinishSceneSwitch(e,t),e.time.delayedCall(80,()=>__rpgWarmAdjacent(e,e.definition.id))}`;
 
-  source = replaceOnce(source, insertionPoint, helpers + insertionPoint, 'warmup helper insertion', file);
+  const adjacentHelper = 'function __rpgWarmAdjacent(e,t){return Promise.allSettled(__rpgAdjacentSceneIds(t).map(t=>__rpgWarmScene(e,t)))}';
+  const battleHelpers = `function __rpgWarmBattles(e,t){let n=${registry}(),r=n.npcs.filter(e=>e.scene===t&&e.battle).map(e=>e.battle);r.forEach(t=>${battleLoader}(e,t)),r.length&&!e.load.isLoading()&&e.load.start()}function __rpgWarmReachable(e,t){return __rpgWarmBattles(e,t),__rpgWarmAdjacent(e,t)}`;
+  const preparedHelpers = helpers
+    .replace('__RPG_SCENE_WARMUP_20260904_02__', '__RPG_SCENE_WARMUP_20260904_03__')
+    .replace(adjacentHelper, adjacentHelper + battleHelpers)
+    .replaceAll(
+      'e.time.delayedCall(80,()=>__rpgWarmAdjacent(e,e.definition.id))',
+      'e.time.delayedCall(80,()=>__rpgWarmReachable(e,e.definition.id))',
+    );
+
+  source = replaceOnce(
+    source,
+    insertionPoint,
+    preparedHelpers + insertionPoint,
+    'warmup helper insertion',
+    file,
+  );
 
   const transitionStart = source.indexOf('startTransitionInteraction(e){');
   const transitionEnd = source.indexOf('}resolveTransitionArrival(e){', transitionStart);

@@ -13,6 +13,7 @@
     ['ArrowDown', { key: 'ArrowDown', keyCode: 40, gameKey: 's', gameCode: 'KeyS', gameKeyCode: 83 }],
     ['ArrowLeft', { key: 'ArrowLeft', keyCode: 37, gameKey: 'a', gameCode: 'KeyA', gameKeyCode: 65 }],
     ['ArrowRight', { key: 'ArrowRight', keyCode: 39, gameKey: 'd', gameCode: 'KeyD', gameKeyCode: 68 }],
+    ['Escape', { key: 'Escape', keyCode: 27 }],
     ['Space', { key: ' ', keyCode: 32 }],
   ]);
 
