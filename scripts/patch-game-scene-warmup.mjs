@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 
-const VERSION = '20260904-scene-warmup-01';
+const VERSION = '20260904-scene-warmup-02';
 const root = path.resolve(import.meta.dirname, '..');
 const gameRoots = ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'];
 
@@ -23,9 +23,31 @@ function capture(source, expression, label, file) {
   return match;
 }
 
+function upgradeWarmupV1(file, source) {
+  const oldFinish = 'finish(){if(this.finishing)return;this.finishing=!0,this.letterTimer?.remove(!1),this.shotTimer?.remove(!1),__rpgWarmScene(this,this.startSceneId).finally(()=>{this.scene.isActive(this.scene.key)&&(this.cameras.main.fadeOut(220,0,0,0),this.cameras.main.once(`camerafadeoutcomplete`,()=>{this.scene.start(this.startSceneId,{isNewGame:!0})}))})}}';
+  const newFinish = 'finish(){if(this.finishing)return;this.finishing=!0,this.letterTimer?.remove(!1),this.shotTimer?.remove(!1),this.cameras.main.fadeOut(220,0,0,0),this.cameras.main.once(`camerafadeoutcomplete`,()=>{this.scene.start(this.startSceneId,{isNewGame:!0})})}}';
+  const oldContinue = 'agentContinueChapter(){if(!this.nextSceneId)return{ok:!1,message:`No next chapter is available.`};if(this.__rpgContinuing)return{ok:!0,message:`The next chapter is being prepared.`};this.__rpgContinuing=!0;let e=this.nextSceneId,t=this.startCutsceneId;return __rpgWarmScene(this,e).finally(()=>{this.scene.isActive(this.scene.key)&&(this.endingQaState=void 0,this.nextSceneId=void 0,this.startCutsceneId=void 0,this.scene.stop(this.parentSceneKey),this.scene.start(e,{chapterStartCutsceneId:t,isChapterStart:!0}))}),{ok:!0,message:`Continued to the next chapter.`}}';
+  const newContinue = 'agentContinueChapter(){if(!this.nextSceneId)return{ok:!1,message:`No next chapter is available.`};if(this.__rpgContinuing)return{ok:!0,message:`The next chapter is being prepared.`};this.__rpgContinuing=!0;let e=this.nextSceneId,t=this.startCutsceneId;return this.endingQaState=void 0,this.nextSceneId=void 0,this.startCutsceneId=void 0,this.scene.stop(this.parentSceneKey),this.scene.start(e,{chapterStartCutsceneId:t,isChapterStart:!0}),{ok:!0,message:`Continued to the next chapter.`}}';
+
+  source = replaceOnce(source, oldFinish, newFinish, 'non-blocking opening finish', file);
+  source = replaceOnce(source, oldContinue, newContinue, 'non-blocking chapter continuation', file);
+  source = replaceOnce(
+    source,
+    '__RPG_SCENE_WARMUP_20260904__',
+    '__RPG_SCENE_WARMUP_20260904_02__',
+    'warmup version marker',
+    file,
+  );
+  fs.writeFileSync(file, source);
+  return true;
+}
+
 function patchBundle(file) {
   let source = fs.readFileSync(file, 'utf8');
-  if (source.includes('__RPG_SCENE_WARMUP_20260904__')) return false;
+  if (source.includes('__RPG_SCENE_WARMUP_20260904_02__')) return false;
+  if (source.includes('__RPG_SCENE_WARMUP_20260904__')) {
+    return upgradeWarmupV1(file, source);
+  }
 
   const loader = capture(
     source,
@@ -96,7 +118,7 @@ function patchBundle(file) {
     file,
   )[0];
 
-  const helpers = `var __RPG_SCENE_WARMUP_20260904__=!0,__rpgSceneWarmups=new Map,__rpgJsonWarmups=new Map,__rpgSceneHistory=[];function __rpgWarmJson(e,t,n){if(e.cache.json.exists(t))return Promise.resolve(!0);let r=__rpgJsonWarmups.get(t);if(r)return r;let i=new Promise(r=>{let i=()=>{e.load.off(\`filecomplete\`,a),e.load.off(\`loaderror\`,o),__rpgJsonWarmups.delete(t)},a=(e,n)=>{e===t&&n===\`json\`&&(i(),r(!0))},o=e=>{e.key===t&&(i(),r(!1))};e.load.on(\`filecomplete\`,a),e.load.on(\`loaderror\`,o),e.load.json(t,${assetUrl}(n)),e.load.isLoading()||e.load.start()});return __rpgJsonWarmups.set(t,i),i}function __rpgWarmScene(e,t){if(!t)return Promise.resolve(!1);let n=${getScene}(t);if(!n)return Promise.resolve(!1);let r=__rpgSceneWarmups.get(t);if(r)return r;let i=[...${getSceneAssetIds}(t)].map(t=>${lazyLoad}(e,t)),a=\`pixel-collision.\${t}.manifest\`;n.collisionManifestPath&&i.push(__rpgWarmJson(e,a,n.collisionManifestPath));let o=Promise.all(i).then(e=>e.every(Boolean)).catch(e=>(console.warn(\`Scene warmup failed for "\${t}".\`,e),!1)).finally(()=>__rpgSceneWarmups.delete(t));return __rpgSceneWarmups.set(t,o),o}function __rpgAdjacentSceneIds(e){let t=${registry}();return[...new Set(t.worldInteractions.filter(t=>t.type===\`transition\`&&t.scene===e).map(e=>e.transition.toSceneId).filter(Boolean))]}function __rpgWarmAdjacent(e,t){return Promise.allSettled(__rpgAdjacentSceneIds(t).map(t=>__rpgWarmScene(e,t)))}async function __rpgWarmChapter(e,t){t&&(await __rpgWarmScene(e,t),e.scene.isActive(e.scene.key)&&await __rpgWarmAdjacent(e,t))}function __rpgRememberScene(e){let t=e.scene.key,n=__rpgSceneHistory.indexOf(t);n>=0&&__rpgSceneHistory.splice(n,1),__rpgSceneHistory.push(t);let r=globalThis.matchMedia?.(\`(pointer: coarse)\`)?.matches?2:3;for(;__rpgSceneHistory.length>r;){let t=__rpgSceneHistory.shift();t&&t!==e.scene.key&&e.scene.isSleeping(t)&&e.scene.stop(t)}}function __rpgFinishSceneSwitch(e,t={}){let n=t.__rpgPreviousSceneKey;if(n&&n!==e.scene.key){let t=e.scene.get(n);t?.__rpgTransitionTimer?.remove(!1),t&&(t.__rpgTransitionTimer=void 0),e.scene.isActive(n)&&e.scene.sleep(n)}e.scene.bringToTop(e.scene.key),__rpgRememberScene(e)}function __rpgWorldWake(e,t={}){e.sceneTransitionPending=!1,e.input.enabled=!0,${syncMusic}(e,e.definition.id),e.resolvePlayerSpawn?.(t),e.refreshAfterQuestStateChange?.(),e.syncNpcs?.(),e.syncQuestPickups?.(),e.refreshQuestTracker?.(),e.refreshQuestTrackerToggle?.(),e.refreshInventoryBar?.(),e.configureMainCameraBounds?.(),e.queueArrivalCutscene?.(t),e.queueChapterStartCutscene?.(t),__rpgFinishSceneSwitch(e,t),e.time.delayedCall(80,()=>__rpgWarmAdjacent(e,e.definition.id))}function __rpgWorldReady(e,t={}){e.sceneTransitionPending=!1,e.input.enabled=!0,e.__rpgWakeHandler||(e.__rpgWakeHandler=(t,n)=>__rpgWorldWake(e,n),e.events.on(\`wake\`,e.__rpgWakeHandler),e.events.once(\`shutdown\`,()=>{e.events.off(\`wake\`,e.__rpgWakeHandler),e.__rpgWakeHandler=void 0})),__rpgFinishSceneSwitch(e,t),e.time.delayedCall(80,()=>__rpgWarmAdjacent(e,e.definition.id))}`;
+  const helpers = `var __RPG_SCENE_WARMUP_20260904_02__=!0,__rpgSceneWarmups=new Map,__rpgJsonWarmups=new Map,__rpgSceneHistory=[];function __rpgWarmJson(e,t,n){if(e.cache.json.exists(t))return Promise.resolve(!0);let r=__rpgJsonWarmups.get(t);if(r)return r;let i=new Promise(r=>{let i=()=>{e.load.off(\`filecomplete\`,a),e.load.off(\`loaderror\`,o),__rpgJsonWarmups.delete(t)},a=(e,n)=>{e===t&&n===\`json\`&&(i(),r(!0))},o=e=>{e.key===t&&(i(),r(!1))};e.load.on(\`filecomplete\`,a),e.load.on(\`loaderror\`,o),e.load.json(t,${assetUrl}(n)),e.load.isLoading()||e.load.start()});return __rpgJsonWarmups.set(t,i),i}function __rpgWarmScene(e,t){if(!t)return Promise.resolve(!1);let n=${getScene}(t);if(!n)return Promise.resolve(!1);let r=__rpgSceneWarmups.get(t);if(r)return r;let i=[...${getSceneAssetIds}(t)].map(t=>${lazyLoad}(e,t)),a=\`pixel-collision.\${t}.manifest\`;n.collisionManifestPath&&i.push(__rpgWarmJson(e,a,n.collisionManifestPath));let o=Promise.all(i).then(e=>e.every(Boolean)).catch(e=>(console.warn(\`Scene warmup failed for "\${t}".\`,e),!1)).finally(()=>__rpgSceneWarmups.delete(t));return __rpgSceneWarmups.set(t,o),o}function __rpgAdjacentSceneIds(e){let t=${registry}();return[...new Set(t.worldInteractions.filter(t=>t.type===\`transition\`&&t.scene===e).map(e=>e.transition.toSceneId).filter(Boolean))]}function __rpgWarmAdjacent(e,t){return Promise.allSettled(__rpgAdjacentSceneIds(t).map(t=>__rpgWarmScene(e,t)))}async function __rpgWarmChapter(e,t){t&&(await __rpgWarmScene(e,t),e.scene.isActive(e.scene.key)&&await __rpgWarmAdjacent(e,t))}function __rpgRememberScene(e){let t=e.scene.key,n=__rpgSceneHistory.indexOf(t);n>=0&&__rpgSceneHistory.splice(n,1),__rpgSceneHistory.push(t);let r=globalThis.matchMedia?.(\`(pointer: coarse)\`)?.matches?2:3;for(;__rpgSceneHistory.length>r;){let t=__rpgSceneHistory.shift();t&&t!==e.scene.key&&e.scene.isSleeping(t)&&e.scene.stop(t)}}function __rpgFinishSceneSwitch(e,t={}){let n=t.__rpgPreviousSceneKey;if(n&&n!==e.scene.key){let t=e.scene.get(n);t?.__rpgTransitionTimer?.remove(!1),t&&(t.__rpgTransitionTimer=void 0),e.scene.isActive(n)&&e.scene.sleep(n)}e.scene.bringToTop(e.scene.key),__rpgRememberScene(e)}function __rpgWorldWake(e,t={}){e.sceneTransitionPending=!1,e.input.enabled=!0,${syncMusic}(e,e.definition.id),e.resolvePlayerSpawn?.(t),e.refreshAfterQuestStateChange?.(),e.syncNpcs?.(),e.syncQuestPickups?.(),e.refreshQuestTracker?.(),e.refreshQuestTrackerToggle?.(),e.refreshInventoryBar?.(),e.configureMainCameraBounds?.(),e.queueArrivalCutscene?.(t),e.queueChapterStartCutscene?.(t),__rpgFinishSceneSwitch(e,t),e.time.delayedCall(80,()=>__rpgWarmAdjacent(e,e.definition.id))}function __rpgWorldReady(e,t={}){e.sceneTransitionPending=!1,e.input.enabled=!0,e.__rpgWakeHandler||(e.__rpgWakeHandler=(t,n)=>__rpgWorldWake(e,n),e.events.on(\`wake\`,e.__rpgWakeHandler),e.events.once(\`shutdown\`,()=>{e.events.off(\`wake\`,e.__rpgWakeHandler),e.__rpgWakeHandler=void 0})),__rpgFinishSceneSwitch(e,t),e.time.delayedCall(80,()=>__rpgWarmAdjacent(e,e.definition.id))}`;
 
   source = replaceOnce(source, insertionPoint, helpers + insertionPoint, 'warmup helper insertion', file);
 
@@ -120,7 +142,7 @@ function patchBundle(file) {
   source = replaceOnce(
     source,
     'this.playShot(0)}}showLoading',
-    'this.playShot(0),__rpgWarmChapter(this,this.startSceneId)}}showLoading',
+    'this.playShot(0),__rpgWarmScene(this,this.startSceneId)}}showLoading',
     'opening warmup hook',
     file,
   );
@@ -132,13 +154,13 @@ function patchBundle(file) {
     throw new Error(`${file}: could not isolate opening finish method`);
   }
   const openingFinish = source.slice(openingFinishStart, openingFinishEnd + 2);
-  const openingFinishReplacement = 'finish(){if(this.finishing)return;this.finishing=!0,this.letterTimer?.remove(!1),this.shotTimer?.remove(!1),__rpgWarmChapter(this,this.startSceneId).finally(()=>{this.scene.isActive(this.scene.key)&&(this.cameras.main.fadeOut(220,0,0,0),this.cameras.main.once(`camerafadeoutcomplete`,()=>{this.scene.start(this.startSceneId,{isNewGame:!0})}))})}}';
+  const openingFinishReplacement = 'finish(){if(this.finishing)return;this.finishing=!0,this.letterTimer?.remove(!1),this.shotTimer?.remove(!1),this.cameras.main.fadeOut(220,0,0,0),this.cameras.main.once(`camerafadeoutcomplete`,()=>{this.scene.start(this.startSceneId,{isNewGame:!0})})}}';
   source = replaceOnce(source, openingFinish, openingFinishReplacement, 'opening finish method', file);
 
   source = replaceOnce(
     source,
     'this.revealEnding(i,a),this.input.keyboard?.on',
-    'this.revealEnding(i,a),this.nextSceneId&&__rpgWarmChapter(this,this.nextSceneId),this.input.keyboard?.on',
+    'this.revealEnding(i,a),this.nextSceneId&&__rpgWarmScene(this,this.nextSceneId),this.input.keyboard?.on',
     'ending warmup hook',
     file,
   );
@@ -149,7 +171,7 @@ function patchBundle(file) {
     throw new Error(`${file}: could not isolate chapter continuation method`);
   }
   const continueMethod = source.slice(continueStart, continueEnd + 1);
-  const continueReplacement = 'agentContinueChapter(){if(!this.nextSceneId)return{ok:!1,message:`No next chapter is available.`};if(this.__rpgContinuing)return{ok:!0,message:`The next chapter is being prepared.`};this.__rpgContinuing=!0;let e=this.nextSceneId,t=this.startCutsceneId;return __rpgWarmChapter(this,e).finally(()=>{this.scene.isActive(this.scene.key)&&(this.endingQaState=void 0,this.nextSceneId=void 0,this.startCutsceneId=void 0,this.scene.stop(this.parentSceneKey),this.scene.start(e,{chapterStartCutsceneId:t,isChapterStart:!0}))}),{ok:!0,message:`Continued to the next chapter.`}}';
+  const continueReplacement = 'agentContinueChapter(){if(!this.nextSceneId)return{ok:!1,message:`No next chapter is available.`};if(this.__rpgContinuing)return{ok:!0,message:`The next chapter is being prepared.`};this.__rpgContinuing=!0;let e=this.nextSceneId,t=this.startCutsceneId;return this.endingQaState=void 0,this.nextSceneId=void 0,this.startCutsceneId=void 0,this.scene.stop(this.parentSceneKey),this.scene.start(e,{chapterStartCutsceneId:t,isChapterStart:!0}),{ok:!0,message:`Continued to the next chapter.`}}';
   source = replaceOnce(source, continueMethod, continueReplacement, 'chapter continuation method', file);
 
   fs.writeFileSync(file, source);
