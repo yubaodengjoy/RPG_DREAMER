@@ -1,4 +1,4 @@
-// RPG Dreamer — five independently cached, explicitly loaded playable worlds.
+// RPG Dreamer — independently cached, explicitly loaded playable worlds.
 (() => {
   const root = document.getElementById('rpg-play-demo');
   if (!root) return;
@@ -25,6 +25,13 @@
     : 'https://pub-f92b6274842f4c76bae0e87541458375.r2.dev/rpg-dreamer/';
 
   const games = {
+    'debt-abyss': {
+      title: '债务深渊',
+      meta: 'Long-horizon generated RPG · Chinese',
+      src: `${gameAssetBase}src-45/src/dist/index.html?v=20260910-src45-01`,
+      poster: `${gameAssetBase}src-45/src/dist/cover.webp`,
+      copy: 'Fight your way out of a debt-driven criminal underworld across two connected chapters. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
+    },
     'world-40': {
       title: '武松·最后一虎',
       meta: 'Long-horizon generated RPG · Chinese',

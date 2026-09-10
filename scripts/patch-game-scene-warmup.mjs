@@ -4,9 +4,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 
-const VERSION = '20260904-scene-warmup-03';
+const VERSION = process.env.RPG_SCENE_VERSION ?? '20260904-scene-warmup-03';
 const root = path.resolve(import.meta.dirname, '..');
-const gameRoots = ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'];
+const gameRoots = (process.env.RPG_GAME_ROOTS
+  ? process.env.RPG_GAME_ROOTS.split(',')
+  : ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'])
+  .map((value) => value.trim())
+  .filter(Boolean);
 
 function replaceOnce(source, search, replacement, label, file) {
   const first = source.indexOf(search);

@@ -11,6 +11,7 @@
 !/github-redirect/index.html
 !/scripts/
 !/scripts/build-cloudflare-site.sh
+!/scripts/compress-game-audio.mjs
 
 # Landing-page runtime files.
 !/index.html
@@ -44,3 +45,4 @@
 /src-42/
 /src-43/
 /src-44/
+/src-45/

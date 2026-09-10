@@ -3,10 +3,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const VERSION = '20260904-chapter-packs-01';
-const MARKER = '__RPG_CHAPTER_PACKS_20260904_01__';
+const VERSION = process.env.RPG_PACK_VERSION ?? '20260904-chapter-packs-01';
+const MARKER = process.env.RPG_PACK_MARKER ?? '__RPG_CHAPTER_PACKS_20260904_01__';
 const root = path.resolve(import.meta.dirname, '..');
-const gameRoots = ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'];
+const gameRoots = (process.env.RPG_GAME_ROOTS
+  ? process.env.RPG_GAME_ROOTS.split(',')
+  : ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'])
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+if (!/^[A-Za-z_$][\w$]*$/.test(MARKER)) {
+  throw new Error(`RPG_PACK_MARKER must be a valid JavaScript identifier: ${MARKER}`);
+}
 
 function replaceOnce(source, search, replacement, label, file) {
   const first = source.indexOf(search);

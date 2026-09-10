@@ -4,10 +4,14 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const PACK_VERSION = '20260904-chapter-packs-01';
+const PACK_VERSION = process.env.RPG_PACK_VERSION ?? '20260904-chapter-packs-01';
 const MAGIC = Buffer.from('RPGPK001');
 const root = path.resolve(import.meta.dirname, '..');
-const gameRoots = ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'];
+const gameRoots = (process.env.RPG_GAME_ROOTS
+  ? process.env.RPG_GAME_ROOTS.split(',')
+  : ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'])
+  .map((value) => value.trim())
+  .filter(Boolean);
 
 function mimeType(file) {
   const extension = path.extname(file).toLowerCase();
@@ -36,12 +40,32 @@ function extractAssetMap(source, file) {
   if (!resolver) throw new Error(`${file}: compiled asset resolver was not found`);
   const resolverName = resolver[1];
   const mapName = resolver[3];
-  const startToken = `var ${mapName}=Object.assign(`;
+  const startToken = `${mapName}=Object.assign(`;
   const start = source.indexOf(startToken);
   const end = source.indexOf(`);function ${resolverName}(e)`, start);
   if (start < 0 || end < 0) throw new Error(`${file}: compiled asset map was not found`);
-  const expression = source.slice(start + `var ${mapName}=`.length, end + 1);
-  return Function(`"use strict";return (${expression})`)();
+  const mapSource = source.slice(start + startToken.length, end);
+
+  // Vite 7 and earlier usually emit direct string values. Vite 8 emits each
+  // URL into a short variable before assigning those variables to the map.
+  // Parse both forms without evaluating the application bundle.
+  const variableAssets = new Map(
+    [...source.slice(0, start).matchAll(
+      /([A-Za-z_$][\w$]*)=``\+new URL\(`([^`]+)`,import\.meta\.url\)\.href/g,
+    )].map((match) => [match[1], `./assets/${match[2]}`]),
+  );
+  const entries = {};
+  for (const match of mapSource.matchAll(/"([^"]+)":("[^"]+"|[A-Za-z_$][\w$]*)/g)) {
+    const [, sourcePath, rawValue] = match;
+    const outputPath = rawValue.startsWith('"')
+      ? JSON.parse(rawValue)
+      : variableAssets.get(rawValue);
+    if (outputPath) entries[sourcePath] = outputPath;
+  }
+  if (Object.keys(entries).length === 0) {
+    throw new Error(`${file}: compiled asset map did not contain any assets`);
+  }
+  return entries;
 }
 
 function chapterFromSource(sourcePath) {
