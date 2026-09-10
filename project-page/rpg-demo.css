@@ -1041,7 +1041,7 @@ body.rpg-demo-fullscreen-fallback #demos {
 
 .rpg-handheld-player .rpg-demo-placeholder h3 {
   margin-top: 0;
-  font-family: "Jersey 10", var(--mono);
+  font-family: var(--mono);
   font-size: clamp(28px, 4.1cqi, 41px);
   font-weight: 400;
   font-synthesis: none;
