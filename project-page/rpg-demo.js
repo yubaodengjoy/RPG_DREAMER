@@ -28,42 +28,42 @@
     'debt-abyss': {
       title: 'GTA 6：罪恶岛',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-45/src/dist/index.html?v=20260910-atlasfix-01`,
+      src: `${gameAssetBase}src-45/src/dist/index.html?v=20260910-loop-resume-01`,
       poster: `${gameAssetBase}src-45/src/dist/cover.webp`,
       copy: 'Fight your way out of a debt-driven criminal underworld across two connected chapters. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
     },
     'world-40': {
       title: '武松·最后一虎',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-40/src/dist/index.html?v=20260910-atlasfix-01`,
+      src: `${gameAssetBase}src-40/src/dist/index.html?v=20260910-loop-resume-01`,
       poster: `${gameAssetBase}src-40/src/dist/cover.webp`,
       copy: 'Follow Wu Song beyond the familiar legend and into a final hunt where every trail conceals a harder choice. Explore a dangerous mountain world shaped by duty, survival, and the mystery of the last tiger.',
     },
     'magic-brush': {
       title: '神笔：移命录',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-41/src/dist/index.html?v=20260910-atlasfix-01`,
+      src: `${gameAssetBase}src-41/src/dist/index.html?v=20260910-loop-resume-01`,
       poster: `${gameAssetBase}src-41/src/dist/cover.webp`,
       copy: 'Join Ma Liang on a four-chapter journey through a world transformed by the power of a magic brush. Every miracle transfers its hidden cost to someone else, turning each act of creation into a difficult moral choice.',
     },
     'world-42': {
       title: 'Pinocchio: The City That Swallows Truth',
       meta: 'Long-horizon generated RPG · English',
-      src: `${gameAssetBase}src-42/src/dist/index.html?v=20260910-atlasfix-01`,
+      src: `${gameAssetBase}src-42/src/dist/index.html?v=20260910-loop-resume-01`,
       poster: `${gameAssetBase}src-42/src/dist/cover.webp`,
       copy: 'Enter a city that consumes truth and rewrites the identities of everyone who lives within its walls. Investigate its shifting districts, confront manufactured memories, and decide what it means to remain real.',
     },
     'vanishing-emperor': {
       title: 'The Vanishing Emperor',
       meta: 'Long-horizon generated RPG · English',
-      src: `${gameAssetBase}src-43/src/dist/index.html?v=20260910-atlasfix-01`,
+      src: `${gameAssetBase}src-43/src/dist/index.html?v=20260910-loop-resume-01`,
       poster: `${gameAssetBase}src-43/src/dist/cover.webp`,
       copy: 'Investigate the kingdom of Valdris after its emperor vanishes without explanation, leaving an empty crown and a disputed voice. Follow competing accounts, uncover concealed loyalties, and determine which truth the kingdom will inherit.',
     },
     'journey-west': {
       title: '西游·女儿国情劫',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-44/src/dist/index.html?v=20260910-atlasfix-01`,
+      src: `${gameAssetBase}src-44/src/dist/index.html?v=20260910-loop-resume-01`,
       poster: `${gameAssetBase}src-44/src/dist/assets/main-menu-TS6JUrUr.png`,
       copy: 'Accompany Sun Wukong as he escorts Tang Sanzang through the Kingdom of Women, the western road, and the Blackwater River. Explore diverse locations, complete side quests, and make pivotal choices that confront mortal desire, attachment, duty, and farewell.',
     },
@@ -127,6 +127,7 @@
   let fallbackFullscreen = false;
   let fallbackMount = null;
   let controlsOpen = false;
+  let rootIsVisible = true;
   let virtualControlsEnabled = false;
   let virtualToggleDrag = null;
   let suppressVirtualToggleClick = false;
@@ -156,6 +157,25 @@
       { source: 'rpg-dreamer-host', type, ...detail },
       new URL(games[id].src).origin,
     );
+  }
+
+  function shouldGameRun(id) {
+    return Boolean(
+      states[id]?.ready
+      && hasCartridge
+      && poweredOn
+      && !controlsOpen
+      && !document.hidden
+      && id === activeId
+      && (rootIsVisible || isGameFullscreen())
+    );
+  }
+
+  function syncGamePlayback() {
+    Object.keys(states).forEach((id) => {
+      if (!states[id].ready) return;
+      sendToGame(id, shouldGameRun(id) ? 'resume' : 'pause');
+    });
   }
 
   function openControlsPage() {
@@ -724,7 +744,11 @@
     window.requestAnimationFrame(() => {
       placeVirtualToggle();
       sendToGame(activeId, 'resize');
-      window.requestAnimationFrame(() => sendToGame(activeId, 'resize'));
+      syncGamePlayback();
+      window.requestAnimationFrame(() => {
+        sendToGame(activeId, 'resize');
+        syncGamePlayback();
+      });
     });
   }
 
@@ -1000,22 +1024,21 @@
 
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
-      const visible = entries.some((entry) => entry.isIntersecting);
-      Object.keys(states).forEach((id) => {
-        if (!states[id].ready) return;
-        sendToGame(id, hasCartridge && poweredOn && !controlsOpen && id === activeId && (visible || document.fullscreenElement === root || fallbackFullscreen) ? 'resume' : 'pause');
-      });
+      rootIsVisible = entries.some((entry) => entry.isIntersecting);
+      syncGamePlayback();
     }, { threshold: 0.05 });
     observer.observe(root);
   }
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) configureGameAudioSession();
-    Object.keys(states).forEach((id) => {
-      if (!states[id].ready) return;
-      sendToGame(id, hasCartridge && poweredOn && !controlsOpen && !document.hidden && id === activeId ? 'resume' : 'pause');
-    });
+    syncGamePlayback();
   });
+
+  // Fullscreen and viewport observers can occasionally arrive out of order on
+  // mobile/tablet browsers. Reassert the desired state so a stale pause cannot
+  // leave the selected game's global loop asleep indefinitely.
+  window.setInterval(syncGamePlayback, 1000);
 
   syncActiveUi();
   syncCartridgeScrollButtons();

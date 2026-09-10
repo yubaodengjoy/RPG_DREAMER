@@ -169,7 +169,10 @@
   // No extra sound UI: the first real interaction with the game canvas also
   // unlocks its audio. Capture both touch and pointer families for iOS/Android.
   ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'keydown'].forEach((type) => {
-    document.addEventListener(type, unlockAudioFromGesture, { capture: true, passive: true });
+    document.addEventListener(type, (event) => {
+      wakeFromUserInteraction(event);
+      unlockAudioFromGesture(event);
+    }, { capture: true, passive: true });
   });
 
   function syncPlayback() {
@@ -188,6 +191,18 @@
     }
     game.scale?.refresh();
     syncAudioState();
+  }
+
+  function wakeFromUserInteraction(event) {
+    if (event?.isTrusted === false || document.hidden) return;
+
+    // Parent visibility/fullscreen updates can race with a Phaser scene
+    // transition. A real interaction inside the visible game is authoritative:
+    // wake the global loop before Phaser handles that input.
+    if (paused || !window.__WEBRPG_GAME__?.loop?.running) {
+      paused = false;
+      syncPlayback();
+    }
   }
 
   function dispatchVirtualKey(code, phase) {
@@ -243,6 +258,10 @@
       if (requested
         && event.data.key === requested.key
         && Number(event.data.keyCode) === requested.keyCode) {
+        // Virtual controls live in the parent document, so their gesture does
+        // not reach wakeFromUserInteraction inside this iframe.
+        paused = false;
+        syncPlayback();
         dispatchVirtualKey(event.data.code, event.data.phase);
       }
     }
