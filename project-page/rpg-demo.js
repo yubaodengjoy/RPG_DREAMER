@@ -28,21 +28,21 @@
     'debt-abyss': {
       title: 'GTA 6：罪恶岛',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-45/src/dist/index.html?v=20260910-packready-01`,
+      src: `${gameAssetBase}src-45/src/dist/index.html?v=20260910-inventory-01`,
       poster: `${gameAssetBase}src-45/src/dist/cover.webp`,
       copy: 'Fight your way out of a debt-driven criminal underworld across two connected chapters. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
     },
     'world-40': {
       title: '武松·最后一虎',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-40/src/dist/index.html?v=20260910-packready-01`,
+      src: `${gameAssetBase}src-40/src/dist/index.html?v=20260910-inventory-01`,
       poster: `${gameAssetBase}src-40/src/dist/cover.webp`,
       copy: 'Follow Wu Song beyond the familiar legend and into a final hunt where every trail conceals a harder choice. Explore a dangerous mountain world shaped by duty, survival, and the mystery of the last tiger.',
     },
     'magic-brush': {
       title: '神笔：移命录',
       meta: 'Long-horizon generated RPG · Chinese',
-      src: `${gameAssetBase}src-41/src/dist/index.html?v=20260910-packready-01`,
+      src: `${gameAssetBase}src-41/src/dist/index.html?v=20260910-inventory-01`,
       poster: `${gameAssetBase}src-41/src/dist/cover.webp`,
       copy: 'Join Ma Liang on a four-chapter journey through a world transformed by the power of a magic brush. Every miracle transfers its hidden cost to someone else, turning each act of creation into a difficult moral choice.',
     },
@@ -56,7 +56,7 @@
     'vanishing-emperor': {
       title: 'The Vanishing Emperor',
       meta: 'Long-horizon generated RPG · English',
-      src: `${gameAssetBase}src-43/src/dist/index.html?v=20260910-packready-01`,
+      src: `${gameAssetBase}src-43/src/dist/index.html?v=20260910-inventory-01`,
       poster: `${gameAssetBase}src-43/src/dist/cover.webp`,
       copy: 'Investigate the kingdom of Valdris after its emperor vanishes without explanation, leaving an empty crown and a disputed voice. Follow competing accounts, uncover concealed loyalties, and determine which truth the kingdom will inherit.',
     },

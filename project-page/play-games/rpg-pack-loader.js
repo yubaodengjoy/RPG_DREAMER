@@ -84,6 +84,10 @@
     const pack = { blob, dataOffset, entries: new Map() };
     for (const entry of index.entries) {
       pack.entries.set(entry.p, entry);
+      // An initial inventory pack can own icons also present in older chapter
+      // packs. A chapter arriving later must not replace the selected version.
+      const owner = manifest?.assetPacks?.[entry.p];
+      if (owner && owner !== packId) continue;
       assetLocations.set(entry.p, { packId, entry });
     }
     loadedPacks.set(packId, pack);

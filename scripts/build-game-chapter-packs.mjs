@@ -79,7 +79,10 @@ function collectPackFiles(gameRoot, source, assetMap) {
   const groupsByOutput = new Map();
   for (const [sourcePath, outputPath] of Object.entries(assetMap)) {
     const normalized = outputPath.replace(/^\.\//, '');
-    const group = chapterFromSource(sourcePath) ?? 'base';
+    // Inventory UI can display carried equipment from any chapter. These small
+    // atlases are boot assets and must be available before the engine starts.
+    const inventoryIcon = /\/(?:icons|atlases|items)\/(?:[^/]+\/)*[^/]*(?:item-icons|items)\.(?:png|json)$/i.test(sourcePath);
+    const group = inventoryIcon ? 'inventory' : chapterFromSource(sourcePath) ?? 'base';
     if (!groupsByOutput.has(normalized)) groupsByOutput.set(normalized, new Set());
     groupsByOutput.get(normalized).add(group);
   }
@@ -88,7 +91,8 @@ function collectPackFiles(gameRoot, source, assetMap) {
   const assetPacks = {};
   for (const [relativePath, groups] of groupsByOutput) {
     const chapterGroups = [...groups].filter((group) => group !== 'base');
-    const group = groups.has('base') || chapterGroups.length !== 1 ? 'base' : chapterGroups[0];
+    const group = groups.has('inventory') ? 'inventory'
+      : groups.has('base') || chapterGroups.length !== 1 ? 'base' : chapterGroups[0];
     const absolutePath = path.join(root, gameRoot, 'src', 'dist', relativePath);
     if (!fs.existsSync(absolutePath)) {
       throw new Error(`${gameRoot}: mapped asset is missing: ${relativePath}`);
@@ -163,11 +167,11 @@ for (const gameRoot of gameRoots) {
 
   const order = [...new Set(Object.values(sceneChapters))]
     .sort((a, b) => Number(a.split('-')[1]) - Number(b.split('-')[1]));
-  const packOrder = ['base', ...order];
+  const packOrder = ['base', 'inventory', ...order];
   const manifest = {
     version: PACK_VERSION,
     game: gameRoot,
-    initial: ['base', order[0]].filter(Boolean),
+    initial: ['base', packs.has('inventory') ? 'inventory' : null, order[0]].filter(Boolean),
     order,
     assetPacks,
     sceneChapters,
