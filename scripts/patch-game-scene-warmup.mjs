@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { patchBattleOwner } from './patch-game-battle-owner.mjs';
 
 const VERSION = process.env.RPG_SCENE_VERSION ?? '20260904-scene-warmup-03';
 const root = path.resolve(import.meta.dirname, '..');
@@ -270,7 +271,14 @@ for (const gameRoot of gameRoots) {
   const assets = path.join(dist, 'assets');
   const bundle = fs.readdirSync(assets).find((name) => /^index-.*\.js$/.test(name));
   if (!bundle) throw new Error(`${gameRoot}: entry bundle was not found`);
-  if (patchBundle(path.join(assets, bundle))) changed += 1;
+  const file = path.join(assets, bundle);
+  const warmupChanged = patchBundle(file);
+  // Retaining sleeping maps also retains their global event subscriptions.
+  // Install ownership isolation whenever scene caching is installed/reused.
+  const beforeOwnership = fs.readFileSync(file, 'utf8');
+  const afterOwnership = patchBattleOwner(beforeOwnership, gameRoot);
+  if (afterOwnership !== beforeOwnership) fs.writeFileSync(file, afterOwnership);
+  if (warmupChanged || afterOwnership !== beforeOwnership) changed += 1;
   patchIndex(path.join(dist, 'index.html'));
 }
 
