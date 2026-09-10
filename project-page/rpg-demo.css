@@ -1056,9 +1056,14 @@ body.rpg-demo-fullscreen-fallback #demos {
   line-height: 1.45;
 }
 
-#demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-placeholder h3,
+#demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-placeholder h3 {
+  font-family: "Jersey 10", var(--mono);
+  font-size: clamp(30px, 4.45cqi, 44px);
+}
+
 #demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-placeholder p {
   font-family: "Jersey 10", var(--mono);
+  font-size: 15px;
 }
 
 #demos .rpg-demo-actions button,
@@ -1451,6 +1456,14 @@ body.rpg-demo-fullscreen-fallback #demos {
     font-size: 8.5px;
     line-height: 1.2;
     -webkit-line-clamp: 2;
+  }
+
+  #demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-placeholder h3 {
+    font-size: 21px;
+  }
+
+  #demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-placeholder p {
+    font-size: 9.5px;
   }
 
   .rpg-demo-standby-tips {
