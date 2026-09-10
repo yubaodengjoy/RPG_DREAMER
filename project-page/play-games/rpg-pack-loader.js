@@ -162,6 +162,16 @@
     return url;
   }
 
+  function assetsReady(values) {
+    const assetPacks = manifest?.assetPacks;
+    if (!assetPacks) return true;
+    const candidates = Array.isArray(values) ? values : [values];
+    return candidates.every((value) => {
+      const packId = assetPacks[normalizeAssetPath(value)];
+      return !packId || loadedPacks.has(packId);
+    });
+  }
+
   function chapterForScene(sceneId) {
     return manifest?.sceneChapters?.[sceneId] ?? null;
   }
@@ -180,6 +190,7 @@
   }
 
   window.__RPG_PACK_RESOLVE__ = resolveAsset;
+  window.__RPG_PACK_ASSET_READY__ = assetsReady;
   window.__RPG_PACK_ENSURE_SCENE__ = ensureScene;
   window.__RPG_PACK_ENTER_SCENE__ = enterScene;
   window.__RPG_PACK_READY__ = (async () => {

@@ -9,7 +9,7 @@ const MAGIC = Buffer.from('RPGPK001');
 const root = path.resolve(import.meta.dirname, '..');
 const gameRoots = (process.env.RPG_GAME_ROOTS
   ? process.env.RPG_GAME_ROOTS.split(',')
-  : ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'])
+  : ['src-40', 'src-41', 'src-42', 'src-43', 'src-44', 'src-45'])
   .map((value) => value.trim())
   .filter(Boolean);
 
@@ -85,6 +85,7 @@ function collectPackFiles(gameRoot, source, assetMap) {
   }
 
   const packs = new Map();
+  const assetPacks = {};
   for (const [relativePath, groups] of groupsByOutput) {
     const chapterGroups = [...groups].filter((group) => group !== 'base');
     const group = groups.has('base') || chapterGroups.length !== 1 ? 'base' : chapterGroups[0];
@@ -93,6 +94,7 @@ function collectPackFiles(gameRoot, source, assetMap) {
       throw new Error(`${gameRoot}: mapped asset is missing: ${relativePath}`);
     }
     if (!packs.has(group)) packs.set(group, []);
+    assetPacks[relativePath] = group;
     packs.get(group).push({
       absolutePath,
       path: relativePath.replaceAll('\\', '/'),
@@ -105,7 +107,7 @@ function collectPackFiles(gameRoot, source, assetMap) {
   for (const match of source.matchAll(/scene\.chapter-0*([1-9]\d*)\.[A-Za-z0-9._-]+/g)) {
     sceneChapters[match[0]] = `chapter-${Number(match[1])}`;
   }
-  return { packs, sceneChapters };
+  return { assetPacks, packs, sceneChapters };
 }
 
 async function writeBuffer(handle, hash, buffer) {
@@ -154,7 +156,7 @@ for (const gameRoot of gameRoots) {
   const bundleFile = path.join(assets, bundleName);
   const source = fs.readFileSync(bundleFile, 'utf8');
   const assetMap = extractAssetMap(source, bundleFile);
-  const { packs, sceneChapters } = collectPackFiles(gameRoot, source, assetMap);
+  const { assetPacks, packs, sceneChapters } = collectPackFiles(gameRoot, source, assetMap);
   const packDir = path.join(dist, 'packs');
   fs.rmSync(packDir, { force: true, recursive: true });
   fs.mkdirSync(packDir, { recursive: true });
@@ -167,6 +169,7 @@ for (const gameRoot of gameRoots) {
     game: gameRoot,
     initial: ['base', order[0]].filter(Boolean),
     order,
+    assetPacks,
     sceneChapters,
     packs: {},
   };
