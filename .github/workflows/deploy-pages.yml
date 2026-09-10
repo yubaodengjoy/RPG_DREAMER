@@ -3,6 +3,11 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [main]
+    # The actual site and games are deployed to Cloudflare. GitHub Pages only
+    # publishes this wrapper, so unrelated game updates need no Pages deploy.
+    paths:
+      - 'github-redirect/**'
+      - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -12,7 +17,8 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # Let the Pages backend finish before another deployment is submitted.
+  cancel-in-progress: false
 
 jobs:
   deploy:
