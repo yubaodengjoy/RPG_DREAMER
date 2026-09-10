@@ -1041,7 +1041,7 @@ body.rpg-demo-fullscreen-fallback #demos {
 
 .rpg-handheld-player .rpg-demo-placeholder h3 {
   margin-top: 0;
-  font-family: var(--mono);
+  font-family: var(--serif);
   font-size: clamp(28px, 4.1cqi, 41px);
   font-weight: 400;
   font-synthesis: none;
@@ -1051,6 +1051,7 @@ body.rpg-demo-fullscreen-fallback #demos {
 .rpg-handheld-player .rpg-demo-placeholder p {
   max-width: 600px;
   margin-bottom: 18px;
+  font-family: var(--serif);
   font-size: 14px;
   line-height: 1.45;
 }
