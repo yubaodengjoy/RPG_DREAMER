@@ -12,6 +12,7 @@
 !/scripts/
 !/scripts/build-cloudflare-site.sh
 !/scripts/compress-game-audio.mjs
+!/scripts/patch-game-atlas-loading.mjs
 
 # Landing-page runtime files.
 !/index.html

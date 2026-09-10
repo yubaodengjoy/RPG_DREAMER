@@ -8,7 +8,7 @@ const MARKER = process.env.RPG_PACK_MARKER ?? '__RPG_CHAPTER_PACKS_20260904_01__
 const root = path.resolve(import.meta.dirname, '..');
 const gameRoots = (process.env.RPG_GAME_ROOTS
   ? process.env.RPG_GAME_ROOTS.split(',')
-  : ['src-40', 'src-41', 'src-42', 'src-43', 'src-44'])
+  : ['src-40', 'src-41', 'src-42', 'src-43', 'src-44', 'src-45'])
   .map((value) => value.trim())
   .filter(Boolean);
 
@@ -33,7 +33,9 @@ function capture(source, expression, label, file) {
 
 function patchBundle(file) {
   let source = fs.readFileSync(file, 'utf8');
-  if (source.includes(MARKER)) return false;
+  if (source.includes(MARKER) || /var __RPG_CHAPTER_PACKS_[A-Za-z0-9_$]+__=!0;/.test(source)) {
+    return false;
+  }
 
   const resolver = capture(
     source,
@@ -90,6 +92,15 @@ function patchIndex(file) {
     source = source.replace(
       /<script type="module" crossorigin src="(\.\/assets\/index-[^"?]+\.js)(?:\?v=[^"]+)?"><\/script>/,
       `<script src="../../../project-page/play-games/rpg-pack-loader.js?v=${VERSION}"></script>\n    <script type="module">\n      await window.__RPG_PACK_READY__;\n      await import("$1?v=${VERSION}");\n    </script>`,
+    );
+  } else {
+    source = source.replace(
+      /rpg-pack-loader\.js(?:\?v=[^"']+)?/,
+      `rpg-pack-loader.js?v=${VERSION}`,
+    );
+    source = source.replace(
+      /(await import\("\.\/assets\/index-[^"?]+\.js)(?:\?v=[^"]+)?("\))/,
+      `$1?v=${VERSION}$2`,
     );
   }
   if (!source.includes(`rpg-pack-loader.js?v=${VERSION}`)) {

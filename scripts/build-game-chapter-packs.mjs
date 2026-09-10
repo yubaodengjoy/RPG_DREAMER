@@ -55,11 +55,13 @@ function extractAssetMap(source, file) {
     )].map((match) => [match[1], `./assets/${match[2]}`]),
   );
   const entries = {};
-  for (const match of mapSource.matchAll(/"([^"]+)":("[^"]+"|[A-Za-z_$][\w$]*)/g)) {
+  for (const match of mapSource.matchAll(/"([^"]+)":("[^"]+"|`[^`]+`|[A-Za-z_$][\w$]*)/g)) {
     const [, sourcePath, rawValue] = match;
     const outputPath = rawValue.startsWith('"')
       ? JSON.parse(rawValue)
-      : variableAssets.get(rawValue);
+      : rawValue.startsWith('`')
+        ? rawValue.slice(1, -1)
+        : variableAssets.get(rawValue);
     if (outputPath) entries[sourcePath] = outputPath;
   }
   if (Object.keys(entries).length === 0) {
