@@ -1056,6 +1056,11 @@ body.rpg-demo-fullscreen-fallback #demos {
   line-height: 1.45;
 }
 
+#demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-placeholder h3,
+#demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-placeholder p {
+  font-family: "Jersey 10", var(--mono);
+}
+
 #demos .rpg-demo-actions button,
 #demos .rpg-demo-load {
   font-family: "Jersey 10", var(--mono);
