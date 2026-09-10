@@ -31,9 +31,21 @@ function capture(source, expression, label, file) {
   return match;
 }
 
+// Download completion is not decode completion. The ending scene owns the
+// warmup loader, so keep it alive until the destination's textures/audio land
+// in Phaser's caches. Otherwise globally queued keys get skipped by the new
+// scene after the old loader is stopped halfway through.
+const downloadOnlyContinue = 'agentContinueChapter(){if(!this.nextSceneId)return{ok:!1,message:`No next chapter is available.`};if(this.__rpgContinuing)return{ok:!0,message:`The next chapter is being prepared.`};this.__rpgContinuing=!0;let e=this.nextSceneId,t=this.startCutsceneId;return Promise.resolve(globalThis.__RPG_PACK_ENSURE_SCENE__?.(e)).catch(e=>console.warn(`Next chapter pack preparation failed.`,e)).finally(()=>{this.scene.isActive(this.scene.key)&&(this.endingQaState=void 0,this.nextSceneId=void 0,this.startCutsceneId=void 0,this.scene.stop(this.parentSceneKey),this.scene.start(e,{chapterStartCutsceneId:t,isChapterStart:!0}))}),{ok:!0,message:`Continued to the next chapter.`}}';
+const readyContinue = 'agentContinueChapter(){if(!this.nextSceneId)return{ok:!1,message:`No next chapter is available.`};if(this.__rpgContinuing)return{ok:!0,message:`The next chapter is being prepared.`};this.__rpgContinuing=!0;let e=this.nextSceneId,t=this.startCutsceneId;return __rpgWarmScene(this,e).then(n=>{if(!this.scene.isActive(this.scene.key))return;if(!n){this.__rpgContinuing=!1;console.warn(`Next chapter assets could not be prepared; continuation can be retried.`);return}this.endingQaState=void 0,this.nextSceneId=void 0,this.startCutsceneId=void 0,this.scene.stop(this.parentSceneKey),this.scene.start(e,{chapterStartCutsceneId:t,isChapterStart:!0})}).catch(e=>{this.__rpgContinuing=!1,console.warn(`Next chapter preparation failed.`,e)}),{ok:!0,message:`The next chapter is being prepared.`}}';
+
 function patchBundle(file) {
   let source = fs.readFileSync(file, 'utf8');
   if (source.includes(MARKER) || /var __RPG_CHAPTER_PACKS_[A-Za-z0-9_$]+__=!0;/.test(source)) {
+    if (source.includes(downloadOnlyContinue)) {
+      source = replaceOnce(source, downloadOnlyContinue, readyContinue, 'decode-ready chapter continuation', file);
+      fs.writeFileSync(file, source);
+      return true;
+    }
     return false;
   }
 
@@ -75,7 +87,7 @@ function patchBundle(file) {
     'chapter continuation method',
     file,
   )[0];
-  const continueReplacement = 'agentContinueChapter(){if(!this.nextSceneId)return{ok:!1,message:`No next chapter is available.`};if(this.__rpgContinuing)return{ok:!0,message:`The next chapter is being prepared.`};this.__rpgContinuing=!0;let e=this.nextSceneId,t=this.startCutsceneId;return Promise.resolve(globalThis.__RPG_PACK_ENSURE_SCENE__?.(e)).catch(e=>console.warn(`Next chapter pack preparation failed.`,e)).finally(()=>{this.scene.isActive(this.scene.key)&&(this.endingQaState=void 0,this.nextSceneId=void 0,this.startCutsceneId=void 0,this.scene.stop(this.parentSceneKey),this.scene.start(e,{chapterStartCutsceneId:t,isChapterStart:!0}))}),{ok:!0,message:`Continued to the next chapter.`}}';
+  const continueReplacement = readyContinue;
   source = replaceOnce(source, continueMethod, continueReplacement, 'pack-gated chapter continuation', file);
 
   fs.writeFileSync(file, source);

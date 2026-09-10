@@ -50,9 +50,8 @@ function patchBundle(file) {
 
   const stalled = [...source.matchAll(stalledQueueStart)];
   const queueFixed = [...source.matchAll(fixedQueueStart)];
-  if (stalled.length && queueFixed.length) {
-    throw new Error(`${file}: partially patched lazy-loader queue starters`);
-  }
+  // Scene warmup may already supply fixed starters while the original lazy
+  // loaders still need the repair. Preserve those and update only old forms.
   if (stalled.length) {
     source = source.replace(stalledQueueStart, (match, name) =>
       `${name}.load.isLoading()?${name}.load.update():${name}.load.start()`);
@@ -63,9 +62,6 @@ function patchBundle(file) {
 
   const battleStalled = [...source.matchAll(stalledBattleStart)];
   const battleFixed = [...source.matchAll(fixedBattleStart)];
-  if (battleStalled.length && battleFixed.length) {
-    throw new Error(`${file}: partially patched battle-loader queue starter`);
-  }
   if (battleStalled.length === 1) {
     const name = battleStalled[0][1];
     source = source.replace(

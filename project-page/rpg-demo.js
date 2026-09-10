@@ -32,6 +32,13 @@
       poster: `${gameAssetBase}src-45/src/dist/cover.webp`,
       copy: 'Fight your way out of a debt-driven criminal underworld across two connected chapters. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
     },
+    'debt-abyss-en': {
+      title: 'GTA 6: Vice Island',
+      meta: 'Long-horizon generated RPG · English',
+      src: `${gameAssetBase}src-46/src/dist/index.html?v=20260910-src46-02`,
+      poster: `${gameAssetBase}src-46/src/dist/cover.webp`,
+      copy: 'Fight your way out of a debt-driven criminal underworld across two connected chapters. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
+    },
     'world-40': {
       title: '武松·最后一虎',
       meta: 'Long-horizon generated RPG · Chinese',
