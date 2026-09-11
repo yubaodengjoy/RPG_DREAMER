@@ -27,6 +27,7 @@
   const games = {
     'debt-abyss': {
       title: 'GTA 6：罪恶岛',
+      screenTitle: 'GTA VI：罪恶岛',
       meta: 'Long-horizon generated RPG · Chinese',
       src: `${gameAssetBase}src-45/src/dist/index.html?v=20260910-battle-owner-01`,
       poster: `${gameAssetBase}src-45/src/dist/cover.webp`,
@@ -269,7 +270,7 @@
       return;
     }
 
-    placeholderTitle.textContent = game.title;
+    placeholderTitle.textContent = game.screenTitle || game.title;
     placeholderCopy.textContent = game.copy;
     progressTitle.textContent = `Booting ${game.title}`;
     setProgress(state.progress, state.progressLabel);
