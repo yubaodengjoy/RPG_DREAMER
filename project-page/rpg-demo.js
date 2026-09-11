@@ -70,7 +70,7 @@
       copy: 'Investigate the kingdom of Valdris after its emperor vanishes without explanation, leaving an empty crown and a disputed voice. Follow competing accounts, uncover concealed loyalties, and determine which truth the kingdom will inherit.',
     },
     'journey-west': {
-      title: '西游：师傅，请留步',
+      title: '西游：师傅请留步',
       meta: 'Long-horizon generated RPG · Chinese',
       src: `${gameAssetBase}src-44/src/dist/index.html?v=20260910-battle-owner-01`,
       poster: `${gameAssetBase}src-44/src/dist/assets/main-menu-TS6JUrUr.png`,
