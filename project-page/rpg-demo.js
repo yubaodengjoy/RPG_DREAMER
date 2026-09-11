@@ -26,15 +26,14 @@
 
   const games = {
     'debt-abyss': {
-      title: 'GTA 6：罪恶岛',
-      screenTitle: 'GTA VI：罪恶岛',
+      title: 'GTA VI：罪恶岛',
       meta: 'Long-horizon generated RPG · Chinese',
       src: `${gameAssetBase}src-45/src/dist/index.html?v=20260910-battle-owner-01`,
       poster: `${gameAssetBase}src-45/src/dist/cover.webp`,
       copy: 'Fight your way out of a debt-driven criminal underworld across two connected chapters. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
     },
     'debt-abyss-en': {
-      title: 'GTA 6: Vice Island',
+      title: 'GTA VI: Vice Island',
       meta: 'Long-horizon generated RPG · English',
       src: `${gameAssetBase}src-46/src/dist/index.html?v=20260910-battle-owner-01`,
       poster: `${gameAssetBase}src-46/src/dist/cover.webp`,
@@ -270,7 +269,7 @@
       return;
     }
 
-    placeholderTitle.textContent = game.screenTitle || game.title;
+    placeholderTitle.textContent = game.title;
     placeholderCopy.textContent = game.copy;
     progressTitle.textContent = `Booting ${game.title}`;
     setProgress(state.progress, state.progressLabel);
