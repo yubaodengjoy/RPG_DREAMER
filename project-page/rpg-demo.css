@@ -1032,6 +1032,13 @@ body.rpg-demo-fullscreen-fallback #demos {
 
 .rpg-handheld-player .rpg-demo-placeholder-content {
   width: min(680px, calc(100% - 34px));
+  /* Scroll any overflowing introduction without trapping the outer page. */
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  touch-action: pan-y pinch-zoom;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(158, 219, 242, 0.4) transparent;
   padding: 28px;
   border: 0;
   background: transparent;
@@ -1075,7 +1082,8 @@ body.rpg-demo-fullscreen-fallback #demos {
 }
 
 .rpg-demo-standby-tips {
-  width: min(500px, calc(100% - 20px));
+  width: max-content;
+  max-width: calc(100% - 20px);
   display: grid;
   gap: 6px;
   margin: -4px auto 14px;
@@ -1116,16 +1124,6 @@ body.rpg-demo-fullscreen-fallback #demos {
 
 .rpg-demo-violence-warning svg {
   color: #ffd27a;
-}
-
-/* Keep the extra notice and Play reachable on short, narrow console screens. */
-.rpg-demo-placeholder.has-content-warning .rpg-demo-placeholder-content {
-  min-height: 0;
-  max-height: 100%;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(158, 219, 242, 0.4) transparent;
 }
 
 @media (min-width: 721px) {
@@ -1479,11 +1477,13 @@ body.rpg-demo-fullscreen-fallback #demos {
   }
 
   .rpg-handheld-player .rpg-demo-placeholder p {
+    display: block;
+    overflow: visible;
     max-width: 250px;
     margin-bottom: 5px;
     font-size: 8.5px;
     line-height: 1.2;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: unset;
   }
 
   #demos .rpg-play-demo:not(.has-cartridge) .rpg-demo-placeholder h3 {
@@ -1495,7 +1495,7 @@ body.rpg-demo-fullscreen-fallback #demos {
   }
 
   .rpg-demo-standby-tips {
-    width: min(290px, calc(100% - 8px));
+    max-width: calc(100% - 8px);
     gap: 3px;
     margin: 0 auto 5px;
   }
