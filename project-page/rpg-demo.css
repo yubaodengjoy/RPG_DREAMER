@@ -1082,8 +1082,7 @@ body.rpg-demo-fullscreen-fallback #demos {
 }
 
 .rpg-demo-standby-tips {
-  width: max-content;
-  max-width: calc(100% - 20px);
+  width: min(500px, calc(100% - 20px));
   display: grid;
   gap: 6px;
   margin: -4px auto 14px;
@@ -1495,7 +1494,7 @@ body.rpg-demo-fullscreen-fallback #demos {
   }
 
   .rpg-demo-standby-tips {
-    max-width: calc(100% - 8px);
+    width: min(290px, calc(100% - 8px));
     gap: 3px;
     margin: 0 auto 5px;
   }
