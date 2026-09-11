@@ -1106,6 +1106,34 @@ body.rpg-demo-fullscreen-fallback #demos {
   color: #9edbf2;
 }
 
+.rpg-demo-violence-warning[hidden] {
+  display: none;
+}
+
+.rpg-demo-violence-warning {
+  border-color: rgba(255, 210, 122, 0.3);
+}
+
+.rpg-demo-violence-warning svg {
+  color: #ffd27a;
+}
+
+/* Keep the extra notice and Play reachable on short, narrow console screens. */
+.rpg-demo-placeholder.has-content-warning .rpg-demo-placeholder-content {
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(158, 219, 242, 0.4) transparent;
+}
+
+@media (min-width: 721px) {
+  .rpg-demo-placeholder.has-content-warning .rpg-demo-placeholder-content {
+    padding-block: 16px;
+  }
+}
+
 .rpg-handheld-player .rpg-demo-load {
   min-height: 44px;
   padding-inline: 22px;

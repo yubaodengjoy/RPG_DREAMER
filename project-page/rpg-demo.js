@@ -30,14 +30,16 @@
       meta: 'Long-horizon generated RPG · Chinese',
       src: `${gameAssetBase}src-45/src/dist/index.html?v=20260910-battle-owner-01`,
       poster: `${gameAssetBase}src-45/src/dist/cover.webp`,
-      copy: 'Fight your way out of a debt-driven criminal underworld across two connected chapters. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
+      containsViolence: true,
+      copy: 'Fight your way out of a debt-driven criminal underworld. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
     },
     'debt-abyss-en': {
       title: 'GTA VI: Vice Island',
       meta: 'Long-horizon generated RPG · English',
       src: `${gameAssetBase}src-46/src/dist/index.html?v=20260910-battle-owner-01`,
       poster: `${gameAssetBase}src-46/src/dist/cover.webp`,
-      copy: 'Fight your way out of a debt-driven criminal underworld across two connected chapters. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
+      containsViolence: true,
+      copy: 'Fight your way out of a debt-driven criminal underworld. Navigate neon streets, docks, highways, mansions, and an airport; forge alliances, settle scores, and decide whether survival costs your redemption.',
     },
     'world-40': {
       title: '武松·最后一虎',
@@ -100,6 +102,7 @@
   const progressTitle = root.querySelector('[data-rpg-progress-title]');
   const placeholderTitle = root.querySelector('[data-rpg-placeholder-title]');
   const placeholderCopy = root.querySelector('[data-rpg-placeholder-copy]');
+  const violenceWarning = root.querySelector('[data-rpg-violence-warning]');
   const loadButton = root.querySelector('[data-rpg-load]');
   const openControlsButton = root.querySelector('[data-rpg-open-controls]');
   const closeControlsButton = root.querySelector('[data-rpg-close-controls]');
@@ -223,6 +226,8 @@
   function syncActiveUi() {
     const game = games[activeId];
     const state = activeState();
+    if (violenceWarning) violenceWarning.hidden = !hasCartridge || !game.containsViolence;
+    placeholder.classList.toggle('has-content-warning', hasCartridge && Boolean(game.containsViolence));
     root.classList.toggle('has-cartridge', hasCartridge);
     root.classList.toggle('is-powered-on', hasCartridge && poweredOn);
     root.classList.toggle('is-booting', hasCartridge && poweredOn && Boolean(state.frame) && !state.ready);
@@ -435,6 +440,7 @@
     cartridgeMoving = false;
     syncActiveUi();
 
+    placeholder.querySelector('.rpg-demo-placeholder-content').scrollTop = 0;
     const bounds = device?.getBoundingClientRect();
     if (bounds && (bounds.top < 76 || bounds.bottom > window.innerHeight)) {
       device.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth', block: 'center' });
